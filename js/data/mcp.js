@@ -2,6 +2,10 @@
 // Two ways to "get my Jira tickets": ask Claude to improvise vs
 // wire a defined MCP server. Steps carry a token cost so the two
 // flows can be metered side by side.
+//
+// Escaping: MCP_PRIMITIVES[].body renders raw (inline <em>).
+// MCP_CONFIG.notes[].body renders through codeify (`backticks`
+// become <code>). Every other field is plain text via escHtml.
 
 export const MCP_TASK = 'Pull my open Jira tickets and summarize them.';
 
@@ -11,6 +15,7 @@ export const MCP_FLOWS = {
     title: 'Just ask Claude to connect to Jira',
     subtitle: 'No MCP server. The model has to invent an integration on the spot.',
     tone: 'warn',
+    srcLabel: 'no config — reinvented every session',
     steps: [
       { kind: 'think', line: 'No jira tool exists. I\u2019ll write code to hit the REST API myself.', tokens: 400 },
       { kind: 'write', line: 'Write fetch_jira.py \u2014 guess the endpoint, auth header, and pagination.', tokens: 1300 },
@@ -32,15 +37,7 @@ export const MCP_FLOWS = {
     title: 'Use a defined MCP server',
     subtitle: 'One entry in .mcp.json. Tools are discovered automatically and reused forever.',
     tone: 'good',
-    config: `{
-  "mcpServers": {
-    "jira": {
-      "command": "npx",
-      "args": ["-y", "mcp-server-jira"],
-      "env": { "JIRA_TOKEN": "\${JIRA_TOKEN}" }
-    }
-  }
-}`,
+    srcLabel: 'configured by one file: .mcp.json',
     steps: [
       { kind: 'system', line: 'Connect jira server \u2192 auto-discover tools: jira_search, jira_get_issue\u2026', tokens: 250 },
       { kind: 'call', line: 'jira_search(jql="assignee=currentUser() AND status=Open")', tokens: 200 },
@@ -55,6 +52,30 @@ export const MCP_FLOWS = {
       'Committed to the repo, so every teammate and session reuses it',
     ],
   },
+};
+
+// The punchline: the one committed file that separates the two flows.
+// Every note restates a claim already made by the flows above or the
+// error contract below — no new behavior claims live here.
+export const MCP_CONFIG = {
+  lead: 'Both runs asked for the same tickets. The only artifact that differs is this file — one committed entry that wires the jira server for every session and every teammate.',
+  code: `{
+  "mcpServers": {
+    "jira": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-jira"],
+      "env": { "JIRA_TOKEN": "\${JIRA_TOKEN}" }
+    }
+  }
+}`,
+  notes: [
+    { tag: 'Discovered, not written', body: 'On connect the client auto-discovers `jira_search`, `jira_get_issue` and their schemas — no throwaway `fetch_jira.py`, no guessed endpoints or pagination.' },
+    { tag: 'Typed in, trimmed out', body: 'Typed inputs and trimmed outputs keep context small: 12 issues with only the fields the tool exposes, not 62 fields × 40 issues of raw JSON.' },
+    { tag: 'Secret stays outside', body: 'The `${JIRA_TOKEN}` reference is expanded by the server process — the token never enters model context and is never pasted inline in code.' },
+    { tag: 'Committed and shared', body: 'The file lives in the repo, so every teammate and every future session reuses the same tools instead of starting from zero.' },
+    { tag: 'Debuggable failures', body: 'A failed call comes back marked `isError` with structured content the coordinator can act on — the error contract below.' },
+    { tag: 'Project scope, on purpose', body: 'Committed here, this config is project scope — the whole team gets it. Personal or experimental servers go in user scope (`~/.claude.json`) instead. And for standard integrations, prefer a community server over writing your own.' },
+  ],
 };
 
 // The error contract that makes MCP tools debuggable.

@@ -56,14 +56,21 @@ export function syncRail(s) {
   document.querySelector('.lab-tab.is-active')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
 }
 
-/** Mount the active lab into #labMount. */
+/** Mount the active lab into #labMount.
+ *  A lab's mount(root) may return a teardown function; it runs before the
+ *  next mount (lab switch or exam-mode re-render) so timers and observers
+ *  never outlive their DOM. */
+let unmount = null;
 export function mountLab(s) {
   const mount = $('labMount');
   if (!mount) return;
+  if (typeof unmount === 'function') unmount();
+  unmount = null;
   mount.innerHTML = '';
   document.body.dataset.lab = s.activeLab;
   document.body.dataset.capture = ''; // labs opt back in on mount (drill does)
-  (LAB_MOUNT[s.activeLab] || (() => {}))(mount);
+  const ret = (LAB_MOUNT[s.activeLab] || (() => {}))(mount);
+  unmount = typeof ret === 'function' ? ret : null;
   syncRail(s);
 }
 
