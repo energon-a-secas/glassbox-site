@@ -25,14 +25,15 @@ js/
   utils.js            $, el, escHtml, highlightCode, copyText, showToast
   data/               Hand-authored content (pure data, no DOM)
     runs.js           Agent-loop scenarios: nodes + per-step scene deltas, token counts, flags
-    mcp.js            Improvised-integration vs defined-MCP flows, isError contract, primitives
-    config.js         Repo maturity L0→L3 trees + annotated file contents
+    loop-contrast.js  Steer-vs-enforce comparison (prompt asks / code enforces) for the Loop lab
+    mcp.js            Improvised-integration vs defined-MCP flows, MCP_CONFIG showcase, isError contract, primitives
+    config.js         Repo maturity L0→L3 trees + user-scope (~/.claude) tree + annotated file contents
     planning.js       Plan-vs-direct signals, preset cases, verdict notes
     antipatterns.js   Anti-pattern gallery + inline-flag lookup (shared with other labs)
     sdk.js            SDK_LEVELS: L0→L5 build-up, each with code, keys, caveats
     sdk-config.js     Config bench: CFG_FIELDS (knobs), CFG_GOALS (requirements), CFG_NOTES
     exam-brief.js     EXAM_BRIEF: format, scoring, domain weights, out-of-scope list
-    patterns.js       18 answer patterns + PATTERN_GROUPS (the filter rail)
+    patterns.js       21 answer patterns + PATTERN_GROUPS (the filter rail)
     traps.js          LURES (distractor shapes), PAIRS (near-miss discriminators), CHECKS
     questions/        Question bank, one file per exam scenario
       index.js        QUESTIONS aggregate + SCENARIOS / DOMAINS / LEVELS vocabularies
@@ -46,9 +47,9 @@ docs/architecture.mmd + .svg   Diagram source + render
 
 ## Conventions
 
-- **No single JS file over 500 lines; `app.js` under 50.** Split by concern, not by size after the fact. This binds every module with logic. A pure-data catalogue splits on a real domain boundary or not at all: `data/questions/` splits by exam scenario, `data/exam-brief.js` is separate from `data/patterns.js` because the brief is not a pattern — but the 18 patterns stay in one file at ~570 lines rather than being chopped into five group-sized fragments to satisfy a number.
+- **No single JS file over 500 lines; `app.js` under 50.** Split by concern, not by size after the fact. This binds every module with logic. A pure-data catalogue splits on a real domain boundary or not at all: `data/questions/` splits by exam scenario, `data/exam-brief.js` is separate from `data/patterns.js` because the brief is not a pattern — but the 21 patterns stay in one file at ~700 lines rather than being chopped into five group-sized fragments to satisfy a number.
 - **Data vs view:** everything in `js/data/` is pure data. Labs in `js/labs/` render it. Never inline scenario copy into a lab module.
-- **Each lab exports `mount(root)`** and is registered in `LAB_MOUNT` (render.js) + `LABS` (state.js). Adding a lab = new data file + new lab module + those two registrations; the rail tab is generated from the `LABS` entry, which needs a unique `key` (digit) and a `half` (`machinery` / `questions`) so the overview map lists it.
+- **Each lab exports `mount(root)`** and is registered in `LAB_MOUNT` (render.js) + `LABS` (state.js). `mount` may return a teardown function; `render.js` calls it before the next mount (lab switch or exam-mode re-render) — return one whenever the lab starts timers or observers (loop and mcp do). Adding a lab = new data file + new lab module + those two registrations; the rail tab is generated from the `LABS` entry, which needs a unique `key` (digit) and a `half` (`machinery` / `questions`) so the overview map lists it.
 - **Glossary:** add a term to `TIPS` in `tips.js`, then reference it anywhere with `data-tip="key"`. Don't hand-write tooltip markup.
 - **Anti-patterns are single-sourced** in `data/antipatterns.js`. Inline flags in other labs reference an anti-pattern `id`; don't duplicate the copy.
 - **Exam accuracy first.** Use the certification's exact terms (`stop_reason`, `tool_choice`, `allowed_tools`, coordinator/subagent, MCP tools/resources/prompts). When the guide names a thing, name it the same way.
@@ -69,4 +70,4 @@ docs/architecture.mmd + .svg   Diagram source + render
 - Hash nav (`#loop`, `#mcp`, …) maps to labs via `events.js` hashchange; keep hashes in sync with `LABS[].id`.
 - **Digit keys come from `LABS[].key`, not rail position.** `events.js` resolves a digit with `LABS.find(l => l.key === e.key)` ('0' is Overview), so rail order and key mapping can change independently. A running drill needs 1–4 to answer: it sets `document.body.dataset.capture = 'keys'` while in its run view and `render.js` clears it on every mount; `events.js` bails when it is set. Any future lab wanting the digits must use the same flag.
 - The drill's scaled score is a **domain-weighted estimate** on the published 100–1000 scale, renormalised over the domains the chosen set actually covers. It is not an official conversion and the result screen says so — keep that disclaimer.
-- A question's `pattern` is a deliberately **specific** label ("Required fields push the model to fabricate"), finer-grained than the Playbook's 18 general cards. `drill.js` resolves it to a card by exact title match, then by `PATTERN_ALIASES` in `data/questions/index.js`, and deep-links via `sessionStorage['glassbox-open-pattern']`. 45 of 59 labels resolve; the rest have no card and render unlinked, which is correct — do not invent a loose match to raise the number. When you add a question, add an alias only if a real card covers it.
+- A question's `pattern` is a deliberately **specific** label ("Required fields push the model to fabricate"), finer-grained than the Playbook's 21 general cards. `drill.js` resolves it to a card by exact title match, then by `PATTERN_ALIASES` in `data/questions/index.js`, and deep-links via `sessionStorage['glassbox-open-pattern']`. 51 of 63 labels resolve; the rest have no card and render unlinked, which is correct — do not invent a loose match to raise the number. When you add a question, add an alias only if a real card covers it.

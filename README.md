@@ -32,7 +32,7 @@ See what Claude actually does under the hood, one clickable step at a time.
 
 Glass Box turns the hidden machinery of Claude into something you can click through. One line like "spin up subagents to review my writing" becomes a live diagram of the coordinator, the `Task` tool, and the isolated subagents underneath, replayed step by step with the raw API turns beside them.
 
-It is study fuel for the Claude Certified Architect &mdash; Foundations exam: nine interactive labs, exam-accurate language, a level-by-level Agent SDK build, a playbook of the decision patterns that settle most questions, and a bank of **91 scenario questions** you can drill and score.
+It is study fuel for the Claude Certified Architect &mdash; Foundations exam: nine interactive labs, exam-accurate language, a level-by-level Agent SDK build, a playbook of the decision patterns that settle most questions, and a bank of **96 scenario questions** you can drill and score.
 
 Every run is a hand-authored simulation, not a live API call, so it runs entirely in your browser with no keys and no setup.
 
@@ -55,7 +55,7 @@ Every run is a hand-authored simulation, not a live API call, so it runs entirel
 - **Playbook** -- the exam brief (format, domain weights, what is explicitly out of scope) and the 18 recurring decision patterns. Each opens to the tell in the stem, the shape of the correct option, and the distractor shapes to reject, with the guide questions it decides.
 - **Traps** -- three catalogues. *Distractor lures*: answer shapes that read as senior engineering and lose here, each with the case where it is genuinely right. *Near-miss pairs*: stems that look identical until one word moves the answer, with the discriminator stated. *Before you answer*: a pre-answer routine.
 - **Anti-patterns** -- a flip-card gallery of the traps the exam loves, cross-referenced by the live flags in the other labs.
-- **Drill** -- 91 questions in the exam's own format. Filter by scenario, weighted domain or difficulty; every answer returns the reasoning for the winner *and* for each option you rejected; the result screen gives a domain-weighted score estimate and groups your misses by the pattern behind them.
+- **Drill** -- 96 questions in the exam's own format. Filter by scenario, weighted domain or difficulty; every answer returns the reasoning for the winner *and* for each option you rejected; the result screen gives a domain-weighted score estimate and groups your misses by the pattern behind them.
 
 ### About the question bank
 

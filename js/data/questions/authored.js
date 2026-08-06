@@ -1,13 +1,17 @@
 // ── Questions: authored (not in the guide's practice test) ───
-// The official practice test covers 5 of the 8 exam scenarios.
+// The official practice test covers 5 of the scenarios the study
+// guide lists (it lists 8; the exam-guide PDF names 6).
 // Scenario 6 (Structured Data Extraction) and scenario 4 (Developer
 // Productivity Tools) appear on the real exam with no practice
 // questions attached, so these are written here in the same format
 // and difficulty band, grounded in the guide's theory chapters:
-//   Ch.2 tools/tool_choice/JSON schemas   Ch.6 prompt engineering
-//   Ch.7 Message Batches   Ch.9 confidence calibration
+//   Ch.2 tools/tool_choice/JSON schemas   Ch.3 orchestration & hooks
+//   Ch.6 prompt engineering   Ch.7 Message Batches
+//   Ch.8 task decomposition   Ch.9 confidence calibration
 //   Ch.11 context management   Ch.13 built-in tools
-// Every answer traces to a stated rule; none invents behaviour.
+// dev-06..dev-10 deliberately weight Domain 1, the exam's biggest
+// domain and the practice test's thinnest. Every answer traces to a
+// stated rule; none invents behaviour.
 
 export const AUTHORED = [
   // ── Structured Data Extraction ─────────────────────────────
@@ -380,5 +384,120 @@ export const AUTHORED = [
     },
     pattern: 'Start fresh when tool results are stale',
     source: 'Authored — Ch.5.10, Domain 1.7',
+  },
+  {
+    id: 'dev-06',
+    scenario: 'devtools',
+    domain: 'd1',
+    level: 'core',
+    situation: 'Your internal migration assistant has a `run_migration` tool for staging environments. Its system prompt says, in bold, "NEVER run a migration against production." In a month of staging drills it still targeted production twice when a connection string was ambiguous.',
+    ask: 'What is the correct fix?',
+    options: [
+      { k: 'A', t: 'A `PreToolUse` hook that inspects every `run_migration` call and blocks any target that resolves to production.' },
+      { k: 'B', t: 'Move the rule to the top of the system prompt and repeat it before every tool description.' },
+      { k: 'C', t: 'Add few-shot examples of the agent refusing to migrate production.' },
+      { k: 'D', t: 'Remove `run_migration` from `allowed_tools` entirely.' },
+    ],
+    answer: 'A',
+    why: 'A production migration is exactly the class of rule — destructive, irreversible — that belongs in code, not in a prompt. The hook fires on 100% of calls and blocks before the tool runs; a prompt instruction is followed most of the time, and this stem has already measured the exceptions.',
+    distractors: {
+      B: 'Stronger wording raises compliance without ever reaching 100%. Two incidents in a month is what "most of the time" looks like.',
+      C: 'Few-shot improves judgment on ambiguous cases; it does not make a guarantee out of a probability.',
+      D: 'Removing the tool breaks the staging drills the assistant exists to run — capability lost, problem intact.',
+    },
+    pattern: 'Deterministic beats probabilistic',
+    source: 'Authored — Ch.3.5, Domain 1.4-1.5',
+  },
+  {
+    id: 'dev-07',
+    scenario: 'devtools',
+    domain: 'd1',
+    level: 'core',
+    situation: 'You define a repo-insights coordinator with `allowed_tools: ["Read", "Grep"]` and three specialist subagents for churn, ownership and test-coverage analysis. At runtime the coordinator never delegates — it grinds through every analysis itself, sequentially, and the run times out.',
+    ask: 'What is the most likely cause?',
+    options: [
+      { k: 'A', t: 'The coordinator’s `allowed_tools` does not include `"Task"`, so it cannot spawn a subagent at all.' },
+      { k: 'B', t: 'Subagents must be registered in `.mcp.json` before a coordinator can reach them.' },
+      { k: 'C', t: 'Delegation requires `tool_choice: "any"` on the coordinator.' },
+      { k: 'D', t: 'The coordinator’s `max_tokens` is too low to plan a delegation.' },
+    ],
+    answer: 'A',
+    why: 'Task is the tool that spawns subagents, and an agent can only call tools on its whitelist. Without `"Task"` in `allowed_tools`, delegation is silently impossible — the coordinator does the only thing it can: everything, itself.',
+    distractors: {
+      B: '`.mcp.json` wires MCP servers, not subagents. Subagents are reached through the Task tool.',
+      C: '`tool_choice: "any"` forces some tool call; it does not grant access to a tool outside the whitelist.',
+      D: 'A low cap truncates output; it does not remove a capability.',
+    },
+    pattern: 'A coordinator without Task cannot delegate',
+    source: 'Authored — Ch.3.3, Domain 1.2-1.3',
+  },
+  {
+    id: 'dev-08',
+    scenario: 'devtools',
+    domain: 'd1',
+    level: 'hard',
+    situation: 'Your weekly engineering digest always aggregates the same four sources in the same order: merged PRs, incident reports, deploy logs, on-call notes. A teammate proposes rebuilding it around a coordinator that decides each week how to decompose the work.',
+    ask: 'How should you evaluate the proposal?',
+    options: [
+      { k: 'A', t: 'Keep a fixed pipeline: the steps are known, stable and identical every run, so deterministic stages beat run-time decomposition.' },
+      { k: 'B', t: 'Adopt dynamic decomposition — a coordinator is always the more capable architecture.' },
+      { k: 'C', t: 'Merge everything into one agent with a larger context window.' },
+      { k: 'D', t: 'Spawn one subagent per repository instead of per source.' },
+    ],
+    answer: 'A',
+    why: 'Dynamic decomposition earns its overhead when the shape of the work varies per request. Here the sources, the order and the output are fixed — a pipeline of deterministic stages is simpler, cheaper and easier to debug, with an LLM call only where judgment is needed.',
+    distractors: {
+      B: 'A coordinator deciding what to do each week adds cost and nondeterminism to a task whose decomposition never changes.',
+      C: 'One agent carrying four sources in one window is the coverage-thins-as-it-fills failure the split exists to avoid.',
+      D: 'Partitioning by repository cuts across all four sources, recreating the aggregation problem inside every subagent.',
+    },
+    pattern: 'Fixed steps get a pipeline, open topics get a coordinator',
+    source: 'Authored — Ch.8.1-8.2, Domain 1.6',
+  },
+  {
+    id: 'dev-09',
+    scenario: 'devtools',
+    domain: 'd1',
+    level: 'core',
+    situation: 'After a long shared investigation into a flaky test suite, two competing fixes emerge: mock the external service, or stand up a dedicated test database. You want to develop both far enough to compare, without either analysis leaking into the other.',
+    ask: 'What is the right session mechanic?',
+    options: [
+      { k: 'A', t: 'Use `fork_session` twice at the end of the investigation, developing one approach per fork.' },
+      { k: 'B', t: 'Try the mock approach first in the same session, then the database approach after it.' },
+      { k: 'C', t: 'Start two fresh sessions and paste the ticket description into each.' },
+      { k: 'D', t: 'Resume the investigation session twice in parallel with `--resume`.' },
+    ],
+    answer: 'A',
+    why: 'Forking branches independent sessions from the shared context up to the branch point: both forks inherit the investigation, then diverge with no cross-contamination — exactly the compare-two-approaches case fork_session exists for.',
+    distractors: {
+      B: 'Sequential attempts in one session contaminate each other: the second approach is reasoned about through the residue of the first.',
+      C: 'Fresh sessions throw away the shared investigation both approaches depend on, so each fork re-derives it — differently.',
+      D: 'Resuming the same named session twice does not create independent branches; it re-enters one history.',
+    },
+    pattern: 'fork_session compares approaches from shared context',
+    source: 'Authored — Ch.5.10, Domain 1.7',
+  },
+  {
+    id: 'dev-10',
+    scenario: 'devtools',
+    domain: 'd1',
+    level: 'hard',
+    situation: 'Your changelog agent delegates to three summarizers — features, fixes, breaking changes — whose inputs are fully independent. Logs show the coordinator issues one `Task` call, waits for the result, then issues the next: total latency is the sum of all three.',
+    ask: 'What change gets the parallelism back?',
+    options: [
+      { k: 'A', t: 'Have the coordinator emit all three `Task` calls in a single turn — multiple Task calls in one turn run concurrently.' },
+      { k: 'B', t: 'Raise the coordinator’s `max_tokens` so it can plan all three delegations at once.' },
+      { k: 'C', t: 'Insert a fourth "dispatcher" subagent whose job is to spawn the other three.' },
+      { k: 'D', t: 'Switch the summarizers to a faster model so the sequential chain completes sooner.' },
+    ],
+    answer: 'A',
+    why: 'Parallel fan-out is a property of how the Task calls are issued: several Task calls in one coordinator turn run in parallel; one call per turn serializes them. The prompt should tell the coordinator to dispatch all independent slices together.',
+    distractors: {
+      B: 'The cap limits response length. It has no effect on whether tool calls in separate turns serialize.',
+      C: 'A dispatcher just moves the same one-call-per-turn behaviour down a level and adds a hop.',
+      D: 'A faster model shrinks each stage but keeps the sum-of-stages shape — the structural fix is concurrency.',
+    },
+    pattern: 'Independent slices fan out in one turn',
+    source: 'Authored — Ch.3.3, Domain 1.2',
   },
 ];

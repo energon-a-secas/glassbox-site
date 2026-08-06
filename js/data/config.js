@@ -47,7 +47,7 @@ TypeScript, Fastify, Postgres (via Kysely), Vitest.
 - Import standards on demand:
   @./.claude/rules/api-conventions.md
   @./.claude/rules/testing.md`,
-    annotation: 'Project-level <span data-tip="claude_md">CLAUDE.md</span> is always loaded and lives in version control, so every teammate gets the same rules. <code>@./path</code> imports pull in other files (relative to this file, max depth 5) so it stays modular. Putting this in <code>~/.claude/</code> instead would strand it on one laptop.',
+    annotation: 'Project-level <span data-tip="claude_md">CLAUDE.md</span> is always loaded and lives in version control, so every teammate gets the same rules. <code>@./path</code> imports pull in other files (relative to this file, max depth 5) so it stays modular. Edit it from inside a session with <span data-tip="memory_cmd">/memory</span>. Putting this in <code>~/.claude/</code> instead would strand it on one laptop.',
   },
   agentsmd: {
     lang: 'md',

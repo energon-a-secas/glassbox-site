@@ -331,7 +331,7 @@ claude --resume investigation-auth-bug
       },
       {
         title: 'Write findings down instead',
-        body: 'In a long investigation, have the agent keep a scratchpad file of concrete findings — real class names, call sites, external rate limits, migration dates. That survives compaction, a new session, and a crash, which context does not.',
+        body: 'In a long investigation, have the agent keep a scratchpad file of concrete findings — real class names, call sites, external rate limits, migration dates. That survives compaction, a new session, and a crash, which context does not. Long multi-agent jobs go further: each agent persists a small state file and the coordinator keeps a manifest, so a crash resumes from disk instead of restarting from zero.',
       },
     ],
     exam: 'The tell for "start a new session" is always a change in the world since the session ran: files refactored, a dependency upgraded, time passed. The tell for <code data-tip="fork_session">fork_session</code> is two candidate approaches you want to compare.',

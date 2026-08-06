@@ -10,7 +10,7 @@ export const TIPS = {
   },
   stop_reason: {
     term: 'stop_reason',
-    body: 'The field that controls the loop. <code>"tool_use"</code> means run a tool and continue; <code>"end_turn"</code> means the task is done. It is the <em>only</em> reliable completion signal.',
+    body: 'The field that controls the loop. <code>"tool_use"</code> means run a tool and continue; <code>"end_turn"</code> means the task is done. It is the <em>only</em> reliable completion signal. Other values: <code>"max_tokens"</code> (the response truncated) and <code>"stop_sequence"</code> (a custom stop string was hit).',
   },
   tool_use: {
     term: 'tool_use',
@@ -99,6 +99,10 @@ export const TIPS = {
   compact: {
     term: '/compact',
     body: 'Summarizes prior history to free the context window. Risk: exact numbers, dates, and specifics can blur into "about" and "roughly".',
+  },
+  memory_cmd: {
+    term: '/memory',
+    body: 'Opens the CLAUDE.md memory file for editing from inside a session. What you save there persists across sessions — unlike the conversation itself.',
   },
   fork_session: {
     term: 'fork_session',
