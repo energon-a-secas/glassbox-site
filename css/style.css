@@ -11,12 +11,13 @@
  *                      rose #e05a6b · violet #a78bfa
  *  text primary:       #f4ede4 (warm ivory)
  *  text secondary:     #d8cec0
- *  text muted:         rgba(ink,.52)
+ *  text muted:         rgba(ink,.60)
  *  header:             ember skin (kit), gradient end re-pointed at --bg
  *
  *  Typography scale (rem)
  *  --text-2xs: 0.6875 --text-xs: 0.75    --text-sm: 0.875   --text-base: 1
  *  --text-lg: 1.125   --text-xl: 1.25    --text-2xl: 1.5
+ *  --text-code: 0.85 (code samples)   --text-mono-sm: 0.8 (dense logs)
  *  --measure: 66ch (prose)   --measure-tight: 54ch (captions, columns)
  *  font stack: 'Avenir Next', -apple-system, BlinkMacSystemFont,
  *              'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif
@@ -57,7 +58,10 @@
   --border-strong: rgba(var(--ink),.26);
   --text-primary: #f4ede4;
   --text-secondary: #d8cec0;
-  --text-muted: rgba(var(--ink),.52);
+  /* .60 ≈ 6.4:1 on --bg. Muted text is almost always 11-14px here, so it
+     needs headroom over the 4.5:1 floor — but past ~.62 it starts
+     competing with --text-secondary and the three-tier system flattens. */
+  --text-muted: rgba(var(--ink),.60);
   /* Glass Box brand: Anthropic clay */
   --accent: #cc785c;
   --accent-bright: #e6a583;
@@ -94,6 +98,11 @@
   --text-2xs: 0.6875rem;
   --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem;
   --text-lg: 1.125rem; --text-xl: 1.25rem; --text-2xl: 1.5rem;
+  /* Two mono tiers, replacing the ad-hoc .74/.78/.8/.82/.84rem spread:
+     --text-code for code samples, --text-mono-sm for dense logs and
+     inline bad-example blocks. */
+  --text-code: 0.85rem;
+  --text-mono-sm: 0.8rem;
   /* Comfortable reading measure for prose. Labs are up to 1180px wide; body
      copy must never run the full width. */
   --measure: 66ch;
@@ -755,7 +764,9 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .lab-tab {
   display: inline-flex; align-items: center; gap: var(--space-2);
   flex-shrink: 0;
-  min-height: 34px;
+  /* 44px touch minimum; rail total = 44 + 2×6px padding + 1px border
+     = 57px, inside the 58px the scroll-padding-top already allows. */
+  min-height: var(--control-height);
   padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm);
   background: transparent; border: 1px solid transparent;
   color: var(--text-muted); cursor: pointer;
@@ -1020,16 +1031,21 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 
 /* ── Code block ─────────────────────────────────────────────── */
 .code-block { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--well); }
-.code-block--sm { font-size: .82rem; }
+/* .code-block--sm survives in markup as a structural hook only; its old
+   font-size never reached the code element (.code-block code wins). */
 .code-block__bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 12px; background: var(--surface-1); border-bottom: 1px solid var(--border-subtle); font-size: var(--text-xs); color: var(--text-muted); }
 .code-block__lang { text-transform: uppercase; letter-spacing: .08em; }
 .code-block pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
-.code-block code { font-family: var(--mono); font-size: .84rem; line-height: 1.6; color: var(--text-secondary); white-space: pre; }
+.code-block code { font-family: var(--mono); font-size: var(--text-code); line-height: 1.6; color: var(--text-secondary); white-space: pre; }
 .code-copy { background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: 5px; padding: 2px 8px; cursor: pointer; font-family: inherit; font-size: var(--text-xs); }
 .code-copy:hover { color: var(--text-primary); border-color: var(--border-strong); }
 .tok-str { color: #b7d99a; }
-.tok-com { color: var(--text-muted); font-style: italic; }
+/* Comments carry whole teaching samples (SDK L5); brighter than muted,
+   still visibly quieter than strings/secondary. Ink triplet = stays warm. */
+.tok-com { color: rgba(var(--ink),.66); font-style: italic; }
 .tok-kw { color: var(--clay); }
+.tok-dec { color: var(--violet); }
+.tok-num { color: var(--amber); }
 
 /* ══ LOOP LAB ══════════════════════════════════════════════ */
 .loop-scenarios { display: flex; flex-wrap: wrap; gap: var(--space-2); }
@@ -1093,7 +1109,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .ctx-meter__fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--clay), var(--amber)); border-radius: 999px; transition: width .5s var(--ease-snap); }
 .ctx-meter__fill.is-hot { background: linear-gradient(90deg, var(--amber), var(--rose)); }
 
-.loop-log { flex: 1; min-height: 200px; max-height: 380px; overflow-y: auto; background: var(--well); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; font-family: var(--mono); font-size: .78rem; }
+.loop-log { flex: 1; min-height: 200px; max-height: 380px; overflow-y: auto; background: var(--well); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; font-family: var(--mono); font-size: var(--text-mono-sm); }
 .log-row { padding: 6px 8px; border-radius: 6px; line-height: 1.45; border-left: 2px solid transparent; }
 .log-row.is-current { background: rgba(var(--ink),.04); border-left-color: var(--clay); }
 .log-row--request { color: #cfe3ff; }
@@ -1120,7 +1136,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .flag__bad span, .flag__fix span { display: block; font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
 .flag__bad span { color: var(--rose); }
 .flag__fix span { color: var(--green); }
-.flag__bad { font-family: var(--mono); font-size: .78rem; }
+.flag__bad { font-family: var(--mono); font-size: var(--text-mono-sm); }
 .flag__fix code, .flag__bad code { font-family: var(--mono); background: rgba(var(--ink),.08); padding: 1px 4px; border-radius: 4px; }
 
 /* ══ MCP LAB ═══════════════════════════════════════════════ */
@@ -1182,7 +1198,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .err-card--bad .err-card__label { color: var(--rose); }
 .err-card--good .err-card__label { color: var(--green); }
 .err-card pre { margin: 0; padding: 12px 14px; overflow-x: auto; background: var(--well); }
-.err-card code { font-family: var(--mono); font-size: .8rem; line-height: 1.55; white-space: pre; }
+.err-card code { font-family: var(--mono); font-size: var(--text-code); line-height: 1.55; white-space: pre; }
 .err-card__note { padding: 10px 14px; font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.45; }
 .prim { background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-4); }
 .prim h4 { font-size: var(--text-base); font-weight: 650; margin-bottom: 6px; color: var(--clay); }
@@ -1193,12 +1209,14 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .cfg-lvl { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; padding: var(--space-3) var(--space-4); border-radius: var(--radius); background: var(--surface-1); border: 1px solid var(--border); cursor: pointer; font-family: inherit; transition: background-color var(--dur), border-color var(--dur); text-align: left; }
 .cfg-lvl:hover { border-color: var(--border-strong); }
 .cfg-lvl.is-active { background: var(--clay-soft); border-color: var(--clay); }
-.cfg-lvl__lv { font-size: var(--text-xs); font-weight: 800; color: var(--clay); letter-spacing: .05em; }
+/* --accent-bright, not --clay: on the active tab's --clay-soft fill the
+   base clay lands ≈4.7:1 at 12px/800 — same fix as .tag--domain. */
+.cfg-lvl__lv { font-size: var(--text-xs); font-weight: 800; color: var(--accent-bright); letter-spacing: .05em; }
 .cfg-lvl__lb { font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); }
 .cfg-lvl.is-active .cfg-lvl__lb { color: var(--text-primary); }
 .cfg-tagline { font-size: var(--text-base); color: var(--text-secondary); }
 .cfg-behavior { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.5; background: var(--clay-soft); border: 1px solid rgba(204,120,92,.3); border-radius: var(--radius); padding: 12px 14px; }
-.cfg-behavior__tag { font-weight: 700; color: var(--clay); text-transform: uppercase; font-size: var(--text-xs); letter-spacing: .05em; margin-right: 8px; }
+.cfg-behavior__tag { font-weight: 700; color: var(--accent-bright); text-transform: uppercase; font-size: var(--text-xs); letter-spacing: .05em; margin-right: 8px; }
 
 .cfg-ide { display: grid; grid-template-columns: 260px 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; min-height: 420px; }
 .cfg-sidebar { background: var(--well); }
@@ -1219,7 +1237,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .cfg-empty { color: var(--text-muted); text-align: center; padding: var(--space-8); }
 .cfg-annot { background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 12px 14px; }
 .cfg-annot__tag { display: inline-block; font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--clay); margin-bottom: 6px; }
-.cfg-annot p { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.55; }
+.cfg-annot p { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.55; max-width: var(--measure); }
 .cfg-annot code { font-family: var(--mono); font-size: .84em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; color: var(--text-primary); }
 
 /* ══ PLANNING LAB ══════════════════════════════════════════ */
@@ -1253,7 +1271,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .verdict__points { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--border-subtle); padding-top: var(--space-3); }
 .verdict__points li { font-size: var(--text-sm); color: var(--text-muted); line-height: 1.45; padding-left: 16px; position: relative; }
 .verdict__points li::before { content: "\2022"; position: absolute; left: 0; color: var(--text-muted); }
-.plan-combined { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.55; background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 14px 16px; }
+.plan-combined { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.55; background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 14px 16px; max-width: var(--measure); }
 .plan-combined__tag { font-weight: 700; color: var(--clay); text-transform: uppercase; font-size: var(--text-xs); letter-spacing: .05em; margin-right: 8px; }
 
 /* ══ ANTI-PATTERNS LAB ═════════════════════════════════════ */
@@ -1275,7 +1293,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .ap-card.is-flipped .ap-card__back { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .ap-card__domain { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--clay); }
 .ap-card__title { font-size: var(--text-base); font-weight: 650; line-height: 1.25; }
-.ap-card__bad { font-family: var(--mono); font-size: .78rem; color: var(--text-secondary); background: var(--rose-soft); border-left: 2px solid var(--rose); padding: var(--space-2) var(--space-3); border-radius: 0 6px 6px 0; line-height: 1.5; }
+.ap-card__bad { font-family: var(--mono); font-size: var(--text-mono-sm); color: var(--text-secondary); background: var(--rose-soft); border-left: 2px solid var(--rose); padding: var(--space-2) var(--space-3); border-radius: 0 6px 6px 0; line-height: 1.5; }
 .ap-card__bad span, .ap-card__why span, .ap-card__fix span { display: block; font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; font-family: var(--font); }
 .ap-card__bad span { color: var(--rose); }
 .ap-card__more { margin-top: auto; font-size: var(--text-xs); color: var(--text-muted); font-weight: 600; }
@@ -2063,7 +2081,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 }
 .sdk-key:last-child { border-bottom: 1px solid var(--border-subtle); }
 .sdk-key__name {
-  font-family: var(--mono); font-size: .82rem; color: var(--accent-bright);
+  font-family: var(--mono); font-size: var(--text-code); color: var(--accent-bright);
   overflow-wrap: anywhere;
 }
 .sdk-key__why { font-size: var(--text-sm); line-height: 1.5; color: var(--text-secondary); }
@@ -2078,7 +2096,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
   font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .07em;
   margin-bottom: var(--space-2);
 }
-.sdk-ledger__col p { font-size: var(--text-sm); line-height: 1.6; color: var(--text-secondary); }
+.sdk-ledger__col p { font-size: var(--text-sm); line-height: 1.6; color: var(--text-secondary); max-width: var(--measure); }
 .sdk-ledger__col--buys { background: var(--green-soft); border-color: var(--green-line); }
 .sdk-ledger__col--buys h4 { color: var(--green); }
 .sdk-ledger__col--buys h4::before { content: "+ "; }
@@ -2095,7 +2113,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
   border-left: 2px solid var(--rose-line);
 }
 .sdk-caveat h4 { font-size: var(--text-sm); font-weight: 650; margin-bottom: var(--space-2); }
-.sdk-caveat p { font-size: var(--text-sm); line-height: 1.6; color: var(--text-secondary); }
+.sdk-caveat p { font-size: var(--text-sm); line-height: 1.6; color: var(--text-secondary); max-width: var(--measure); }
 
 .sdk-exam {
   display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3);
@@ -2106,7 +2124,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
   flex: 0 0 auto; font-size: var(--text-xs); font-weight: 700;
   text-transform: uppercase; letter-spacing: .07em; color: var(--violet-text);
 }
-.sdk-exam p { flex: 1 1 260px; font-size: var(--text-sm); line-height: 1.6; color: var(--text-secondary); }
+.sdk-exam p { flex: 1 1 260px; font-size: var(--text-sm); line-height: 1.6; color: var(--text-secondary); max-width: var(--measure); }
 .sdk-refs { font-size: var(--text-xs); color: var(--text-muted); font-family: var(--mono); }
 
 .sdk-level__nav { display: flex; justify-content: space-between; gap: var(--space-3); align-items: center; }
@@ -2147,7 +2165,7 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
   border: 1px solid var(--rose-line); background: var(--rose-soft);
 }
 .sdk-gap h5 { font-size: var(--text-sm); font-weight: 650; margin-bottom: var(--space-2); }
-.sdk-gap__risk, .sdk-gap__fix { font-size: var(--text-sm); line-height: 1.6; }
+.sdk-gap__risk, .sdk-gap__fix { font-size: var(--text-sm); line-height: 1.6; max-width: var(--measure); }
 .sdk-gap__risk { color: var(--rose-text); margin-bottom: var(--space-2); }
 .sdk-gap__fix { color: var(--text-secondary); }
 .sdk-gap__ref { display: block; margin-top: var(--space-2); font-family: var(--mono); font-size: var(--text-xs); color: var(--text-muted); }
