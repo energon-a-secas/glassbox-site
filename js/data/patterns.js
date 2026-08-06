@@ -50,7 +50,7 @@ export const PATTERNS = [
     pick: [
       'Applies every session, to everything: project <code>CLAUDE.md</code>. Split it by topic into <code>.claude/rules/</code> files once it is unwieldy; use <code>@path</code> imports to share standards without copying them.',
       'Applies to files matching a pattern, wherever they live: <code>.claude/rules/</code> with <code>paths:</code> glob frontmatter. This beats a directory-level <code>CLAUDE.md</code> whenever the files are spread out.',
-      'Applies only when someone asks: a skill in <code>.claude/skills/</code> or a command in <code>.claude/commands/</code>. In the repo for the team; in <code>~/.claude/</code> for yourself, and a personal skill with the <b>same</b> name overrides the project one.',
+      'Applies only when someone asks: a skill in <code>.claude/skills/</code> or a command in <code>.claude/commands/</code>. In the repo for the team; in <code>~/.claude/</code> for yourself — under a <b>different</b> name, because a personal skill with the same name silently shadows the project one and stops receiving team updates.',
       'Skill frontmatter is three separate fixes: <code>context: fork</code> isolates verbose output in a subagent, <code>allowed-tools</code> removes dangerous capability, <code>argument-hint</code> prompts for the missing parameter.',
     ],
     reject: [

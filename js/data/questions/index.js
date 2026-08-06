@@ -22,7 +22,9 @@ export const QUESTIONS = [
   ...AUTHORED,
 ];
 
-/** Exam scenarios, in the guide's numbering. `guide` false = authored here. */
+/** Exam scenarios, in the guide's numbering. `guide` = the guide's practice
+ *  test exercises it; false = the guide lists the scenario but leaves it
+ *  without practice questions, so ours are authored here. */
 export const SCENARIOS = [
   { id: 'support', label: 'Customer Support Agent', short: 'Support', n: 1, guide: true },
   { id: 'codegen', label: 'Code Generation with Claude Code', short: 'Code Gen', n: 2, guide: true },
@@ -101,6 +103,6 @@ export const PATTERN_ALIASES = {
   'Position and structure beat volume': 'context-economy',
   'Cut tokens at the source, not downstream': 'context-economy',
   'Scratchpad findings survive context loss': 'context-economy',
-  'Personal config overrides project config by precedence': 'config-surface',
+  'Personal variants get their own name': 'config-surface',
   'Project config in VCS, secrets by environment': 'config-surface',
 };

@@ -50,7 +50,7 @@ export const TIPS = {
   },
   system_prompt: {
     term: 'System prompt',
-    body: 'Sent in the top-level <code>system</code> field, not in <code>messages</code>. Loaded once, outranks user messages. Careless wording can create unintended tool bias.',
+    body: 'Usually the top-level <code>system</code> field: loaded first, outranks user messages, and careless wording can bias tool choice. A <code>system</code>-role message can also be inserted mid-conversation to update instructions — later ones take precedence for the turns that follow.',
   },
   context_window: {
     term: 'Context window',

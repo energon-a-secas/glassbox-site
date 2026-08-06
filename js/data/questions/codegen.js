@@ -132,14 +132,14 @@ export const CODEGEN = [
       { k: 'C', t: 'Create a personal version at `~/.claude/skills/commit/SKILL.md` with the same name.' },
       { k: 'D', t: 'Set `override: true` in the personal skill frontmatter to prioritise it over the project version.' },
     ],
-    answer: 'C',
-    why: 'Personal skills take precedence over project skills of the same name, so the same-name copy simply wins for that developer. Nobody else is affected, and they keep the `/commit` muscle memory.',
+    answer: 'A',
+    why: 'A different name avoids the collision entirely: the developer keeps the team’s maintained `/commit` — and every update the team ships to it — plus a clearly named personal skill. No teammate is affected and nothing is silently shadowed.',
     distractors: {
-      A: 'This works, but it is second best: it abandons the familiar command name for no benefit, since precedence already handles the conflict.',
       B: 'Username branching pushes one person’s preferences into the shared, version-controlled file.',
+      C: 'Works mechanically — personal skills take precedence over project skills with the same name — but that is the trap: the shadowing is silent, so this developer quietly stops receiving team updates to `/commit` and has to remember they run a different skill under the same command.',
       D: 'No such frontmatter key. Precedence is positional, not declared.',
     },
-    pattern: 'Personal config overrides project config by precedence',
+    pattern: 'Personal variants get their own name',
     source: 'Guide Q36',
   },
   {
