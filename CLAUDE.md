@@ -36,13 +36,14 @@ js/
     exam-brief.js     EXAM_BRIEF: format, scoring, domain weights, out-of-scope list
     patterns.js       21 answer patterns + PATTERN_GROUPS (the filter rail)
     traps.js          LURES (distractor shapes), PAIRS (near-miss discriminators), CHECKS
+    vocab.js          Lexicon: VERB_GROUPS (term/gloss/tell/trap), QUICK_TEST, DISTINCTIONS — guide-traceable only; third-party-bank claims excluded
     questions/        Question bank, one file per exam scenario
       index.js        QUESTIONS aggregate + SCENARIOS / DOMAINS / LEVELS vocabularies
       support.js  codegen.js  research.js  ci.js  conversational.js   (guide practice test)
       authored.js     Extraction + Dev Tools — exam scenarios the guide leaves unexercised
   labs/               One module per lab, each exports mount(root)
     overview.js  The landing map: hero, per-lab cards by `half`, domain-weight map. Counts are derived from data modules, never hardcoded.
-    loop.js  sdk.js  mcp.js  config.js  planning.js  context.js  patterns.js  traps.js  antipatterns.js  drill.js
+    loop.js  sdk.js  mcp.js  config.js  planning.js  context.js  patterns.js  vocab.js  traps.js  antipatterns.js  drill.js
 docs/architecture.mmd + .svg   Diagram source + render
 ```
 

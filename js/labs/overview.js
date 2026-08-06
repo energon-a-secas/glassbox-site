@@ -16,6 +16,7 @@ import { MCP_FLOWS } from '../data/mcp.js';
 import { CONFIG_LEVELS } from '../data/config.js';
 import { PLANNING_CASES } from '../data/planning.js';
 import { CW_SCENARIOS } from '../data/context.js';
+import { VERB_GROUPS, DISTINCTIONS } from '../data/vocab.js';
 import { PATTERNS } from '../data/patterns.js';
 import { LURES, PAIRS } from '../data/traps.js';
 import { ANTIPATTERNS } from '../data/antipatterns.js';
@@ -52,6 +53,10 @@ const CARDS = {
     desc: 'The decision patterns that settle most stems: the tell in the question, the winning option shape, the distractor shapes.',
     fact: `${PATTERNS.length} patterns`,
   },
+  vocab: {
+    desc: 'The exam’s verbs are signals, not synonyms: synthesize means judgment, aggregate means code, enforce means a hook. Each term with its stem-tell, its trap, and the near-miss pairs split apart.',
+    fact: `${VERB_GROUPS.reduce((a, g) => a + g.verbs.length, 0)} terms · ${DISTINCTIONS.length} pairs split`,
+  },
   traps: {
     desc: 'Distractor lures with their genuine exceptions, near-miss stems with the discriminator stated, and the checks to run before answering.',
     fact: `${LURES.length} lures · ${PAIRS.length} near-misses`,
@@ -72,7 +77,7 @@ const DOMAIN_LABS = {
   d1: ['loop', 'sdk'],
   d2: ['mcp', 'sdk'],
   d3: ['config', 'planning'],
-  d4: ['patterns', 'traps'],
+  d4: ['patterns', 'vocab', 'traps'],
   d5: ['context', 'loop', 'antipatterns'],
 };
 

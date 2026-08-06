@@ -1253,6 +1253,41 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .cw-issue__row p { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.55; }
 .cw-issue code, .cw-verdict code, .insp-blurb code { font-family: var(--mono); font-size: .84em; background: rgba(var(--ink),.08); padding: 1px 4px; border-radius: 4px; color: var(--text-primary); }
 
+/* ══ LEXICON LAB ════════════════════════════════════════════
+ * Dictionary cards for the exam's operational verbs. Cards open the
+ * inspector; exam mode reveals each card's trap inline. The pairs
+ * table reuses .cw-table. */
+.vx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: var(--space-3); }
+.vx-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  text-align: left; cursor: pointer;
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; font: inherit; color: inherit;
+  transition: border-color .18s, background .18s;
+}
+.vx-card:hover { border-color: var(--clay-line); background: rgba(204,120,92,.04); }
+.vx-term { font-family: var(--mono); font-size: var(--text-base); font-weight: 700; color: var(--clay); }
+.vx-gloss { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.5; }
+.vx-gloss code, .vx-trap code, .vx-insp code, .vx-table code { font-family: var(--mono); font-size: .84em; background: rgba(var(--ink),.08); padding: 1px 4px; border-radius: 4px; color: var(--text-primary); }
+.vx-trap { font-size: var(--text-xs); color: var(--text-muted); line-height: 1.5; border-top: 1px dashed var(--border-subtle); padding-top: 8px; }
+.vx-trap b { color: var(--amber); font-size: var(--text-2xs); text-transform: uppercase; letter-spacing: .05em; margin-right: 4px; }
+.vx-insp { display: flex; flex-direction: column; gap: 4px; margin-top: var(--space-3); }
+.vx-insp__tag { font-size: var(--text-2xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--teal); }
+.vx-insp--trap .vx-insp__tag { color: var(--amber); }
+.vx-insp p { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.55; }
+.vx-quicklist { display: flex; flex-direction: column; gap: 8px; max-width: var(--measure); }
+.vx-quick {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px;
+  text-align: left; cursor: pointer; font: inherit;
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 10px 14px;
+}
+.vx-quick:hover { border-color: var(--border-strong); }
+.vx-quick__q { font-size: var(--text-sm); color: var(--text-primary); }
+.vx-quick__a { font-family: var(--mono); font-size: var(--text-sm); font-weight: 700; color: var(--green); visibility: hidden; }
+.vx-quick.is-open .vx-quick__a { visibility: visible; }
+.vx-table tbody th { white-space: normal; }
+
 /* ══ MCP LAB ═══════════════════════════════════════════════ */
 .mcp-task { font-family: var(--mono); font-size: var(--text-sm); background: var(--well); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; }
 .mcp-task__label { color: var(--clay); font-weight: 700; margin-right: 10px; text-transform: uppercase; font-size: var(--text-xs); letter-spacing: .06em; }

@@ -22,16 +22,16 @@ flowchart TB
 
     subgraph App["ES Modules"]
         HTML --> app["app.js\nEntry point"]
-        app --> state["state.js\n10 labs + exam mode (localStorage)"]
+        app --> state["state.js\n11 labs + exam mode (localStorage)"]
         app --> render["render.js\nShell + lab router"]
-        app --> events["events.js\nRail, exam toggle, keyboard 0-9 + c, hash nav"]
+        app --> events["events.js\nRail, exam toggle, keyboard 0-9 + c v, hash nav"]
 
         render --> sims["labs: see the machinery\nloop · sdk · mcp · config · planning · context"]
-        render --> study["labs: answer the questions\npatterns · traps · antipatterns · drill"]
+        render --> study["labs: answer the questions\npatterns · vocab · traps · antipatterns · drill"]
 
         sims --> ui["ui.js\nInspector drawer + glossary tooltips"]
         sims --> simdata["data/*.js\nruns · loop-contrast · sdk · sdk-config · mcp · config · planning · context"]
-        study --> studydata["data/*.js\npatterns · traps · antipatterns"]
+        study --> studydata["data/*.js\npatterns · vocab · traps · antipatterns"]
         study --> qbank["data/questions/\n96 questions, one file per exam scenario"]
 
         sims --> utils["utils.js\nescHtml, highlightCode, toast"]
