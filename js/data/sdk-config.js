@@ -3,6 +3,10 @@
 // whether the configuration actually satisfies the requirement. The
 // point is the gap between "this works" and "this is guaranteed".
 // Pure data. No DOM. Evaluated by js/labs/sdk.js.
+//
+// Escaping: goal `why`/`gap` and note `text` render RAW — inline
+// <code>/<em> and data-tip glossary spans (keys in js/tips.js).
+// Everything else is plain text via escHtml.
 
 /** The knobs. `def` is the starting value. */
 export const CFG_FIELDS = [
@@ -60,7 +64,7 @@ export const CFG_GOALS = [
     id: 'refund',
     label: 'It issues refunds',
     need: { pre: 'on' },
-    why: 'Money moves. A threshold rule stated in the system prompt is followed most of the time, and "most of the time" is a breach waiting to happen. <code>PreToolUse</code> blocks the call in code.',
+    why: 'Money moves. A threshold rule stated in the system prompt is followed most of the time, and "most of the time" is a breach waiting to happen. <code data-tip="hook">PreToolUse</code> blocks the call in code.',
     gap: 'Nothing stops a refund above the limit except the model choosing to obey.',
     refs: 'Practice Q51 · Ch.3.5',
   },
@@ -76,7 +80,7 @@ export const CFG_GOALS = [
     id: 'structured',
     label: 'Output must parse as JSON',
     need: { toolChoice: ['any', 'forced'] },
-    why: '<code>any</code> forces a tool call, so you always get schema-shaped output while the model still picks which tool fits.',
+    why: '<code data-tip="tool_choice">any</code> forces a tool call, so you always get schema-shaped output while the model still picks which tool fits.',
     gap: 'With <code>auto</code> the model can reply in prose, and the parser downstream throws.',
     refs: 'Ch.2.3-2.4 · Drill: Extraction',
   },
@@ -92,7 +96,7 @@ export const CFG_GOALS = [
     id: 'thirdparty',
     label: 'It reads third-party MCP tools',
     need: { post: 'on' },
-    why: 'Unix timestamps here, ISO dates there, numeric status codes somewhere else. A <code>PostToolUse</code> hook normalises all of it in one place, including servers you cannot modify.',
+    why: 'Unix timestamps here, ISO dates there, numeric status codes somewhere else. A <code data-tip="hook">PostToolUse</code> hook normalises all of it in one place, including servers you cannot modify.',
     gap: 'The model interprets three different formats on every call, and you cannot patch a server you do not own.',
     refs: 'Practice Q59 · Ch.3.5',
   },
@@ -144,11 +148,11 @@ export const CFG_NOTES = [
   {
     when: { task: 'on' },
     tone: 'note',
-    text: 'A subagent inherits no history. Everything it needs goes in the Task prompt, and it should return structured findings rather than raw output.',
+    text: 'A subagent <span data-tip="isolated_context">inherits no history</span>. Everything it needs goes in the Task prompt, and it should return structured findings rather than raw output.',
   },
   {
     when: { pre: 'on' },
     tone: 'ok',
-    text: 'Deterministic enforcement: the hook fires 100% of the time, where a prompt instruction does not.',
+    text: 'Deterministic enforcement: the <span data-tip="hook">hook</span> fires 100% of the time, where a prompt instruction does not.',
   },
 ];

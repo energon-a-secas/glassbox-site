@@ -10,7 +10,7 @@ export const TIPS = {
   },
   stop_reason: {
     term: 'stop_reason',
-    body: 'The field that controls the loop. <code>"tool_use"</code> means run a tool and continue; <code>"end_turn"</code> means the task is done. It is the <em>only</em> reliable completion signal.',
+    body: 'The field that controls the loop. <code>"tool_use"</code> means run a tool and continue; <code>"end_turn"</code> means the task is done. It is the <em>only</em> reliable completion signal. Other values: <code>"max_tokens"</code> (the response truncated) and <code>"stop_sequence"</code> (a custom stop string was hit).',
   },
   tool_use: {
     term: 'tool_use',
@@ -50,7 +50,7 @@ export const TIPS = {
   },
   system_prompt: {
     term: 'System prompt',
-    body: 'Sent in the top-level <code>system</code> field, not in <code>messages</code>. Loaded once, outranks user messages. Careless wording can create unintended tool bias.',
+    body: 'Usually the top-level <code>system</code> field: loaded first, outranks user messages, and careless wording can bias tool choice. A <code>system</code>-role message can also be inserted mid-conversation to update instructions — later ones take precedence for the turns that follow.',
   },
   context_window: {
     term: 'Context window',
@@ -88,6 +88,10 @@ export const TIPS = {
     term: '.claude/rules/',
     body: 'Topic-split rules with YAML <code>paths:</code> frontmatter. A rule loads only when Claude edits a matching file, saving context versus one monolithic CLAUDE.md.',
   },
+  user_scope: {
+    term: 'User scope (~/.claude)',
+    body: 'Config that follows the person, not the repo: CLAUDE.md, settings, skills and commands under <code>~/.claude/</code>. Never version-controlled. A personal skill with the same name silently takes precedence over the project one — which is why the guide says to name personal variants differently.',
+  },
   planning_mode: {
     term: 'Planning mode',
     body: 'Read-only exploration (Read, Grep, Glob) that produces a plan you approve before any edits. Use for large, ambiguous, architectural, or unfamiliar-codebase work.',
@@ -95,6 +99,10 @@ export const TIPS = {
   compact: {
     term: '/compact',
     body: 'Summarizes prior history to free the context window. Risk: exact numbers, dates, and specifics can blur into "about" and "roughly".',
+  },
+  memory_cmd: {
+    term: '/memory',
+    body: 'Opens the CLAUDE.md memory file for editing from inside a session. What you save there persists across sessions — unlike the conversation itself.',
   },
   fork_session: {
     term: 'fork_session',
@@ -107,5 +115,21 @@ export const TIPS = {
   headless: {
     term: 'Headless (-p)',
     body: '<code>claude -p "..."</code> runs non-interactively: process prompt, print to stdout, exit. The only correct way to run Claude Code in CI/CD.',
+  },
+  sliding_window: {
+    term: 'Sliding window',
+    body: 'Keep only the last N turns verbatim and drop the rest. Cheap and exact for recent context — but everything older is simply gone, and widening N only delays the cliff.',
+  },
+  case_facts: {
+    term: 'CASE FACTS block',
+    body: 'Critical values (ids, amounts, dates) extracted into a structured block that ships <em>verbatim</em> in every prompt, outside any summary — so compression never touches them.',
+  },
+  prefill: {
+    term: 'Prefill',
+    body: 'End the <code>messages</code> array with a partial <code>assistant</code> turn; the model continues from it. Controls openings and forces formats at the generation level.',
+  },
+  prompt_dilution: {
+    term: 'System-prompt dilution',
+    body: 'As assistant replies accumulate, the brief’s share of the window shrinks and the model pattern-matches its own prose instead. Drift at 2,500 tokens is dilution, not attention decay. Counter: reinforce at breakpoints.',
   },
 };

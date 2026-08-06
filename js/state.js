@@ -14,7 +14,10 @@ export const LABS = [
   { id: 'mcp', key: '3', half: 'machinery', label: 'MCP', hint: 'Improvised integration vs a defined MCP server' },
   { id: 'config', key: '4', half: 'machinery', label: 'Config Explorer', hint: 'A repo from bare to fully outfitted' },
   { id: 'planning', key: '5', half: 'machinery', label: 'Plan vs Direct', hint: 'When Claude should plan before it edits' },
+  // Digits 0-9 were taken when this lab landed; 'c' for context.
+  { id: 'context', key: 'c', half: 'machinery', label: 'Context', hint: 'Sliding window, digests, case facts: what ships in the next request' },
   { id: 'patterns', key: '6', half: 'questions', label: 'Playbook', hint: 'The decision patterns that settle most questions' },
+  { id: 'vocab', key: 'v', half: 'questions', label: 'Lexicon', hint: 'The exam’s verbs decoded: synthesize ≠ aggregate ≠ consolidate' },
   { id: 'traps', key: '7', half: 'questions', label: 'Traps', hint: 'Distractor lures and near-miss stems, side by side' },
   { id: 'antipatterns', key: '8', half: 'questions', label: 'Anti-patterns', hint: 'The traps the exam loves to test' },
   { id: 'drill', key: '9', half: 'questions', label: 'Drill', hint: 'Answer the question bank and score yourself' },

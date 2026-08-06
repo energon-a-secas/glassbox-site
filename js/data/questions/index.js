@@ -22,7 +22,9 @@ export const QUESTIONS = [
   ...AUTHORED,
 ];
 
-/** Exam scenarios, in the guide's numbering. `guide` false = authored here. */
+/** Exam scenarios, in the guide's numbering. `guide` = the guide's practice
+ *  test exercises it; false = the guide lists the scenario but leaves it
+ *  without practice questions, so ours are authored here. */
 export const SCENARIOS = [
   { id: 'support', label: 'Customer Support Agent', short: 'Support', n: 1, guide: true },
   { id: 'codegen', label: 'Code Generation with Claude Code', short: 'Code Gen', n: 2, guide: true },
@@ -78,7 +80,7 @@ export const PATTERN_ALIASES = {
   'Narrow decomposition is a coordinator bug': 'coordinator-hub',
   'Preserve the conflict, do not arbitrate it': 'coordinator-hub',
   'Handle the error at the lowest level that can resolve it': 'lowest-level-recovery',
-  'Know when retry cannot work': 'lowest-level-recovery',
+  'Know when retry cannot work': 'retry-with-feedback',
   'Structured error context over generic status': 'structured-errors',
   'Continue with partial results, annotate the gap': 'structured-errors',
   'Distinguish access failure from valid empty result': 'structured-errors',
@@ -90,8 +92,14 @@ export const PATTERN_ALIASES = {
   'Use the native capability before adding machinery': 'no-new-subsystem',
   'stop_reason is the only loop signal': 'protocol-fields',
   'Use the documented mechanism, not a workaround': 'protocol-fields',
-  'Schemas fix syntax; validation fixes semantics': 'protocol-fields',
+  'Schemas fix syntax; validation fixes semantics': 'retry-with-feedback',
   'tool_choice any guarantees structured output': 'protocol-fields',
+  'Required fields push the model to fabricate': 'retry-with-feedback',
+  'Give the schema a way to be honest': 'retry-with-feedback',
+  'Self-correction: extract stated and calculated': 'retry-with-feedback',
+  'Aggregate accuracy hides segment failure': 'calibrated-confidence',
+  'Grep to locate, Read to understand': 'built-in-tools',
+  'Read + Write when Edit cannot be unique': 'built-in-tools',
   'Normalise in a hook, not in the prompt': 'enforce-in-code',
   'Enforce structure at the tool level, not by asking': 'enforce-in-code',
   'Constrain at generation, not after it': 'enforce-in-code',
@@ -101,6 +109,6 @@ export const PATTERN_ALIASES = {
   'Position and structure beat volume': 'context-economy',
   'Cut tokens at the source, not downstream': 'context-economy',
   'Scratchpad findings survive context loss': 'context-economy',
-  'Personal config overrides project config by precedence': 'config-surface',
+  'Personal variants get their own name': 'config-surface',
   'Project config in VCS, secrets by environment': 'config-surface',
 };

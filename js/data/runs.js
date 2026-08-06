@@ -117,7 +117,7 @@ export const RUNS = {
     steps: [
       { chat: '\u203a Write a cited report on AI\u2019s impact on creative industries.', raw: 'POST /v1/messages \u2014 tools: [Task]', turn: 'request', reveal: ['user', 'coord'], edges: [['user', 'coord']], tokens: 1600 },
       { chat: 'Coordinator: Three non-overlapping beats \u2014 visual art, music, literature.', raw: '\u2190 (reasoning) split coverage to minimize duplicate searches', turn: 'response', active: 'coord', tokens: 2000, note: 'Coordinator prompts are written as goals + quality criteria ("complete, cited, no overlap"), not step-by-step scripts.' },
-      { chat: 'Spawning 3 researchers in parallel\u2026', raw: '\u2190 stop_reason: "tool_use" \u2192 3 \u00d7 Task(topic, query_budget, output_schema)', turn: 'response', active: 'coord', reveal: ['art', 'music', 'lit'], edges: [['coord', 'art'], ['coord', 'music'], ['coord', 'lit']], active: ['art', 'music', 'lit'], tokens: 2600, note: 'Each Task carries an explicit output schema so returns are structured claims, not prose blobs.' },
+      { chat: 'Spawning 3 researchers in parallel\u2026', raw: '\u2190 stop_reason: "tool_use" \u2192 3 \u00d7 Task(topic, query_budget, output_schema)', turn: 'response', reveal: ['art', 'music', 'lit'], edges: [['coord', 'art'], ['coord', 'music'], ['coord', 'lit']], active: ['art', 'music', 'lit'], tokens: 2600, note: 'Each Task carries an explicit output schema so returns are structured claims, not prose blobs.' },
       { chat: 'research:visual-art \u2713 6 attributed claims', raw: '\u2192 tool_result: visual-art \u2192 {claims:[{claim, source, date, confidence}]}', turn: 'result', done: ['art'], active: ['music', 'lit'], tokens: 4200, note: 'Provenance kept per claim (source + date + confidence) so the synthesis can\u2019t drop the "who said it".' },
       { chat: 'research:literature \u2713 5 attributed claims', raw: '\u2192 tool_result: literature \u2192 {claims:[\u2026]}', turn: 'result', done: ['lit'], active: ['music'], tokens: 5600 },
       { chat: 'research:music \u26a0 partial \u2014 search timed out', raw: '\u2192 tool_result (isError): music \u2192 {status:"partial_failure", failure_type:"timeout", partial_results:[1], alternative_approaches:[\u2026]}', turn: 'result', done: ['music'], active: 'coord', tokens: 6400, flag: 'generic-error', note: 'A structured error tells the coordinator what to do: retry a narrower query, use partial results, or annotate the gap. "search failed" would tell it nothing.' },
@@ -125,6 +125,40 @@ export const RUNS = {
       { chat: 'Report ready \u25b8 Music tagged "PARTIAL COVERAGE".', raw: '\u2190 stop_reason: "end_turn"', turn: 'response', done: ['coord'], tokens: 7300, note: 'The synthesis renders coverage honestly: FULL for art & literature, PARTIAL for music, with a note explaining why.' },
     ],
   },
+
+  chat: {
+    id: 'chat',
+    title: 'Sixty turns in character',
+    blurb: 'A support persona over a long, multi-order chat. Watch it drift as its own answers dilute the brief, then three context moves bring it back.',
+    prompt: 'Hi Riley! Quick question about my hoodie order — and later, two more…',
+    contextMax: 9000,
+    nodes: {
+      user: { id: 'user', label: 'Customer', kind: 'user', blurb: 'One customer, three orders, sixty turns. The chat never ends — the window would.' },
+      agent: {
+        id: 'agent', label: 'Support persona', kind: 'coordinator', role: 'Agent',
+        model: 'claude-sonnet-4-6', tools: ['lookup_order'], tool_choice: 'auto', max_tokens: 1024,
+        context: 'System prompt (persona + exact-numbers policy) + every turn so far',
+        blurb: 'A warm, named persona whose brief lives in the system prompt. The brief is resent on every call — what shrinks over time is its share of the window.',
+      },
+      lookup: { id: 'lookup', label: 'lookup_order', kind: 'tool', role: 'MCP tool', blurb: 'Returns each order’s exact status and total. Results join the history like everything else.' },
+      remind: { id: 'remind', label: 'persona re-inject', kind: 'tool', role: 'Context strategy', context: 'A one-line reminder at conversation breakpoints', blurb: 'Re-establishes the constraints as history accumulates. Reinforce, don’t restart: it costs a message, not the conversation.' },
+      digest: { id: 'digest', label: 'rolling summary', kind: 'tool', role: 'Context strategy', context: 'Resolved topics compressed to a short digest', blurb: 'Frees the window, blurs specifics. Fine for settled threads; fatal as the only home of an exact number.' },
+      facts: { id: 'facts', label: 'CASE FACTS block', kind: 'tool', role: 'Context strategy', context: 'Verbatim: order ids, exact totals, dates', blurb: 'Kept word-for-word in every prompt so summarization never loses the $129.99.' },
+    },
+    steps: [
+      { chat: '› Hi Riley! Quick question about my hoodie order.', raw: 'POST /v1/messages — system: persona "Riley" + exact-numbers policy · 1 user turn', turn: 'request', reveal: ['user', 'agent'], edges: [['user', 'agent']], tokens: 900, note: 'The persona lives in the system field, loaded at the top and resent with every request. It goes out on every call — "the system prompt is only sent once" is a distractor, not a mechanism.' },
+      { chat: 'Riley: Happy to help — pulling it up now!', raw: '← stop_reason: "tool_use" → lookup_order("A-1188")', turn: 'response', active: 'agent', reveal: ['lookup'], edges: [['agent', 'lookup']], tokens: 1200 },
+      { chat: 'Order A-1188 · hoodie · $42.50 · shipped ✓', raw: '→ tool_result: {order:"A-1188", total: 42.50, status:"shipped"}', turn: 'result', done: ['lookup'], active: 'agent', tokens: 1600 },
+      { chat: '(turn 7, a second order now) › Also — where’s my keyboard?', raw: 'POST — the transcript is mostly the assistant’s own prose by now', turn: 'request', active: 'agent', tokens: 2200, note: 'Watch the ratio, not the total: every answer the assistant writes shrinks the persona’s share of the context.' },
+      { chat: 'Agent: Your request has been processed. Please allow 3-5 business days.', raw: '← generic template voice — no Riley, no exact number, at only ~2,600 tokens', turn: 'response', active: 'agent', tokens: 2600, note: 'Drift, well inside every limit: the model increasingly pattern-matches to its own accumulated output instead of the brief. Not attention decay — at 2,600 tokens nothing is being forgotten.' },
+      { chat: 'Fix — reinforce, don’t restart: a one-line persona reminder at the breakpoint.', raw: 'messages ← "Reminder: you are Riley — warm, named, exact totals only."', turn: 'system', reveal: ['remind'], edges: [['agent', 'remind']], active: ['remind'], tokens: 2900, note: 'Periodic reinforcement re-establishes the constraints as history accumulates — the direct counter to instruction drift, for the cost of a small message rather than the conversation.' },
+      { chat: '(thirty turns later — three orders in flight) › So what’s my keyboard refund again?', raw: 'POST — 54 turns resent · window at 76% and climbing', turn: 'request', done: ['remind'], active: 'agent', tokens: 6800, note: 'A different problem now: the window itself. Nothing persists server-side, so the whole transcript reships on every request — and three orders of history is real budget.' },
+      { chat: 'Fix — summarize what’s settled: the hoodie thread becomes a two-line digest.', raw: 'history ← digest("A-1188 resolved; tone warm") · 54 turns → 12', turn: 'system', reveal: ['digest'], edges: [['agent', 'digest']], active: ['digest'], tokens: 3600, flag: 'compact-numbers', note: 'Summaries free the window and blur specifics — "about $130" is how $129.99 dies. Never let a summary be the only place a number lives.' },
+      { chat: 'Fix — pin the facts: ids, exact totals and dates kept verbatim in every prompt.', raw: 'prompt ← CASE FACTS {A-1188: $42.50 · B-2041: $129.99 · C-3307: $259.00}', turn: 'system', reveal: ['facts'], edges: [['agent', 'facts']], done: ['digest'], active: ['facts'], tokens: 3900, note: 'The CASE FACTS block rides along word-for-word, outside the digest, so no compression ever touches an exact number.' },
+      { chat: 'Recent turns stay word-for-word; older ones live in the digest.', raw: 'context = system + CASE FACTS + digest + last N turns (verbatim)', turn: 'system', done: ['facts'], active: 'agent', tokens: 4200, note: 'A sliding window of recent turns keeps the live thread verbatim while the digest carries the past. Pick the split per case — support across multiple orders needs the numbers pinned hardest.' },
+      { chat: 'Riley: Your keyboard refund is exactly $129.99, and the monitor (C-3307, $259.00) ships Friday!', raw: '← stop_reason: "end_turn" — persona intact, numbers exact', turn: 'response', done: ['agent'], tokens: 4400, note: 'The same recipe holds for any long-running chat — a support desk or a roleplay character: reinforce the persona at breakpoints, pin exact facts verbatim, summarize the rest.' },
+    ],
+  },
 };
 
-export const RUN_ORDER = ['writing', 'support', 'research'];
+export const RUN_ORDER = ['writing', 'support', 'research', 'chat'];

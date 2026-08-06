@@ -220,17 +220,17 @@ export const PAIRS = [
     question: 'A developer wants a personal variant of a team skill.',
     sides: [
       {
-        when: 'They want to keep typing the same command and not affect teammates.',
-        answer: 'Create <code>~/.claude/skills/commit/SKILL.md</code> - the <em>same</em> name. Personal skills take precedence over project skills, so the override is automatic and <code>/commit</code> still works.',
-        ref: 'Q36',
+        when: 'They want their own workflow without affecting teammates.',
+        answer: 'Create it under <code>~/.claude/skills/</code> with a <em>different</em> name, e.g. <code>/my-commit</code>. They keep the team’s maintained <code>/commit</code> — and every update the team ships to it — plus a clearly named personal skill.',
+        ref: 'Q36, §5.5',
       },
       {
-        when: 'The option renames it to /my-commit, or sets override: true in the personal frontmatter.',
-        answer: 'Both lose. Renaming throws away the command name for no benefit, and <code>override: true</code> is not a real frontmatter key.',
+        when: 'The option reuses the same name at user scope, or sets override: true in the frontmatter.',
+        answer: 'Both lose. Same-name shadowing is silent: personal skills take precedence over project skills, so that developer quietly stops receiving team updates to <code>/commit</code>. And <code>override: true</code> is not a real frontmatter key.',
         ref: 'Q36',
       },
     ],
-    rule: 'This is a precedence question, not a naming question - user scope already beats project scope at the same path. Note the tension with the theory section: §5.5 suggests personal variants "under different names", but Q36 explicitly grades the renamed copy as the worse answer because precedence gives you the override <em>and</em> keeps the familiar name.',
+    rule: 'Precedence is the trap, not the trick. User scope beats project scope at the same path, which makes shadowing automatic <em>and</em> invisible - the shadowed developer stops tracking team improvements without any signal. §5.5 and Q36 agree: personal variants go under different names, so the override never happens by accident.',
   },
   {
     id: 'error-handling-location',

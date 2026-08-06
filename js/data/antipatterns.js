@@ -1,6 +1,10 @@
 // ── Anti-patterns ────────────────────────────────────────────
 // Drives the Anti-patterns lab AND the inline flags in other labs
 // (a step's `flag` field is an id here). Keyed for cross-reference.
+//
+// Escaping: `fix` renders RAW (inline <code>). `bad`, `why`, `title`
+// and `domain` are plain text — every consumer escapes them, so markup
+// in those fields shows up literally.
 
 export const ANTIPATTERNS = {
   'parse-text-completion': {
@@ -88,7 +92,7 @@ export const ANTIPATTERNS = {
     id: 'user-level-claude-md',
     domain: 'Claude Code config',
     title: 'Putting team standards in user-level CLAUDE.md',
-    bad: 'Coding conventions live in <code>~/.claude/CLAUDE.md</code>, so a new teammate never receives them.',
+    bad: 'Coding conventions live in ~/.claude/CLAUDE.md, so a new teammate never receives them.',
     why: 'User-level config isn\u2019t in version control. The rules exist only on one laptop.',
     fix: 'Put shared standards in project-level <code>.claude/CLAUDE.md</code> (or a root CLAUDE.md), committed to the repo.',
     tags: ['claude_md'],
@@ -97,7 +101,7 @@ export const ANTIPATTERNS = {
     id: 'stale-resume',
     domain: 'Sessions',
     title: 'Resuming a session over changed files',
-    bad: 'Days later you <code>--resume</code> an investigation whose tool results describe files that have since changed.',
+    bad: 'Days later you --resume an investigation whose tool results describe files that have since changed.',
     why: 'Stale tool results mislead the model. It reasons over a codebase that no longer exists.',
     fix: 'Start fresh with a short summary ("here\u2019s what we found\u2026") instead of resuming stale context.',
     tags: ['fork_session'],
@@ -106,10 +110,28 @@ export const ANTIPATTERNS = {
     id: 'compact-numbers',
     domain: 'Context',
     title: 'Trusting /compact with exact numbers',
-    bad: 'Run <code>/compact</code> and assume the $89.99 total and 2024-12-01 date survive the summary.',
+    bad: 'Run /compact and assume the $89.99 total and 2024-12-01 date survive the summary.',
     why: 'Summarization blurs specifics into "about" and "roughly". Numbers, dates, and IDs are the first casualties.',
     fix: 'Keep a verbatim CASE FACTS block in every prompt, independent of whatever gets summarized.',
     tags: ['compact', 'context_window'],
+  },
+  'window-just-bigger': {
+    id: 'window-just-bigger',
+    domain: 'Context',
+    title: 'Fixing forgetfulness by widening the window',
+    bad: 'Users say the assistant forgets things, so you raise the sliding window from 25 to 50 message pairs.',
+    why: 'The same cliff arrives at pair 51. Raw turns are the most expensive place to keep information, and the oldest still fall off first.',
+    fix: 'Summarize older turns and keep recent ones verbatim; pin exact values in a <code>CASE FACTS</code> block that ships with every prompt.',
+    tags: ['sliding_window', 'case_facts', 'context_window'],
+  },
+  'prompt-not-prefill': {
+    id: 'prompt-not-prefill',
+    domain: 'Conversation',
+    title: 'Instructing away a verbal tic',
+    bad: 'System prompt: NEVER open with "Certainly!" or "I’d be happy to help!" — and hoping.',
+    why: 'A prompt rule fights probability with prose: the model still samples openings, and its own past replies keep voting for the tic. Post-processing and temperature are patches on the same leak.',
+    fix: 'Prefill a partial assistant turn (<code>{role:"assistant", content:"..."}</code> as the last message) — the model continues your opening instead of writing its own.',
+    tags: ['prefill', 'system_prompt'],
   },
 };
 
@@ -117,6 +139,6 @@ export const ANTIPATTERNS = {
 export const ANTIPATTERN_GROUPS = [
   { label: 'Agent loop & orchestration', ids: ['parse-text-completion', 'vague-task', 'prompt-not-hook'] },
   { label: 'Tools & MCP', ids: ['generic-error', 'silent-empty', 'overlapping-tools'] },
-  { label: 'Prompting & output', ids: ['required-fields', 'confidence-escalation'] },
-  { label: 'Config, sessions & context', ids: ['user-level-claude-md', 'stale-resume', 'compact-numbers'] },
+  { label: 'Prompting & output', ids: ['required-fields', 'confidence-escalation', 'prompt-not-prefill'] },
+  { label: 'Config, sessions & context', ids: ['user-level-claude-md', 'stale-resume', 'compact-numbers', 'window-just-bigger'] },
 ];

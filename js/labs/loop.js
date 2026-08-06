@@ -5,7 +5,8 @@
 
 import { RUNS, RUN_ORDER } from '../data/runs.js';
 import { ANTIPATTERNS } from '../data/antipatterns.js';
-import { el, escHtml } from '../utils.js';
+import { LOOP_CONTRAST } from '../data/loop-contrast.js';
+import { el, escHtml, flagHtml, highlightCode } from '../utils.js';
 import { openInspector } from '../ui.js';
 
 const S = { runId: 'writing', step: 0, view: 'chat', playing: false, timer: null, pos: {} };
@@ -166,8 +167,11 @@ function renderLog(scene) {
   for (let i = 0; i <= S.step; i++) {
     const st = r.steps[i];
     const cur = i === S.step ? ' is-current' : '';
+    // In the chat view a request renders as the user's bubble — the CLI
+    // caret (›) is the terminal's affordance, not the chat's.
+    const chatText = st.turn === 'request' ? st.chat.replace(/›\s*/g, '') : st.chat;
     rows.push(`<div class="log-row log-row--${st.turn}${cur}">
-      <span class="log-chat">${escHtml(st.chat)}</span>
+      <span class="log-chat">${escHtml(chatText)}</span>
       <span class="log-raw">${escHtml(st.raw)}</span>
     </div>`);
   }
@@ -197,14 +201,44 @@ function renderFlag(scene) {
   const box = document.getElementById('loopFlag');
   if (!box) return;
   if (!scene.flag || !ANTIPATTERNS[scene.flag]) { box.hidden = true; box.innerHTML = ''; return; }
-  const ap = ANTIPATTERNS[scene.flag];
   box.hidden = false;
-  box.innerHTML = `
-    <div class="flag__head"><span class="flag__badge">anti-pattern</span> ${escHtml(ap.title)}</div>
-    <div class="flag__cols">
-      <div class="flag__bad"><span>Don\u2019t</span>${escHtml(ap.bad)}</div>
-      <div class="flag__fix"><span>Do</span>${ap.fix}</div>
-    </div>`;
+  box.innerHTML = flagHtml(ANTIPATTERNS[scene.flag]);
+}
+
+// \u2500\u2500 Steer vs enforce (static bottom section) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// Rendered once at mount; paint()/selectRun() never touch it. Each side
+// has exactly FOUR children (title / claim / code / reliability row) \u2014
+// the .pair__cols subgrid template pins those rows to shared baselines.
+function contrastHtml() {
+  const c = LOOP_CONTRAST;
+  const sides = c.sides.map((s) => `
+    <div class="pair__side loop-contrast__side" data-tone="${s.tone}">
+      <h4>${escHtml(s.title)}</h4>
+      <p>${s.claim}</p>
+      <div class="code-block code-block--sm">
+        <div class="code-block__bar"><span class="code-block__lang">${escHtml(s.codeLabel)}</span></div>
+        <pre><code>${highlightCode(s.code, s.lang)}</code></pre>
+      </div>
+      <div class="sdk-note sdk-note--${s.rel.tone === 'ok' ? 'ok' : 'warn'}">${s.rel.text}</div>
+    </div>`).join('');
+  const levers = c.levers.map((l) => `
+    <div class="prim">
+      <h4 data-tip="${l.tip}">${escHtml(l.name)}</h4>
+      <p>${l.text}</p>
+    </div>`).join('');
+  return `
+    <section class="pair loop-contrast">
+      <div class="loop-contrast__head">
+        <h3>${escHtml(c.heading)}</h3>
+        <p>${escHtml(c.lead)}</p>
+      </div>
+      <div class="pair__cols" data-sides="2">${sides}</div>
+      <div class="lab-label">The levers that enforce instead of ask</div>
+      <div class="prim-grid">${levers}</div>
+      <div class="loop-note"><span class="loop-note__tag">replay it</span> ${c.counterfactual}</div>
+      <div class="loop-flag">${flagHtml(ANTIPATTERNS[c.flag])}</div>
+      <a class="btn btn--ghost loop-contrast__link" id="loopSdkLink" href="#${c.xref.hash}">${escHtml(c.xref.label)}</a>
+    </section>`;
 }
 
 function paint() {
@@ -268,6 +302,17 @@ function buildScenarioChips() {
 // ── Mount ────────────────────────────────────────────────────
 export function mountLoop(root) {
   stop(); // playback from a previous mount would keep advancing off-screen
+
+  // Arriving from the Context lab: land on the requested run. Navigation
+  // itself was the #loop hashchange; the parked id only picks the run.
+  try {
+    const runId = sessionStorage.getItem('glassbox-open-loop-run');
+    if (runId && RUNS[runId]) {
+      sessionStorage.removeItem('glassbox-open-loop-run');
+      S.runId = runId; S.step = 0; S.pos = {};
+    }
+  } catch { /* private mode */ }
+
   root.innerHTML = `
     <section class="lab lab-loop">
       <header class="lab__head">
@@ -310,6 +355,8 @@ export function mountLoop(root) {
 
       <div class="loop-note is-empty" id="loopNote"></div>
       <div class="loop-flag" id="loopFlag" hidden></div>
+
+      ${contrastHtml()}
     </section>`;
 
   buildScenarioChips();
@@ -330,6 +377,13 @@ export function mountLoop(root) {
     renderLog(sceneAt(S.step));
   });
 
+  // Deep-link into the SDK lab landing on L3 Hooks. Navigation itself is
+  // the href="#sdk" hashchange; this only parks the level for mountSdk,
+  // mirroring the drill → playbook sessionStorage precedent.
+  root.querySelector('#loopSdkLink').addEventListener('click', () => {
+    try { sessionStorage.setItem('glassbox-open-sdk-level', LOOP_CONTRAST.xref.level); } catch { /* private mode */ }
+  });
+
   // Bound once: the lab remounts on every tab switch, and one listener
   // per mount would accumulate for the life of the page.
   if (!mountLoop._resize) {
@@ -337,4 +391,8 @@ export function mountLoop(root) {
     window.addEventListener('resize', () => paint(), { passive: true });
   }
   paint();
+
+  // render.js runs this before the next mount: a run left playing must not
+  // keep advancing (and painting) against a detached stage.
+  return stop;
 }

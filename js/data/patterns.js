@@ -50,7 +50,7 @@ export const PATTERNS = [
     pick: [
       'Applies every session, to everything: project <code>CLAUDE.md</code>. Split it by topic into <code>.claude/rules/</code> files once it is unwieldy; use <code>@path</code> imports to share standards without copying them.',
       'Applies to files matching a pattern, wherever they live: <code>.claude/rules/</code> with <code>paths:</code> glob frontmatter. This beats a directory-level <code>CLAUDE.md</code> whenever the files are spread out.',
-      'Applies only when someone asks: a skill in <code>.claude/skills/</code> or a command in <code>.claude/commands/</code>. In the repo for the team; in <code>~/.claude/</code> for yourself, and a personal skill with the <b>same</b> name overrides the project one.',
+      'Applies only when someone asks: a skill in <code>.claude/skills/</code> or a command in <code>.claude/commands/</code>. In the repo for the team; in <code>~/.claude/</code> for yourself — under a <b>different</b> name, because a personal skill with the same name silently shadows the project one and stops receiving team updates.',
       'Skill frontmatter is three separate fixes: <code>context: fork</code> isolates verbose output in a subagent, <code>allowed-tools</code> removes dangerous capability, <code>argument-hint</code> prompts for the missing parameter.',
     ],
     reject: [
@@ -143,6 +143,8 @@ export const PATTERNS = [
       'Examples that show the whole output shape you want: location, issue, severity, concrete fix.',
       'Concrete input/output pairs when prose about field nesting and timestamp formats keeps being misread.',
       'Replace verbose declarative rules with examples that demonstrate the behaviour, when the prompt is long and drift sets in.',
+      'For extraction, examples double as normalization rules: three date formats all shown mapping to ISO 8601, "five bucks" shown becoming <code>{"amount": 5, "currency": "USD"}</code>.',
+      'When iterating on a transform, build the test set first - input/output pairs including the edge cases - and refine against it, not against vibes.',
     ],
     reject: [
       '"Refine the instructions further" - you have already proved instructions do not stabilize this.',
@@ -173,6 +175,7 @@ export const PATTERNS = [
       'The coordinator forwards both result sets to the synthesis agent for unified integration - it does not concatenate raw outputs and call that the report.',
       'The subagent finishes its own work, annotates the conflict with both values, both sources and both dates, and passes reconciliation up.',
       'Central routing buys observability, uniform error handling, and control over what each subagent is allowed to see.',
+      'Render the synthesis by content type: financial data as tables, news as prose, technical material as lists, time series chronologically.',
     ],
     reject: [
       'Blaming the search or analysis agent when the logs show the coordinator handed out only visual-art subtasks.',
@@ -264,6 +267,7 @@ export const PATTERNS = [
       'Nobody stated it and it is inferable: make reasonable assumptions, state them explicitly, proceed, and invite corrections.',
       'The user contradicted themselves: surface the contradiction and ask which matters more. Do not average them, do not take the most recent.',
       'No rule exists to apply - policy gap, explicit request for a human, no progress after real attempts: escalate with a complete, self-contained handoff, because the human never sees the transcript.',
+      'Building in an unfamiliar domain where requirements live in a stakeholder’s head: have Claude <em>interview</em> you first - clarifying questions until the requirements are explicit - before it implements anything.',
     ],
     reject: [
       'A confidence threshold that acts autonomously above 85% - guessing with a number attached to it.',
@@ -293,7 +297,8 @@ export const PATTERNS = [
     pick: [
       'Synchronous for anything a human is blocked on; batch for anything scheduled with slack in the deadline.',
       'Batch for the jobs that already poll and already tolerate delay - the architecture matches without changes.',
-      'On failures, identify them by <code>custom_id</code> and resubmit only those documents; plan submission windows against the 24-hour ceiling.',
+      'On failures, identify them by <code>custom_id</code> and resubmit only those documents.',
+      'Do the window arithmetic: a 30-hour SLA minus the 24-hour batch ceiling leaves 6 hours, so submissions must go out at least that often - a 4-hour cadence buys margin.',
     ],
     reject: [
       '"Move both to batch and poll for completion" - the window is up to 24 hours with no latency SLA.',
@@ -502,6 +507,7 @@ export const PATTERNS = [
       'Attribute rising latency and cost to the growing transcript being resent, not to longer responses or slower storage.',
       'For drift inside the limits, the cause is accumulated assistant text diluting the system prompt: re-inject the guidance at conversation breakpoints, or trade declarative rules for examples.',
       'Persistent behavioural guidelines belong in the system prompt; a live event is best prefixed onto the next user message.',
+      'To pin or vary how a response opens, prefill the start of the assistant turn - the model continues from what is already written.',
     ],
     reject: [
       'A <code>session_id</code> parameter or server-side memory - neither exists in this API.',
@@ -546,6 +552,98 @@ export const PATTERNS = [
     },
     refs: 'Ch.1.3 stop_reason · Ch.2.3-2.5 tool_choice, JSON schemas, syntax vs semantic errors · Ch.3.1 Agentic loop · Ch.5.9 CLI for CI/CD · Domain 1.1',
   },
+  {
+    id: 'retry-with-feedback',
+    rank: 19,
+    title: 'Retry with the error, not from scratch',
+    oneline: 'A failed extraction retries with the document, the wrong output, and the specific validation error - regeneration loses what was right.',
+    domains: ['d4', 'd2'],
+    tells: [
+      'Extractions pass the schema but fail business rules: line items that do not sum to the stated total, dates in the future, a currency that does not match the vendor.',
+      'An option proposes regenerating from scratch, lowering temperature, or a post-processing fixup script.',
+      'The stem separates documents where the data is present-but-wrong from documents where it simply is not there.',
+      'Pydantic or JSON-schema validation appears among the options.',
+    ],
+    pick: [
+      'Schemas fix <em>syntax</em>; validation code fixes <em>semantics</em>. A schema guarantees shape - it cannot know whether the totals reconcile. Validate after parsing, in code.',
+      'On failure, retry with feedback: the original document, the failed extraction, and the specific error ("line items sum to $4,120; stated total is $4,210"). The model can only fix what it is told about.',
+      'Let the output self-correct: extract <code>stated_total</code> and <code>calculated_total</code> as separate fields plus a <code>conflict_detected</code> flag, so disagreement is data rather than silence.',
+      'Know when retry cannot work: if the information is absent from the source, no retry conjures it. Nullable fields and an honest "unclear" beat a confident fabrication.',
+    ],
+    reject: [
+      'Regenerating from scratch without the error - it discards the 90% that was right and may fail somewhere new.',
+      'Marking optional data as required so "the field is always filled" - that manufactures values.',
+      'A retry loop with no feedback and no cap: same input, same failure, forever.',
+      'Treating schema validation as the whole answer when the stem describes semantically wrong values.',
+    ],
+    example: {
+      stem: 'Invoice extractions validate against the schema, but on 8% of documents the line items do not sum to the extracted total.',
+      answer: 'Validate the sum in code; on failure retry once with the document, the failed output, and the specific mismatch. Flag documents that still fail for human review.',
+      ref: 'Drill: Extraction (ext-01, ext-04, ext-09)',
+    },
+    refs: 'Ch.2.5 Syntax vs semantic errors · Ch.6.5 Validation and retry · Ch.6.6 Self-correction · Domain 4.4',
+  },
+  {
+    id: 'calibrated-confidence',
+    rank: 20,
+    title: 'Calibrate on labels, sample the confident',
+    oneline: 'Human review is routed by field-level confidence calibrated against labeled data - and the auto-accepted bucket still gets sampled.',
+    domains: ['d5', 'd4'],
+    tells: [
+      'A pipeline must decide which outputs a human reviews, under a budget: reviewing everything defeats automation, reviewing nothing is unaccountable.',
+      'An option routes on the model rating its own confidence in the prompt.',
+      'Aggregate accuracy is high but one segment misbehaves - "97% overall" hiding 40% on handwritten invoices.',
+      'The stem mentions a labeled validation set, sampling, or accuracy broken out by document type.',
+    ],
+    pick: [
+      'Field-level confidence scores calibrated against a labeled validation set - thresholds set where the labels say errors actually start, not where they feel right.',
+      'Route low-confidence extractions to human review, auto-accept the rest - then stratified random sampling of the auto-accepted bucket catches calibration drift.',
+      'Segment accuracy by document type and by field. An aggregate number hides the one segment that fails.',
+      'Give review findings a <code>detected_pattern</code> field so false positives can be analysed - and switched off - by category.',
+    ],
+    reject: [
+      'Self-rated confidence as the router: models are confidently wrong, and its calibration is poor.',
+      'Escalating on user sentiment or anger - mood does not track case complexity.',
+      'Reviewing 100% of outputs "to be safe", or 0% because the aggregate accuracy looks high.',
+      'A confidence threshold chosen without labeled data to calibrate it against.',
+    ],
+    example: {
+      stem: 'An extraction pipeline processes 10,000 invoices a day; the team can review 400. How do you decide which?',
+      answer: 'Calibrate field-level confidence on a labeled set, route low-confidence documents to review, and randomly sample the auto-accepted remainder to verify the thresholds hold.',
+      ref: 'Drill: Extraction (ext-07) · Practice Q23 / Q29',
+    },
+    refs: 'Ch.9.4 Confidence calibration and human oversight · Domain 5.5 · Domain 4.4',
+  },
+  {
+    id: 'built-in-tools',
+    rank: 21,
+    title: 'Pick the built-in tool by its job',
+    oneline: 'Glob finds files by name, Grep finds content, Read before Edit - and Read + Write when Edit cannot match uniquely.',
+    domains: ['d2', 'd3'],
+    tells: [
+      'The options are permutations of Read, Write, Edit, Bash, Grep and Glob.',
+      'The task is "find where X is defined / configured / used" in a large, unfamiliar codebase.',
+      'An Edit failed because the target string appears more than once, or the change rewrites most of a file.',
+      'An option pipes <code>cat</code> or <code>grep</code> through Bash where a dedicated tool exists.',
+    ],
+    pick: [
+      '<code>Glob</code> when you know the file name shape ("**/*.test.ts"); <code>Grep</code> when you know something <em>inside</em> the file; <code>Read</code> to actually understand what you found.',
+      'Investigate incrementally: Grep to locate candidates, Read the few that matter, Grep again with what you learned. Loading everything up front burns the window.',
+      '<code>Edit</code> for a surgical change with a uniquely matchable target; <code>Read</code> + <code>Write</code> when the match is ambiguous or the rewrite touches most of the file.',
+      '<code>Bash</code> for running tests, builds and commands - not for file reading the dedicated tools do with less output.',
+    ],
+    reject: [
+      'Reading entire directories into context before knowing what matters - exploration is a search problem, not a download.',
+      'Edit with a non-unique anchor string, then patching the failure with more Edits.',
+      'Bash one-liners that reimplement Grep or Glob and dump unfiltered output into the window.',
+    ],
+    example: {
+      stem: 'You need to change how one config key is read across a large repo you have never seen.',
+      answer: 'Grep for the key to find the read sites, Read the relevant module, then Edit the unique target - Glob only if the file name itself is the clue.',
+      ref: 'Drill: Dev Tools (dev-01, dev-02)',
+    },
+    refs: 'Ch.13 Built-in tools · Domain 2.5 · Domain 5.4 large-codebase context',
+  },
 ];
 
 export const PATTERN_GROUPS = [
@@ -555,15 +653,15 @@ export const PATTERN_GROUPS = [
   },
   {
     label: 'Enforcement and tool design',
-    ids: ['enforce-in-code', 'tool-descriptions', 'least-privilege', 'protocol-fields'],
+    ids: ['enforce-in-code', 'tool-descriptions', 'least-privilege', 'protocol-fields', 'built-in-tools'],
   },
   {
     label: 'Orchestration and failure handling',
-    ids: ['coordinator-hub', 'structured-errors', 'lowest-level-recovery', 'split-the-pass', 'escalate-or-assume'],
+    ids: ['coordinator-hub', 'structured-errors', 'lowest-level-recovery', 'split-the-pass', 'escalate-or-assume', 'calibrated-confidence'],
   },
   {
     label: 'Prompting, output and batching',
-    ids: ['few-shot', 'explicit-criteria', 'blocking-vs-batch'],
+    ids: ['few-shot', 'explicit-criteria', 'blocking-vs-batch', 'retry-with-feedback'],
   },
   {
     label: 'Configuration and context',
