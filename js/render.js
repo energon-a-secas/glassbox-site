@@ -12,6 +12,7 @@ import { mountTraps } from './labs/traps.js';
 import { mountAntipatterns } from './labs/antipatterns.js';
 import { mountDrill } from './labs/drill.js';
 import { mountOverview } from './labs/overview.js';
+import { mountContext } from './labs/context.js';
 
 const LAB_MOUNT = {
   overview: mountOverview,
@@ -20,6 +21,7 @@ const LAB_MOUNT = {
   mcp: mountMcp,
   config: mountConfig,
   planning: mountPlanning,
+  context: mountContext,
   patterns: mountPatterns,
   traps: mountTraps,
   antipatterns: mountAntipatterns,

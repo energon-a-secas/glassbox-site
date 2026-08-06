@@ -116,4 +116,20 @@ export const TIPS = {
     term: 'Headless (-p)',
     body: '<code>claude -p "..."</code> runs non-interactively: process prompt, print to stdout, exit. The only correct way to run Claude Code in CI/CD.',
   },
+  sliding_window: {
+    term: 'Sliding window',
+    body: 'Keep only the last N turns verbatim and drop the rest. Cheap and exact for recent context — but everything older is simply gone, and widening N only delays the cliff.',
+  },
+  case_facts: {
+    term: 'CASE FACTS block',
+    body: 'Critical values (ids, amounts, dates) extracted into a structured block that ships <em>verbatim</em> in every prompt, outside any summary — so compression never touches them.',
+  },
+  prefill: {
+    term: 'Prefill',
+    body: 'End the <code>messages</code> array with a partial <code>assistant</code> turn; the model continues from it. Controls openings and forces formats at the generation level.',
+  },
+  prompt_dilution: {
+    term: 'System-prompt dilution',
+    body: 'As assistant replies accumulate, the brief’s share of the window shrinks and the model pattern-matches its own prose instead. Drift at 2,500 tokens is dilution, not attention decay. Counter: reinforce at breakpoints.',
+  },
 };

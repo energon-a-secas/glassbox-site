@@ -1185,6 +1185,74 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .loop-contrast__link { align-self: flex-start; }
 .loop-contrast code, .loop-note code { font-family: var(--mono); font-size: .84em; background: rgba(var(--ink),.08); padding: 1px 4px; border-radius: 4px; color: var(--text-primary); }
 
+/* ══ CONTEXT LAB ════════════════════════════════════════════
+ * Split-screen conversation memory: the chat pane reuses the loop
+ * lab's .loop-log--chat bubbles verbatim; the request pane stacks
+ * kind-toned context blocks (system / digest / CASE FACTS / turn /
+ * reinforcement / prefill / dropped), top-to-bottom = prompt order. */
+.cw-how { font-family: var(--mono); font-size: var(--text-mono-sm); color: var(--text-muted); }
+.cw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.cw-pane { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-3); }
+.cw-pane__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); font-size: var(--text-xs); color: var(--text-muted); }
+.cw-pane__head span:first-child { color: var(--text-secondary); font-weight: 650; }
+/* Fixed chat height sets the row; the sibling pane's stack flexes to match. */
+.cw-chat { flex: none; height: 420px; max-height: none; min-height: 0; }
+.cw-meter { flex: none; }
+.cw-stack { flex: 1; min-height: 0; max-height: 400px; overflow-y: auto; scrollbar-gutter: stable; display: flex; flex-direction: column; gap: 6px; }
+
+.cw-block { border: 1px solid var(--border-subtle); border-left: 3px solid var(--border-strong); border-radius: 8px; background: var(--well); padding: 7px 10px; }
+.cw-block__top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); margin-bottom: 3px; }
+.cw-block__tag { font-size: var(--text-2xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-secondary); }
+.cw-block__tok { font-family: var(--mono); font-size: var(--text-2xs); color: var(--text-muted); white-space: nowrap; }
+.cw-block__body { font-family: var(--mono); font-size: var(--text-2xs); line-height: 1.5; color: var(--text-muted); white-space: pre-wrap; overflow-wrap: break-word; }
+.cw-block--sys   { border-left-color: var(--violet); }
+.cw-block--sys .cw-block__tag { color: var(--violet-text); }
+.cw-block--sum   { border-left-color: var(--amber); }
+.cw-block--sum .cw-block__tag { color: var(--amber); }
+.cw-block--facts { border-left-color: var(--green); }
+.cw-block--facts .cw-block__tag { color: var(--green); }
+.cw-block--mind  { border-left-color: var(--clay); }
+.cw-block--mind .cw-block__tag { color: var(--accent-bright); }
+.cw-block--pre   { border-left-color: var(--teal); }
+.cw-block--pre .cw-block__tag { color: var(--teal); }
+.cw-block--gap   { border-style: dashed; border-left-style: dashed; background: transparent; opacity: .75; }
+.cw-block--gap .cw-block__body { font-style: italic; }
+
+/* Verdict strip: what the current strategy wins, costs, and is for. */
+.cw-verdict { display: flex; flex-direction: column; gap: 6px; background: var(--surface-1); border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 12px 14px; }
+.cw-verdict__row { display: flex; gap: 12px; align-items: baseline; }
+.cw-verdict__tag { flex: none; width: 84px; font-size: var(--text-2xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); text-align: right; }
+.cw-verdict__tag--win { color: var(--green); }
+.cw-verdict__tag--cost { color: var(--rose-text); }
+.cw-verdict__tag--exam { color: var(--amber); }
+.cw-verdict__row p { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.5; max-width: var(--measure); }
+.cw-verdict__row--exam { border-top: 1px dashed var(--border-subtle); padding-top: 8px; margin-top: 2px; }
+
+/* Technique matrix. Rows are buttons into the inspector. */
+.cw-tablewrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-1); }
+.cw-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.cw-table thead th { text-align: left; font-size: var(--text-2xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); padding: 10px 14px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.cw-table tbody tr { cursor: pointer; }
+.cw-table tbody tr:hover, .cw-table tbody tr:focus-visible { background: rgba(var(--ink),.04); }
+.cw-table tbody tr + tr { border-top: 1px solid var(--border-subtle); }
+.cw-table td, .cw-table tbody th { padding: 10px 14px; vertical-align: top; text-align: left; }
+.cw-table tbody th { font-weight: 650; color: var(--text-primary); white-space: nowrap; }
+.cw-table__when { color: var(--text-secondary); }
+.cw-yn { display: inline-block; font-size: var(--text-xs); padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; color: var(--text-secondary); }
+.cw-yn--y { background: var(--green-soft); border-color: var(--green-line); color: var(--green); }
+.cw-yn--n { background: rgba(224,90,107,.12); border-color: rgba(224,90,107,.4); color: var(--rose-text); }
+.cw-yn--mix { background: var(--amber-soft); border-color: var(--amber-line); color: var(--amber); }
+
+/* Recurring failures: symptom → cause → fix cards. */
+.cw-issues { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); align-items: start; }
+.cw-issue { display: flex; flex-direction: column; gap: 10px; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: var(--space-4); min-width: 0; }
+.cw-issue__symptom { font-size: var(--text-base); font-weight: 650; font-style: italic; color: var(--text-primary); border-left: 3px solid var(--clay); padding-left: 10px; line-height: 1.45; }
+.cw-issue__row { display: flex; gap: 10px; }
+.cw-issue__tag { flex: none; width: 48px; font-size: var(--text-2xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--rose-text); text-align: right; padding-top: 3px; }
+.cw-issue__tag--fix { color: var(--green); }
+.cw-issue__row p { font-size: var(--text-sm); color: var(--text-secondary); line-height: 1.55; }
+.cw-issue code, .cw-verdict code, .insp-blurb code { font-family: var(--mono); font-size: .84em; background: rgba(var(--ink),.08); padding: 1px 4px; border-radius: 4px; color: var(--text-primary); }
+
 /* ══ MCP LAB ═══════════════════════════════════════════════ */
 .mcp-task { font-family: var(--mono); font-size: var(--text-sm); background: var(--well); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; }
 .mcp-task__label { color: var(--clay); font-weight: 700; margin-right: 10px; text-transform: uppercase; font-size: var(--text-xs); letter-spacing: .06em; }
@@ -2415,6 +2483,9 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 @media (max-width: 900px) {
   .loop-stage { grid-template-columns: 1fr; }
   .mcp-grid, .plan-grid, .err-grid, .flag__cols { grid-template-columns: 1fr; }
+  .cw-grid, .cw-issues { grid-template-columns: 1fr; }
+  .cw-chat { height: 320px; }
+  .cw-stack { max-height: 320px; }
   /* Stacked columns don't share rows; undo the subgrid pinning. */
   .mcp-grid { grid-template-rows: none; }
   .mcp-col { display: flex; grid-row: auto; }

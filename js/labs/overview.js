@@ -15,6 +15,7 @@ import { SDK_LEVELS } from '../data/sdk.js';
 import { MCP_FLOWS } from '../data/mcp.js';
 import { CONFIG_LEVELS } from '../data/config.js';
 import { PLANNING_CASES } from '../data/planning.js';
+import { CW_SCENARIOS } from '../data/context.js';
 import { PATTERNS } from '../data/patterns.js';
 import { LURES, PAIRS } from '../data/traps.js';
 import { ANTIPATTERNS } from '../data/antipatterns.js';
@@ -43,6 +44,10 @@ const CARDS = {
     desc: 'Read the signals in a task and make the call: plan first, or go straight to edits. The console decides from the same signals you were shown.',
     fact: `${PLANNING_CASES.length} cases to call`,
   },
+  context: {
+    desc: 'The same conversation replayed under different memory strategies: the chat on one side, the request the model actually receives on the other. Watch a window drop the order number, a digest blur $129.99, a persona drift.',
+    fact: `${Object.values(CW_SCENARIOS).reduce((a, s) => a + s.strategies.length, 0)} playouts, side by side`,
+  },
   patterns: {
     desc: 'The decision patterns that settle most stems: the tell in the question, the winning option shape, the distractor shapes.',
     fact: `${PATTERNS.length} patterns`,
@@ -68,7 +73,7 @@ const DOMAIN_LABS = {
   d2: ['mcp', 'sdk'],
   d3: ['config', 'planning'],
   d4: ['patterns', 'traps'],
-  d5: ['loop', 'antipatterns'],
+  d5: ['context', 'loop', 'antipatterns'],
 };
 
 const HALVES = [

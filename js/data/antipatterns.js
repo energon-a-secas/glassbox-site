@@ -115,12 +115,30 @@ export const ANTIPATTERNS = {
     fix: 'Keep a verbatim CASE FACTS block in every prompt, independent of whatever gets summarized.',
     tags: ['compact', 'context_window'],
   },
+  'window-just-bigger': {
+    id: 'window-just-bigger',
+    domain: 'Context',
+    title: 'Fixing forgetfulness by widening the window',
+    bad: 'Users say the assistant forgets things, so you raise the sliding window from 25 to 50 message pairs.',
+    why: 'The same cliff arrives at pair 51. Raw turns are the most expensive place to keep information, and the oldest still fall off first.',
+    fix: 'Summarize older turns and keep recent ones verbatim; pin exact values in a <code>CASE FACTS</code> block that ships with every prompt.',
+    tags: ['sliding_window', 'case_facts', 'context_window'],
+  },
+  'prompt-not-prefill': {
+    id: 'prompt-not-prefill',
+    domain: 'Conversation',
+    title: 'Instructing away a verbal tic',
+    bad: 'System prompt: NEVER open with "Certainly!" or "I’d be happy to help!" — and hoping.',
+    why: 'A prompt rule fights probability with prose: the model still samples openings, and its own past replies keep voting for the tic. Post-processing and temperature are patches on the same leak.',
+    fix: 'Prefill a partial assistant turn (<code>{role:"assistant", content:"..."}</code> as the last message) — the model continues your opening instead of writing its own.',
+    tags: ['prefill', 'system_prompt'],
+  },
 };
 
 // Category → ids, for the gallery layout.
 export const ANTIPATTERN_GROUPS = [
   { label: 'Agent loop & orchestration', ids: ['parse-text-completion', 'vague-task', 'prompt-not-hook'] },
   { label: 'Tools & MCP', ids: ['generic-error', 'silent-empty', 'overlapping-tools'] },
-  { label: 'Prompting & output', ids: ['required-fields', 'confidence-escalation'] },
-  { label: 'Config, sessions & context', ids: ['user-level-claude-md', 'stale-resume', 'compact-numbers'] },
+  { label: 'Prompting & output', ids: ['required-fields', 'confidence-escalation', 'prompt-not-prefill'] },
+  { label: 'Config, sessions & context', ids: ['user-level-claude-md', 'stale-resume', 'compact-numbers', 'window-just-bigger'] },
 ];

@@ -302,6 +302,17 @@ function buildScenarioChips() {
 // ── Mount ────────────────────────────────────────────────────
 export function mountLoop(root) {
   stop(); // playback from a previous mount would keep advancing off-screen
+
+  // Arriving from the Context lab: land on the requested run. Navigation
+  // itself was the #loop hashchange; the parked id only picks the run.
+  try {
+    const runId = sessionStorage.getItem('glassbox-open-loop-run');
+    if (runId && RUNS[runId]) {
+      sessionStorage.removeItem('glassbox-open-loop-run');
+      S.runId = runId; S.step = 0; S.pos = {};
+    }
+  } catch { /* private mode */ }
+
   root.innerHTML = `
     <section class="lab lab-loop">
       <header class="lab__head">

@@ -29,6 +29,7 @@ js/
     mcp.js            Improvised-integration vs defined-MCP flows, MCP_CONFIG showcase, isError contract, primitives
     config.js         Repo maturity L0→L3 trees + user-scope (~/.claude) tree + annotated file contents
     planning.js       Plan-vs-direct signals, preset cases, verdict notes
+    context.js        Conversation-memory playouts (scenarios × strategies: chat turns + per-step request stacks) + CW_MATRIX technique table + CW_ISSUES symptom/cause/fix gallery
     antipatterns.js   Anti-pattern gallery + inline-flag lookup (shared with other labs)
     sdk.js            SDK_LEVELS: L0→L5 build-up, each with code, keys, caveats
     sdk-config.js     Config bench: CFG_FIELDS (knobs), CFG_GOALS (requirements), CFG_NOTES
@@ -41,7 +42,7 @@ js/
       authored.js     Extraction + Dev Tools — exam scenarios the guide leaves unexercised
   labs/               One module per lab, each exports mount(root)
     overview.js  The landing map: hero, per-lab cards by `half`, domain-weight map. Counts are derived from data modules, never hardcoded.
-    loop.js  sdk.js  mcp.js  config.js  planning.js  patterns.js  traps.js  antipatterns.js  drill.js
+    loop.js  sdk.js  mcp.js  config.js  planning.js  context.js  patterns.js  traps.js  antipatterns.js  drill.js
 docs/architecture.mmd + .svg   Diagram source + render
 ```
 
@@ -49,7 +50,7 @@ docs/architecture.mmd + .svg   Diagram source + render
 
 - **No single JS file over 500 lines; `app.js` under 50.** Split by concern, not by size after the fact. This binds every module with logic. A pure-data catalogue splits on a real domain boundary or not at all: `data/questions/` splits by exam scenario, `data/exam-brief.js` is separate from `data/patterns.js` because the brief is not a pattern — but the 21 patterns stay in one file at ~700 lines rather than being chopped into five group-sized fragments to satisfy a number.
 - **Data vs view:** everything in `js/data/` is pure data. Labs in `js/labs/` render it. Never inline scenario copy into a lab module.
-- **Each lab exports `mount(root)`** and is registered in `LAB_MOUNT` (render.js) + `LABS` (state.js). `mount` may return a teardown function; `render.js` calls it before the next mount (lab switch or exam-mode re-render) — return one whenever the lab starts timers or observers (loop and mcp do). Adding a lab = new data file + new lab module + those two registrations; the rail tab is generated from the `LABS` entry, which needs a unique `key` (digit) and a `half` (`machinery` / `questions`) so the overview map lists it.
+- **Each lab exports `mount(root)`** and is registered in `LAB_MOUNT` (render.js) + `LABS` (state.js). `mount` may return a teardown function; `render.js` calls it before the next mount (lab switch or exam-mode re-render) — return one whenever the lab starts timers or observers (loop and mcp do). Adding a lab = new data file + new lab module + those two registrations; the rail tab is generated from the `LABS` entry, which needs a unique `key` (a single keypress — digits 0–9 were exhausted at ten labs, so Context uses `c`) and a `half` (`machinery` / `questions`) so the overview map lists it.
 - **Glossary:** add a term to `TIPS` in `tips.js`, then reference it anywhere with `data-tip="key"`. Don't hand-write tooltip markup.
 - **Anti-patterns are single-sourced** in `data/antipatterns.js`. Inline flags in other labs reference an anti-pattern `id`; don't duplicate the copy.
 - **Exam accuracy first.** Use the certification's exact terms (`stop_reason`, `tool_choice`, `allowed_tools`, coordinator/subagent, MCP tools/resources/prompts). When the guide names a thing, name it the same way.
