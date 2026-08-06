@@ -1,33 +1,65 @@
 // ── Lab 3: Config Explorer (VS Code-style) ───────────────────
-// A repo at four maturity levels. Pick a level, browse the tree,
-// click a file to read it with an annotation on what it changes.
+// A repo at four maturity levels, plus the user scope (~/.claude) as a
+// second, constant sidebar tree. Pick a level, browse, click a file to
+// read it with an annotation on what it changes.
 
-import { CONFIG_LEVELS, CONFIG_FILES } from '../data/config.js';
-import { el, escHtml, highlightCode } from '../utils.js';
+import { CONFIG_LEVELS, CONFIG_FILES, USER_TREE } from '../data/config.js';
+import { ANTIPATTERNS } from '../data/antipatterns.js';
+import { el, escHtml, flagHtml, highlightCode, copyText } from '../utils.js';
 
 const C = { level: 0, file: null };
 const DEFAULT_FILE = { l0: 'readme', l1: 'claudemd', l2: 'rulesApi', l3: 'skill' };
 
 function levelObj() { return CONFIG_LEVELS[C.level]; }
 
+// Display names by file id (the L3 tree is a superset of every level).
+const FILE_NAMES = {};
+(function collect(ns) {
+  ns.forEach((n) => (n.children ? collect(n.children) : n.file && (FILE_NAMES[n.file] = n.name)));
+})([...CONFIG_LEVELS[CONFIG_LEVELS.length - 1].tree, ...USER_TREE]);
+
 function treeHtml(nodes, depth) {
   return nodes.map((n) => {
     const pad = `style="padding-left:${8 + depth * 16}px"`;
     if (n.children) {
-      return `<li class="tree-dir"><div class="tree-row tree-row--dir" ${pad}><span class="tree-caret">\u25be</span><span class="tree-ic">\ud83d\udcc1</span>${escHtml(n.name)}</div><ul>${treeHtml(n.children, depth + 1)}</ul></li>`;
+      return `<li class="tree-dir"><div class="tree-row tree-row--dir" ${pad}><span class="tree-caret">\u25be</span><span class="tree-ic">${n.ic || '\ud83d\udcc1'}</span>${escHtml(n.name)}</div><ul>${treeHtml(n.children, depth + 1)}</ul></li>`;
     }
-    const active = n.file === C.file ? ' is-active' : '';
+    const active = n.file === C.file;
     const dot = n.file ? '' : ' tree-row--plain';
-    return `<li><div class="tree-row tree-file${active}${dot}" data-file="${n.file || ''}" ${pad}><span class="tree-ic">\ud83d\udcc4</span>${escHtml(n.name)}</div></li>`;
+    // Openable rows are keyboard-reachable buttons; plain rows stay inert.
+    const press = n.file ? ' tabindex="0" role="button"' : '';
+    return `<li><div class="tree-row tree-file${active ? ' is-active' : ''}${dot}" data-file="${n.file || ''}"${press}${active ? ' aria-current="true"' : ''} ${pad}><span class="tree-ic">\ud83d\udcc4</span>${escHtml(n.name)}</div></li>`;
   }).join('');
 }
 
 function renderTree() {
   const lv = levelObj();
   document.getElementById('cfgTree').innerHTML = `<ul class="tree">${treeHtml(lv.tree, 0)}</ul>`;
+}
+
+/** Every file id reachable at the current level: project tree, plus the
+ *  user scope at levels that show it (see `userScope` in the data). */
+function levelFiles() {
+  const out = [];
+  const walk = (ns) => ns.forEach((n) => (n.children ? walk(n.children) : n.file && out.push(n.file)));
+  walk(levelObj().tree);
+  if (levelObj().userScope) walk(USER_TREE);
+  return out;
+}
+
+/** Class/aria toggle only \u2014 no tree re-render, so keyboard focus survives. */
+function updateActive() {
   document.querySelectorAll('.tree-file[data-file]').forEach((r) => {
-    if (r.dataset.file) r.classList.toggle('is-active', r.dataset.file === C.file);
+    const on = r.dataset.file === C.file;
+    r.classList.toggle('is-active', on);
+    if (on) r.setAttribute('aria-current', 'true'); else r.removeAttribute('aria-current');
   });
+}
+
+function selectFile(id) {
+  C.file = id;
+  updateActive();
+  renderFile();
 }
 
 function renderFile() {
@@ -37,13 +69,19 @@ function renderFile() {
     view.innerHTML = `<div class="cfg-empty">Select a file to read it.</div>`;
     return;
   }
-  const name = C.file;
+  // "Who wins" renders only when both colliding files exist at this level,
+  // so the skill collision appears exactly when the project copy does (L3).
+  const wins = f.collision && levelFiles().includes(f.collision.with)
+    ? `<div class="cfg-annot cfg-annot--wins"><span class="cfg-annot__tag">who wins</span><p>${f.collision.note}</p></div>` : '';
+  const ap = f.flag && ANTIPATTERNS[f.flag];
+  const flag = ap ? `<div class="loop-flag">${flagHtml(ap)}</div>` : '';
   view.innerHTML = `
     <div class="code-block">
-      <div class="code-block__bar"><span class="code-block__lang">${escHtml(f.lang)}</span></div>
+      <div class="code-block__bar"><span class="code-block__lang">${escHtml(f.lang)}</span><button class="code-copy" type="button" id="cfgCopy">copy</button></div>
       <pre><code>${highlightCode(f.code, f.lang)}</code></pre>
     </div>
-    <div class="cfg-annot"><span class="cfg-annot__tag">what it changes</span><p>${f.annotation}</p></div>`;
+    <div class="cfg-annot"><span class="cfg-annot__tag">what it changes</span><p>${f.annotation}</p></div>
+    ${wins}${flag}`;
 }
 
 function renderMeta() {
@@ -56,11 +94,14 @@ function renderMeta() {
 function selectLevel(i) {
   C.level = i;
   const lv = levelObj();
+  // The user scope only appears once the project has custom skills to
+  // collide with (L3) — before that, the second tree stays hidden.
+  const userScopeEl = document.getElementById('cfgUserScope');
+  if (userScopeEl) userScopeEl.hidden = !lv.userScope;
   // keep current file if it still exists at this level, else default
-  const files = [];
-  (function walk(ns) { ns.forEach((n) => n.children ? walk(n.children) : n.file && files.push(n.file)); })(lv.tree);
+  const files = levelFiles();
   if (!files.includes(C.file)) C.file = DEFAULT_FILE[lv.id] || files[0];
-  renderMeta(); renderTree(); renderFile();
+  renderMeta(); renderTree(); updateActive(); renderFile();
 }
 
 export function mountConfig(root) {
@@ -71,7 +112,7 @@ export function mountConfig(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">A repo, from bare to fully outfitted</h2>
-          <p class="lab__lead">Step a project through four levels of Claude Code config. Each file you add changes what Claude knows before it types a character. Click a file to read it.</p>
+          <p class="lab__lead">Step a project through four levels of Claude Code config. Each file you add changes what Claude knows before it types a character. Click a file to read it. At L3, once custom skills exist, a second tree appears: your <span data-tip="user_scope">user scope</span>, where a personal copy of the same skill can silently shadow the team’s.</p>
         </div>
       </header>
 
@@ -81,18 +122,37 @@ export function mountConfig(root) {
 
       <div class="cfg-ide">
         <aside class="cfg-sidebar">
-          <div class="cfg-sidebar__head">Explorer</div>
+          <div class="cfg-sidebar__head">Explorer — project</div>
           <div id="cfgTree"></div>
+          <div id="cfgUserScope" hidden>
+            <div class="cfg-sidebar__head cfg-sidebar__head--user">User scope — ~/.claude</div>
+            <p class="cfg-user-sub">follows you, not the repo</p>
+            <div id="cfgTreeUser"></div>
+          </div>
         </aside>
         <div class="cfg-main" id="cfgView"></div>
       </div>
     </section>`;
 
+  // The user scope never changes with the level — render it once.
+  root.querySelector('#cfgTreeUser').innerHTML = `<ul class="tree tree--user">${treeHtml(USER_TREE, 0)}</ul>`;
+
   root.querySelector('.cfg-levels').addEventListener('click', (e) => {
     const b = e.target.closest('.cfg-lvl'); if (b) selectLevel(+b.dataset.i);
   });
-  root.querySelector('#cfgTree').addEventListener('click', (e) => {
-    const r = e.target.closest('.tree-file'); if (r && r.dataset.file) { C.file = r.dataset.file; renderTree(); renderFile(); }
+  // One pair of delegated listeners covers both trees.
+  const sidebar = root.querySelector('.cfg-sidebar');
+  sidebar.addEventListener('click', (e) => {
+    const r = e.target.closest('.tree-file'); if (r && r.dataset.file) selectFile(r.dataset.file);
+  });
+  sidebar.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const r = e.target.closest('.tree-file');
+    if (r && r.dataset.file) { e.preventDefault(); selectFile(r.dataset.file); }
+  });
+  // The copy button is re-created with every renderFile; delegate instead.
+  root.querySelector('#cfgView').addEventListener('click', (e) => {
+    if (e.target.closest('#cfgCopy') && C.file) copyText(CONFIG_FILES[C.file].code, `${FILE_NAMES[C.file] || 'File'} copied`);
   });
 
   selectLevel(C.level);

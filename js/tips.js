@@ -88,6 +88,10 @@ export const TIPS = {
     term: '.claude/rules/',
     body: 'Topic-split rules with YAML <code>paths:</code> frontmatter. A rule loads only when Claude edits a matching file, saving context versus one monolithic CLAUDE.md.',
   },
+  user_scope: {
+    term: 'User scope (~/.claude)',
+    body: 'Config that follows the person, not the repo: CLAUDE.md, settings, skills and commands under <code>~/.claude/</code>. Never version-controlled. A personal skill with the same name silently takes precedence over the project one — which is why the guide says to name personal variants differently.',
+  },
   planning_mode: {
     term: 'Planning mode',
     body: 'Read-only exploration (Read, Grep, Glob) that produces a plan you approve before any edits. Use for large, ambiguous, architectural, or unfamiliar-codebase work.',

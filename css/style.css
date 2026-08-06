@@ -1329,6 +1329,13 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .tree-row--plain { cursor: default; color: var(--text-muted); }
 .tree-row--plain:hover { background: transparent; color: var(--text-muted); }
 .tree-row--dir { color: var(--text-primary); font-weight: 600; }
+/* Second sidebar section: the user scope (~/.claude), constant across levels. */
+.cfg-sidebar__head--user { border-top: 1px solid var(--border-subtle); margin-top: var(--space-2); }
+.cfg-user-sub { padding: 2px 14px 6px; font-size: var(--text-2xs); font-style: italic; color: var(--text-muted); }
+/* "Who wins" strip for same-name collisions across scopes. --amber (not
+   --clay) so it reads as a caution, and amber clears AA on --amber-soft. */
+.cfg-annot--wins { background: var(--amber-soft); border-color: var(--amber-line); }
+.cfg-annot--wins .cfg-annot__tag { color: var(--amber); }
 .cfg-main { background: var(--panel); padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); overflow: auto; }
 .cfg-main .code-block { background: var(--well); }
 .cfg-empty { color: var(--text-muted); text-align: center; padding: var(--space-8); }

@@ -2,7 +2,20 @@
 // A repo at four maturity levels. Each level = a file tree plus a
 // files map { path -> { lang, code, annotation } }. The explorer
 // renders the tree on the left and the selected file + annotation
-// on the right.
+// on the right. USER_TREE is the second sidebar tree: the user scope
+// (~/.claude), identical at every level because it follows the
+// person, not the repo.
+//
+// Escaping: `annotation` and `collision.note` render RAW HTML (inline
+// <code>, <em>, data-tip spans). Every other field is escaped.
+// Optional per-file fields:
+//   flag       anti-pattern id (data/antipatterns.js) — the lab renders
+//              the Don't/Do strip from that single source.
+//   collision  { with: <fileId>, note: <rawHtml> } — the "who wins"
+//              strip renders only when both files exist at the current
+//              level. Precedence wording matches Guide Q36 exactly
+//              (see data/questions/codegen.js and data/traps.js).
+// Tree nodes may carry `ic` to override the directory glyph.
 
 const F = {
   readme: {
@@ -57,6 +70,14 @@ Every endpoint returns the standard { data, error } wrapper.
 Validate input with zod before touching the database.`,
     annotation: 'A path-scoped rule. The YAML <code>paths:</code> frontmatter means this loads <em>only</em> when Claude edits a file under <code>src/api/</code>. Irrelevant rules stay out of context, saving tokens.',
   },
+  dirClaude: {
+    lang: 'md',
+    code: `# src/api — local notes
+
+Endpoints here are versioned: /v2/ only.
+Legacy /v1/ handlers are frozen — do not edit.`,
+    annotation: 'A directory-level <span data-tip="claude_md">CLAUDE.md</span>: loaded when Claude works under <code>src/api/</code>, for conventions that live and die with this folder. When the matching files are <em>scattered</em> across the tree, a <span data-tip="rules_dir">.claude/rules/</span> file with <code>paths:</code> globs beats it — which is exactly the call this repo made for its tests.',
+  },
   rulesTest: {
     lang: 'md',
     code: `---
@@ -77,6 +98,10 @@ argument-hint: "Path to the module to review"
 Review the module for the conventions in CLAUDE.md.
 Report findings as { location, issue, severity, fix }.`,
     annotation: '<code>context: fork</code> runs this <code>/review</code> skill in an isolated subagent, so its verbose output never pollutes your main session. <code>allowed-tools</code> is least privilege \u2014 it literally cannot write or delete. Invoke on demand; unlike CLAUDE.md it is not always loaded.',
+    collision: {
+      with: 'userSkill',
+      note: 'This is the copy a fresh clone gets. A personal <code>~/.claude/skills/review/SKILL.md</code> \u2014 like the one in the user-scope tree \u2014 takes precedence at the same name, silently shadowing this file for that developer and cutting them off from its updates. Nobody else is affected, and the guide recommends personal variants use a different name instead.',
+    },
   },
   command: {
     lang: 'md',
@@ -110,6 +135,45 @@ plus at least two edge cases.`,
 }`,
     annotation: '<span data-tip="mcp_json">.mcp.json</span> at the project root, in version control, gives the whole team the same MCP tools on clone. The secret stays a <code>${DATABASE_URL}</code> reference \u2014 the token itself is never committed.',
   },
+
+  // \u2500\u2500 user scope (~/.claude) \u2014 follows the person, not the repo \u2500\u2500
+  userClaudemd: {
+    lang: 'md',
+    code: `# My preferences \u2014 every repo I open
+
+- Walk me through the plan before editing.
+- Commit messages: imperative mood, <= 72 chars.`,
+    annotation: 'User-level <span data-tip="claude_md">CLAUDE.md</span> loads in every session of <em>every</em> repo, alongside the project file \u2014 it follows you, not the code. Personal taste belongs here; a team standard here reaches exactly one laptop. That is the drift flagged below.',
+    flag: 'user-level-claude-md',
+  },
+  userSettings: {
+    lang: 'json',
+    code: `{
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash",
+        "command": "~/.claude/hooks/log-commands.sh" }
+    ]
+  }
+}`,
+    annotation: 'The same settings surface as the project\u2019s <code>.claude/settings.json</code> (L3), scoped to you: this hook audits every Bash call in every repo you open. Personal defaults belong here. Anything the <em>team</em> relies on ships in the project file, in version control \u2014 user-scope configs drift, with no single source of truth.',
+  },
+  userSkill: {
+    lang: 'md',
+    code: `---
+context: fork
+allowed-tools: ["Read", "Grep", "Glob"]
+argument-hint: "Path to the module to review"
+---
+Review the module for the conventions in CLAUDE.md,
+then flag any TODO older than one sprint \u2014 my own
+pet peeve, not a team rule.`,
+    annotation: 'The <em>same</em> skill name at <span data-tip="user_scope">user scope</span>. Personal skills take precedence over project skills of the same name, so on this laptop <code>/review</code> silently runs this file instead of the team\u2019s \u2014 and stops receiving the team\u2019s updates to it. That is why the guide says to name personal variants differently (<code>/my-review</code>); <code>override: true</code> is not a real frontmatter key either way.',
+    collision: {
+      with: 'skill',
+      note: 'Both scopes define <code>skills/review/SKILL.md</code>. User scope beats project scope at the same path, so this copy silently wins on this machine \u2014 and stops tracking the team\u2019s improvements to <code>/review</code>. The guide\u2019s recommendation: give personal variants their own name, so the shadowing never happens by accident. Precedence is positional, not declared.',
+    },
+  },
 };
 
 // Tree node: { name, file? } — `file` keys into F. No `file` = directory.
@@ -141,7 +205,7 @@ export const CONFIG_LEVELS = [
     tagline: 'Path-scoped rules that load only when relevant, so context stays lean.',
     behavior: 'API rules load only when editing src/api; test rules load only in *.test.ts. The context window carries just the rules that matter for the file at hand.',
     tree: [
-      { name: 'src', children: [{ name: 'api', children: [{ name: 'orders.ts' }] }] },
+      { name: 'src', children: [{ name: 'api', children: [{ name: 'CLAUDE.md', file: 'dirClaude' }, { name: 'orders.ts' }] }] },
       { name: '.claude', children: [
         { name: 'rules', children: [
           { name: 'api-conventions.md', file: 'rulesApi' },
@@ -156,10 +220,11 @@ export const CONFIG_LEVELS = [
   },
   {
     id: 'l3', level: 'L3', label: '+ skills, hooks & .mcp.json',
-    tagline: 'On-demand workflows, deterministic guards, and shared tools.',
-    behavior: 'A fully outfitted repo: /review and /test-gen commands, a PreToolUse hook that can\u2019t be argued with, and MCP tools every teammate gets on clone.',
+    tagline: 'On-demand workflows, deterministic guards, and shared tools \u2014 and the user scope enters the picture.',
+    behavior: 'A fully outfitted repo: /review and /test-gen commands, a PreToolUse hook that can\u2019t be argued with, and MCP tools every teammate gets on clone. Custom skills exist now, so personal copies can too: the ~/.claude tree appears below.',
+    userScope: true,
     tree: [
-      { name: 'src', children: [{ name: 'api', children: [{ name: 'orders.ts' }] }] },
+      { name: 'src', children: [{ name: 'api', children: [{ name: 'CLAUDE.md', file: 'dirClaude' }, { name: 'orders.ts' }] }] },
       { name: '.claude', children: [
         { name: 'skills', children: [{ name: 'review', children: [{ name: 'SKILL.md', file: 'skill' }] }] },
         { name: 'commands', children: [{ name: 'test-gen.md', file: 'command' }] },
@@ -176,6 +241,19 @@ export const CONFIG_LEVELS = [
       { name: 'package.json', file: 'pkg' },
     ],
   },
+];
+
+// The user scope (~/.claude). Rendered once by the lab and shown only at
+// levels flagged `userScope` (L3): the same-name skill collision only
+// means something once the project has custom skills to collide with.
+export const USER_TREE = [
+  { name: '~/.claude', ic: '🏠', children: [
+    { name: 'CLAUDE.md', file: 'userClaudemd' },
+    { name: 'settings.json', file: 'userSettings' },
+    { name: 'skills', children: [
+      { name: 'review', children: [{ name: 'SKILL.md', file: 'userSkill' }] },
+    ] },
+  ] },
 ];
 
 export const CONFIG_FILES = F;
