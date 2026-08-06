@@ -49,12 +49,16 @@
   --ink: 244, 237, 228;
   --bg: #151210;
   --well: #110d0a;
-  --panel: #1b1511;
-  --surface-1: rgba(var(--ink),.035);
-  --surface-2: rgba(var(--ink),.07);
+  /* Raised surfaces earn a real luminance step: at #1b1511 the overview
+     cards sat ~1.1:1 over the page and dissolved into it. #241b15 keeps
+     the espresso temperature but reads as a surface, not a stain; the
+     border tiers (.12/.17/.26) moved up with it for the same reason. */
+  --panel: #241b15;
+  --surface-1: rgba(var(--ink),.055);
+  --surface-2: rgba(var(--ink),.10);
   --surface-toast: #2b211a;
-  --border-subtle: rgba(var(--ink),.08);
-  --border: rgba(var(--ink),.12);
+  --border-subtle: rgba(var(--ink),.12);
+  --border: rgba(var(--ink),.17);
   --border-strong: rgba(var(--ink),.26);
   --text-primary: #f4ede4;
   --text-secondary: #d8cec0;
@@ -116,6 +120,10 @@
   --control-height-sm: 36px;
   --shadow-card: 0 12px 28px rgba(8, 4, 2, 0.5);
   --shadow-modal: 0 24px 48px rgba(4, 2, 1, 0.6);
+  /* Resting elevation for raised cards: a 1px ivory rim light on the top
+     edge plus a soft ambient drop, so panels separate from the page even
+     where the border alone is quiet. */
+  --shadow-raised: inset 0 1px 0 rgba(var(--ink),.05), 0 2px 10px rgba(8, 4, 2, .35);
   --z-sticky-header: 200;
   --z-modal: 400;
   --z-toast: 500;
@@ -2449,8 +2457,9 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 }
 .ov-stats { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 .ov-stat {
-  background: var(--panel); border: 1px solid var(--border-subtle);
+  background: var(--panel); border: 1px solid var(--border);
   border-radius: var(--radius); padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-raised);
 }
 .ov-stat__num {
   font-size: 1.55rem; font-weight: 750; letter-spacing: -.01em;
@@ -2467,9 +2476,10 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .ov-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: var(--space-3); }
 .ov-card {
   display: flex; flex-direction: column; gap: var(--space-2);
-  background: var(--panel); border: 1px solid var(--border-subtle);
+  background: var(--panel); border: 1px solid var(--border);
   border-radius: var(--radius); padding: var(--space-4);
   color: inherit; text-decoration: none;
+  box-shadow: var(--shadow-raised);
   transition: border-color var(--dur), background-color var(--dur), transform var(--dur), box-shadow var(--dur);
 }
 .ov-card:hover {
@@ -2494,9 +2504,10 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 }
 
 .ov-map {
-  background: var(--panel); border: 1px solid var(--border-subtle);
+  background: var(--panel); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: var(--space-5);
   display: flex; flex-direction: column;
+  box-shadow: var(--shadow-raised);
 }
 .ov-domain { padding: var(--space-3) 0; border-top: 1px solid var(--border-subtle); }
 .ov-domain:first-child { border-top: 0; padding-top: 0; }
