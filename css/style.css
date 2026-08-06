@@ -1397,6 +1397,32 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .tree-row--plain { cursor: default; color: var(--text-muted); }
 .tree-row--plain:hover { background: transparent; color: var(--text-muted); }
 .tree-row--dir { color: var(--text-primary); font-weight: 600; }
+
+/* ── Read-order chips ─────────────────────────────────────────
+ * Session-start files carry their reading number; the rest name the
+ * trigger that loads them. The .is-reading pulse walks the numbered
+ * rows once per level select (see replayReadOrder in labs/config.js). */
+.tree-load {
+  margin-left: auto; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 16px; padding: 0 5px; border-radius: 999px;
+  font-family: var(--font); font-size: var(--text-2xs); font-weight: 700;
+  letter-spacing: .02em; line-height: 16px; white-space: nowrap;
+  border: 1px solid var(--border); color: var(--text-muted);
+}
+.tree-load--start { background: var(--clay-soft); border-color: var(--clay-line); color: var(--accent-bright); }
+.tree-load--path { background: var(--amber-soft); border-color: var(--amber-line); color: var(--amber); }
+.tree-load--invoke { background: rgba(45,212,191,.1); border-color: rgba(45,212,191,.35); color: var(--teal); }
+.tree-load--never { background: transparent; border-style: dashed; }
+.tree-file.is-reading { background: var(--clay-soft); box-shadow: inset 0 0 0 1px var(--clay-line); }
+.tree-file.is-reading .tree-load--start { background: var(--clay); border-color: var(--clay); color: #1a0e08; }
+.tree-file, .tree-load { transition: background .25s, box-shadow .25s, color .25s; }
+
+.cfg-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: var(--text-xs); color: var(--text-muted); }
+.cfg-legend__lab { font-size: var(--text-2xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-secondary); }
+.cfg-legend__item { display: inline-flex; align-items: center; gap: 6px; }
+.cfg-legend__replay { margin-left: auto; }
+.cfg-legend__replay[disabled] { opacity: .45; cursor: not-allowed; }
 /* Second sidebar section: the user scope (~/.claude), constant across levels. */
 .cfg-sidebar__head--user { border-top: 1px solid var(--border-subtle); margin-top: var(--space-2); }
 .cfg-user-sub { padding: 2px 14px 6px; font-size: var(--text-2xs); font-style: italic; color: var(--text-muted); }

@@ -27,7 +27,7 @@ js/
     runs.js           Agent-loop scenarios: nodes + per-step scene deltas, token counts, flags
     loop-contrast.js  Steer-vs-enforce comparison (prompt asks / code enforces) for the Loop lab
     mcp.js            Improvised-integration vs defined-MCP flows, MCP_CONFIG showcase, isError contract, primitives
-    config.js         Repo maturity L0→L3 trees + user-scope (~/.claude) tree + annotated file contents
+    config.js         Repo maturity L0→L3 trees + user-scope (~/.claude) tree + annotated file contents + read-order metadata (per-file `load`, per-level `startOrder`)
     planning.js       Plan-vs-direct signals, preset cases, verdict notes
     context.js        Conversation-memory playouts (scenarios × strategies: chat turns + per-step request stacks) + CW_MATRIX technique table + CW_ISSUES symptom/cause/fix gallery
     antipatterns.js   Anti-pattern gallery + inline-flag lookup (shared with other labs)

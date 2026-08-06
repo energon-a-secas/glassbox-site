@@ -18,23 +18,58 @@ const FILE_NAMES = {};
   ns.forEach((n) => (n.children ? collect(n.children) : n.file && (FILE_NAMES[n.file] = n.name)));
 })([...CONFIG_LEVELS[CONFIG_LEVELS.length - 1].tree, ...USER_TREE]);
 
-function treeHtml(nodes, depth) {
+/** Read-order chip for a file row: session-start files get their number
+ *  in `lv.startOrder`; everything else names its trigger. */
+function loadChip(id, lv) {
+  const ld = id && CONFIG_FILES[id] && CONFIG_FILES[id].load;
+  if (!ld) return '';
+  if (ld.when === 'start') {
+    const n = lv.startOrder.indexOf(id);
+    return n === -1 ? '' : `<span class="tree-load tree-load--start" title="${escHtml(ld.title)}">${n + 1}</span>`;
+  }
+  return `<span class="tree-load tree-load--${ld.when}" title="${escHtml(ld.title)}">${escHtml(ld.chip)}</span>`;
+}
+
+function treeHtml(nodes, depth, lv) {
   return nodes.map((n) => {
     const pad = `style="padding-left:${8 + depth * 16}px"`;
     if (n.children) {
-      return `<li class="tree-dir"><div class="tree-row tree-row--dir" ${pad}><span class="tree-caret">\u25be</span><span class="tree-ic">${n.ic || '\ud83d\udcc1'}</span>${escHtml(n.name)}</div><ul>${treeHtml(n.children, depth + 1)}</ul></li>`;
+      return `<li class="tree-dir"><div class="tree-row tree-row--dir" ${pad}><span class="tree-caret">\u25be</span><span class="tree-ic">${n.ic || '\ud83d\udcc1'}</span>${escHtml(n.name)}</div><ul>${treeHtml(n.children, depth + 1, lv)}</ul></li>`;
     }
     const active = n.file === C.file;
     const dot = n.file ? '' : ' tree-row--plain';
     // Openable rows are keyboard-reachable buttons; plain rows stay inert.
     const press = n.file ? ' tabindex="0" role="button"' : '';
-    return `<li><div class="tree-row tree-file${active ? ' is-active' : ''}${dot}" data-file="${n.file || ''}"${press}${active ? ' aria-current="true"' : ''} ${pad}><span class="tree-ic">\ud83d\udcc4</span>${escHtml(n.name)}</div></li>`;
+    return `<li><div class="tree-row tree-file${active ? ' is-active' : ''}${dot}" data-file="${n.file || ''}"${press}${active ? ' aria-current="true"' : ''} ${pad}><span class="tree-ic">\ud83d\udcc4</span>${escHtml(n.name)}${loadChip(n.file, lv)}</div></li>`;
   }).join('');
 }
 
 function renderTree() {
   const lv = levelObj();
-  document.getElementById('cfgTree').innerHTML = `<ul class="tree">${treeHtml(lv.tree, 0)}</ul>`;
+  document.getElementById('cfgTree').innerHTML = `<ul class="tree">${treeHtml(lv.tree, 0, lv)}</ul>`;
+}
+
+// \u2500\u2500 Read-order replay \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// Pulses the session-start files in reading order when a level is
+// selected (and on demand). The numbered chips stay put; the pulse
+// only draws the eye along them once.
+let pulseTimers = [];
+function clearPulse() {
+  pulseTimers.forEach(clearTimeout);
+  pulseTimers = [];
+  document.querySelectorAll('.tree-row.is-reading').forEach((r) => r.classList.remove('is-reading'));
+}
+function replayReadOrder() {
+  clearPulse();
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  levelObj().startOrder.forEach((id, i) => {
+    pulseTimers.push(setTimeout(() => {
+      document.querySelectorAll(`.tree-file[data-file="${id}"]`).forEach((r) => {
+        r.classList.add('is-reading');
+        pulseTimers.push(setTimeout(() => r.classList.remove('is-reading'), 900));
+      });
+    }, 200 + i * 450));
+  });
 }
 
 /** Every file id reachable at the current level: project tree, plus the
@@ -102,6 +137,12 @@ function selectLevel(i) {
   const files = levelFiles();
   if (!files.includes(C.file)) C.file = DEFAULT_FILE[lv.id] || files[0];
   renderMeta(); renderTree(); updateActive(); renderFile();
+  const replay = document.getElementById('cfgReplay');
+  if (replay) {
+    replay.disabled = !lv.startOrder.length;
+    replay.title = lv.startOrder.length ? 'Watch the session-start reads, in order' : 'Nothing auto-loads at this level';
+  }
+  replayReadOrder();
 }
 
 export function mountConfig(root) {
@@ -120,6 +161,15 @@ export function mountConfig(root) {
       <p class="cfg-tagline" id="cfgTagline"></p>
       <div class="cfg-behavior" id="cfgBehavior"></div>
 
+      <div class="cfg-legend">
+        <span class="cfg-legend__lab">Read order</span>
+        <span class="cfg-legend__item"><span class="tree-load tree-load--start">1</span> in context before the first keystroke, broad → specific</span>
+        <span class="cfg-legend__item"><span class="tree-load tree-load--path">on edit</span> when a matching file is touched</span>
+        <span class="cfg-legend__item"><span class="tree-load tree-load--invoke">/name</span> when you invoke it</span>
+        <span class="cfg-legend__item"><span class="tree-load tree-load--never">if asked</span> only if Claude opens it</span>
+        <button class="btn btn--ghost btn--sm cfg-legend__replay" type="button" id="cfgReplay">▶ replay</button>
+      </div>
+
       <div class="cfg-ide">
         <aside class="cfg-sidebar">
           <div class="cfg-sidebar__head">Explorer — project</div>
@@ -134,8 +184,10 @@ export function mountConfig(root) {
       </div>
     </section>`;
 
-  // The user scope never changes with the level — render it once.
-  root.querySelector('#cfgTreeUser').innerHTML = `<ul class="tree tree--user">${treeHtml(USER_TREE, 0)}</ul>`;
+  // The user scope never changes with the level — render it once. Its
+  // read-order numbers come from the level that shows it (L3).
+  const userLevel = CONFIG_LEVELS.find((lv) => lv.userScope);
+  root.querySelector('#cfgTreeUser').innerHTML = `<ul class="tree tree--user">${treeHtml(USER_TREE, 0, userLevel)}</ul>`;
 
   root.querySelector('.cfg-levels').addEventListener('click', (e) => {
     const b = e.target.closest('.cfg-lvl'); if (b) selectLevel(+b.dataset.i);
@@ -154,6 +206,11 @@ export function mountConfig(root) {
   root.querySelector('#cfgView').addEventListener('click', (e) => {
     if (e.target.closest('#cfgCopy') && C.file) copyText(CONFIG_FILES[C.file].code, `${FILE_NAMES[C.file] || 'File'} copied`);
   });
+  root.querySelector('#cfgReplay').addEventListener('click', replayReadOrder);
 
   selectLevel(C.level);
+
+  // render.js runs this before the next mount: pending pulse timers must
+  // not fire against a detached tree.
+  return clearPulse;
 }
