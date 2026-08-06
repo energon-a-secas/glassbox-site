@@ -3,8 +3,9 @@
 // checks a configuration against what the agent actually has to do.
 //
 // Escaping contract (see data/sdk.js, data/sdk-config.js): caveat body,
-// `why`, `gap` and note `text` carry inline <code>/<em>/<strong> and
-// render raw. Everything else is plain text and goes through escHtml.
+// `breaks`, `exam`, `why`, `gap` and note `text` carry inline
+// <code>/<em>/<strong> and data-tip glossary spans, and render raw.
+// Everything else is plain text and goes through escHtml.
 
 import { SDK_LEVELS } from '../data/sdk.js';
 import { CFG_FIELDS, CFG_GOALS, CFG_NOTES } from '../data/sdk-config.js';
@@ -228,12 +229,20 @@ function setLevel(id) {
 // ── Mount ────────────────────────────────────────────────────
 
 export function mountSdk(root) {
+  // Deep-linked from the Loop lab's steer-vs-enforce section: land on the
+  // parked level (L3 Hooks), then clear the key so a manual visit starts
+  // wherever the reader left off. Mirrors the drill → playbook precedent.
+  try {
+    const want = sessionStorage.getItem('glassbox-open-sdk-level');
+    if (want && SDK_LEVELS.some((l) => l.id === want)) S.level = want;
+    sessionStorage.removeItem('glassbox-open-sdk-level');
+  } catch { /* private browsing: no sessionStorage, keep the current level */ }
   root.innerHTML = `
     <section class="lab lab-sdk">
       <header class="lab__head">
         <div>
           <h2 class="lab__title">Building an agent, one setting at a time</h2>
-          <p class="lab__lead">The Agent Loop lab shows the loop Claude Code already runs for you. This is the part you write: six levels, each adding exactly one layer of configuration, with what it buys you and what still breaks if you stop there.</p>
+          <p class="lab__lead">The Agent Loop lab shows the <span data-tip="agentic_loop">loop</span> Claude Code already runs for you. This is the part you write: six levels, each adding exactly one layer of configuration, with what it buys you and what still breaks if you stop there.</p>
         </div>
       </header>
 
@@ -278,6 +287,7 @@ export function mountSdk(root) {
     }
   });
 
-  // Exam mode jumps straight to the bench: that is where the judgement lives.
-  if (state.examMode) document.getElementById('sdkBench')?.setAttribute('data-emphasis', 'on');
+  // Exam mode emphasises the bench: that is where the judgement lives.
+  // (The CSS hook lives on the .sdk-bench section, not the inner div.)
+  if (state.examMode) root.querySelector('.sdk-bench')?.setAttribute('data-emphasis', 'on');
 }

@@ -1,6 +1,10 @@
 // ── Anti-patterns ────────────────────────────────────────────
 // Drives the Anti-patterns lab AND the inline flags in other labs
 // (a step's `flag` field is an id here). Keyed for cross-reference.
+//
+// Escaping: `fix` renders RAW (inline <code>). `bad`, `why`, `title`
+// and `domain` are plain text — every consumer escapes them, so markup
+// in those fields shows up literally.
 
 export const ANTIPATTERNS = {
   'parse-text-completion': {
@@ -88,7 +92,7 @@ export const ANTIPATTERNS = {
     id: 'user-level-claude-md',
     domain: 'Claude Code config',
     title: 'Putting team standards in user-level CLAUDE.md',
-    bad: 'Coding conventions live in <code>~/.claude/CLAUDE.md</code>, so a new teammate never receives them.',
+    bad: 'Coding conventions live in ~/.claude/CLAUDE.md, so a new teammate never receives them.',
     why: 'User-level config isn\u2019t in version control. The rules exist only on one laptop.',
     fix: 'Put shared standards in project-level <code>.claude/CLAUDE.md</code> (or a root CLAUDE.md), committed to the repo.',
     tags: ['claude_md'],
@@ -97,7 +101,7 @@ export const ANTIPATTERNS = {
     id: 'stale-resume',
     domain: 'Sessions',
     title: 'Resuming a session over changed files',
-    bad: 'Days later you <code>--resume</code> an investigation whose tool results describe files that have since changed.',
+    bad: 'Days later you --resume an investigation whose tool results describe files that have since changed.',
     why: 'Stale tool results mislead the model. It reasons over a codebase that no longer exists.',
     fix: 'Start fresh with a short summary ("here\u2019s what we found\u2026") instead of resuming stale context.',
     tags: ['fork_session'],
@@ -106,7 +110,7 @@ export const ANTIPATTERNS = {
     id: 'compact-numbers',
     domain: 'Context',
     title: 'Trusting /compact with exact numbers',
-    bad: 'Run <code>/compact</code> and assume the $89.99 total and 2024-12-01 date survive the summary.',
+    bad: 'Run /compact and assume the $89.99 total and 2024-12-01 date survive the summary.',
     why: 'Summarization blurs specifics into "about" and "roughly". Numbers, dates, and IDs are the first casualties.',
     fix: 'Keep a verbatim CASE FACTS block in every prompt, independent of whatever gets summarized.',
     tags: ['compact', 'context_window'],

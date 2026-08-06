@@ -7,6 +7,10 @@
 // Grounded in the guide: Ch.1 (request shape, roles, statelessness),
 // Ch.2 (tools, tool_choice), Ch.3 (AgentDefinition, hub-and-spoke,
 // Task, hooks), Ch.5.10 (sessions), Ch.11.5 (subagent context budgets).
+//
+// Escaping: caveat `body`, `breaks` and `exam` render RAW — they carry
+// inline <code>/<em>/<strong> and data-tip glossary spans (keys must
+// exist in js/tips.js). Everything else is plain text via escHtml.
 
 export const SDK_LEVELS = [
   {
@@ -115,10 +119,10 @@ while True:
       },
       {
         title: 'tool_choice is how you guarantee structure',
-        body: '<code>auto</code> can answer in prose, which breaks a parser downstream. <code>any</code> forces a tool call — structured output guaranteed, model still picks which tool. A named tool forces a specific first step, so use it for ordering, not for classification.',
+        body: '<code>auto</code> can answer in prose, which breaks a parser downstream. <code data-tip="tool_choice">any</code> forces a tool call — structured output guaranteed, model still picks which tool. A named tool forces a specific first step, so use it for ordering, not for classification.',
       },
     ],
-    exam: 'The anti-patterns here are tested directly: parsing assistant text for completion, using an arbitrary iteration limit, and treating "the response contains text" as done. All three lose to <code>stop_reason</code>.',
+    exam: 'The anti-patterns here are tested directly: parsing assistant text for completion, using an arbitrary iteration limit, and treating "the response contains text" as done. All three lose to <code data-tip="stop_reason">stop_reason</code>.',
     refs: 'Ch.2.1-2.3, 3.1 · Practice Q58',
   },
 
@@ -168,7 +172,7 @@ support_agent = AgentDefinition(
         body: 'A general <code>fetch_url</code> plus an instruction not to use it for search will still be used for search. Replace it with <code>load_document</code>, which validates that the URL points at a document. Least privilege at the interface beats a rule in the prompt.',
       },
     ],
-    exam: '<code>allowed_tools</code> is the answer whenever the stem describes an agent doing something outside its remit, and the fix "add an instruction telling it not to" is on the list.',
+    exam: '<code data-tip="allowed_tools">allowed_tools</code> is the answer whenever the stem describes an agent doing something outside its remit, and the fix "add an instruction telling it not to" is on the list.',
     refs: 'Ch.3.2 · Domain 2.3 · Practice Q10, Q56',
   },
 
@@ -212,7 +216,7 @@ def normalize_dates(result):
     caveats: [
       {
         title: 'Money, identity, legality, safety → hook, never prompt',
-        body: 'This is the single most repeated judgement on the exam. If the consequence of non-compliance is financial, legal or a safety breach, the answer enforces it in code. "Strengthen the system prompt" and "add few-shot examples" both lose to a programmatic precondition every time.',
+        body: 'This is the single most repeated judgement on the exam. If the consequence of non-compliance is financial, legal or a safety breach, the answer enforces it in code. "Strengthen the system prompt" and "add <span data-tip="few_shot">few-shot examples</span>" both lose to a programmatic precondition every time.',
       },
       {
         title: 'PostToolUse is a context-management tool',
@@ -220,7 +224,7 @@ def normalize_dates(result):
       },
       {
         title: 'It reaches third-party MCP servers too',
-        body: 'A hook is the only place you can normalise output from a server you do not own. That is exactly why it beats "modify the tools you control and write wrappers for the rest".',
+        body: 'A <span data-tip="hook">hook</span> is the only place you can normalise output from a server you do not own. That is exactly why it beats "modify the tools you control and write wrappers for the rest".',
       },
     ],
     exam: 'Watch for the near-miss: sometimes the right answer is not a hook but a <em>tool-level</em> fix, when the tool itself has definitive knowledge — a tool that knows a failure was a network timeout should retry internally rather than surface a flag for the agent to interpret.',
@@ -270,7 +274,7 @@ Return JSON only, no prose:
     caveats: [
       {
         title: 'Isolated context is the whole point, and the whole trap',
-        body: 'A subagent inherits none of the coordinator’s history and shares no memory between calls. <code>Task: "Analyze the document"</code> gives it nothing to analyse. Paste the document, the prior results and the output schema into the prompt.',
+        body: 'A subagent inherits none of the coordinator’s history and <span data-tip="isolated_context">shares no memory between calls</span>. <code data-tip="task_tool">Task: "Analyze the document"</code> gives it nothing to analyse. Paste the document, the prior results and the output schema into the prompt.',
       },
       {
         title: 'Ask for structured findings, not raw dumps',
@@ -285,7 +289,7 @@ Return JSON only, no prose:
         body: 'When every subagent succeeds and the report still misses whole areas, the subagents did their jobs — the coordinator handed out the wrong slices. Partition the space explicitly <em>before</em> delegating, or two agents research the same subtopic and double the token bill.',
       },
     ],
-    exam: 'A coordinator without <code>"Task"</code> in <code>allowed_tools</code> cannot delegate at all. And when subagents all succeed but the output is wrong, look up the chain, not down.',
+    exam: 'A coordinator without <code data-tip="task_tool">"Task"</code> in <code data-tip="allowed_tools">allowed_tools</code> cannot delegate at all. And when subagents all succeed but the output is wrong, look up the chain, not down.',
     refs: 'Ch.3.3-3.4, 11.5 · Practice Q4, Q8, Q11, Q14',
   },
 
@@ -323,14 +327,14 @@ claude --resume investigation-auth-bug
       },
       {
         title: 'Forking copies the staleness too',
-        body: '<code>fork_session</code> is for exploring alternatives from a good starting point, not for repairing a degraded one. It inherits whatever the parent had, including out-of-date tool results.',
+        body: '<code data-tip="fork_session">fork_session</code> is for exploring alternatives from a good starting point, not for repairing a degraded one. It inherits whatever the parent had, including out-of-date tool results.',
       },
       {
         title: 'Write findings down instead',
         body: 'In a long investigation, have the agent keep a scratchpad file of concrete findings — real class names, call sites, external rate limits, migration dates. That survives compaction, a new session, and a crash, which context does not.',
       },
     ],
-    exam: 'The tell for "start a new session" is always a change in the world since the session ran: files refactored, a dependency upgraded, time passed. The tell for <code>fork_session</code> is two candidate approaches you want to compare.',
+    exam: 'The tell for "start a new session" is always a change in the world since the session ran: files refactored, a dependency upgraded, time passed. The tell for <code data-tip="fork_session">fork_session</code> is two candidate approaches you want to compare.',
     refs: 'Ch.5.10, 11.4 · Domain 1.7',
   },
 ];
