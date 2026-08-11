@@ -2548,6 +2548,15 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 }
 .ov-map__note a { color: var(--accent-bright); }
 
+/* Embedded Proctor runner (the drill bank, portable) */
+.ov-proctor {
+  width: 100%;
+  height: 680px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #040714; /* Proctor's canvas, so the frame doesn't flash */
+}
+
 /* The rail's overview chip holds an svg house instead of a digit. */
 .lab-tab__num svg { width: 11px; height: 11px; display: block; }
 

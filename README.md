@@ -58,6 +58,7 @@ Every run is a hand-authored simulation, not a live API call, so it runs entirel
 - **Traps** -- three catalogues. *Distractor lures*: answer shapes that read as senior engineering and lose here, each with the case where it is genuinely right. *Near-miss pairs*: stems that look identical until one word moves the answer, with the discriminator stated. *Before you answer*: a pre-answer routine.
 - **Anti-patterns** -- a flip-card gallery of the traps the exam loves, cross-referenced by the live flags in the other labs.
 - **Drill** -- 96 questions in the exam's own format. Filter by scenario, weighted domain or difficulty; every answer returns the reasoning for the winner *and* for each option you rejected; the result screen gives a domain-weighted score estimate and groups your misses by the pattern behind them.
+- **Portable bank** -- the whole bank exports to [Proctor](https://proctor.neorgon.com/)'s format ([`proctor-drill.json`](proctor-drill.json), regenerated with `make proctor`) and runs embedded on the overview -- study mode, timed simulator, PDF export, notes.
 
 ### About the question bank
 

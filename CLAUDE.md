@@ -58,6 +58,7 @@ docs/architecture.mmd + .svg   Diagram source + render
 - **Every claim traces to the guide.** Nothing in `data/patterns.js`, `data/traps.js` or `data/questions/` may assert behaviour the official study guide does not state. Questions carry a `source` field: `Guide Qn` for the practice test, `Authored — Ch.x` for ones written here, and the chapter must actually support the answer.
 - **Escaping is per-field, and the data files document it.** In `patterns.js` only `oneline`/`tells`/`pick`/`reject` carry inline `<code>`; in `traps.js` only `bait`/`kill`/`unless`/`sides[].answer`/`rule`/`body`. Those render raw; every other field goes through `escHtml`. Adding markup to a plain field will show up as literal text.
 - **Question options are never shuffled.** `distractors` is keyed by letter and the explanations say "Why C". Only question order is randomised.
+- **`proctor-drill.json` is generated, and committed.** It is the bank exported to Proctor's format (`make proctor` → `scripts/export-proctor.mjs`); the overview lab embeds it via proctor.neorgon.com. Any edit under `js/data/questions/` must re-run the export or the embedded copy silently drifts from the drill.
 - **No inline `onclick`.** Wire listeners in `events.js` (or the lab's own mount) and expose to `window.*` only if unavoidable.
 - **Numbers:** format token counts with `toLocaleString('en-US')` so grouping is stable across locales.
 - **Header/footer** are the vendored Neorgon kits — never edit `css/neorgon-*.css` or `js/neorgon-*.js` here; edit `packages/neorgon-ui/` and re-run the sync script.

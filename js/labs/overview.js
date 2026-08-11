@@ -178,5 +178,15 @@ export function mountOverview(root) {
           <p class="ov-map__note">The <a href="#drill">Drill</a> samples all five domains and estimates a scaled score on the 100-1000 scale from these weights.</p>
         </div>
       </section>
+
+      <section class="ov-sec">
+        <header class="ov-sec__head">
+          <h3>Take the bank with you</h3>
+          <p>The full bank also ships as a <a href="proctor-drill.json">Proctor test file</a> — ${QUESTIONS.length} questions, every option reasoned. Here it runs embedded in <a href="https://proctor.neorgon.com/" target="_blank" rel="noopener noreferrer">Proctor</a>: study mode with instant corrections, or open it there for the timed simulator, PDF export, and notes.</p>
+        </header>
+        <iframe class="ov-proctor" loading="lazy"
+          src="https://proctor.neorgon.com/?embed=1&mode=study&src=${encodeURIComponent('https://glassbox.neorgon.com/proctor-drill.json')}"
+          title="Glass Box drill bank — Proctor"></iframe>
+      </section>
     </section>`;
 }
