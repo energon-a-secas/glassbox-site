@@ -14,7 +14,7 @@
 //   collision  { with: <fileId>, note: <rawHtml> } — the "who wins"
 //              strip renders only when both files exist at the current
 //              level. Precedence wording matches Guide Q36 exactly
-//              (see data/questions/codegen.js and data/traps.js).
+//              (see data/questions/codegen.js and data/traps/pairs.js).
 //   load       { when, chip?, title } — when Claude actually reads it.
 //              when: 'start'  in context before the first keystroke; the
 //                             tree chip is its number in the level's

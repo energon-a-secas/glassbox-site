@@ -1638,6 +1638,46 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
   color: var(--rose-text); font-weight: 700; font-size: .9em;
 }
 
+/* Contested scope: where the guide's out-of-scope list and the third-party
+   question banks disagree. Single column and no ✕ marker — unlike the list
+   above, these are not things to stop studying. */
+.contested__lead {
+  margin-top: var(--space-3);
+  font-size: var(--text-xs); color: var(--text-muted); line-height: 1.6;
+  max-width: var(--measure);
+}
+.brief__scope--contested ul.contested-list { columns: 1; margin-top: var(--space-3); }
+.brief__scope--contested .contested {
+  padding: var(--space-3) var(--space-4); padding-left: var(--space-4);
+  margin-bottom: var(--space-3);
+  background: var(--surface-2); border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--amber-line);
+  border-radius: var(--radius-sm);
+}
+.brief__scope--contested .contested::before { content: none; }
+.contested__head {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.contested__topic { font-size: var(--text-sm); font-weight: 650; color: var(--text-primary); }
+.contested__n {
+  padding: 1px 7px; border-radius: 999px;
+  background: var(--amber-soft); border: 1px solid var(--amber-line);
+  font-family: var(--mono); font-size: var(--text-2xs); font-weight: 700; color: var(--amber);
+}
+.contested__split { display: grid; gap: var(--space-1); margin-bottom: var(--space-2); }
+.contested__split p { font-size: var(--text-xs); color: var(--text-muted); line-height: 1.55; }
+.contested__split span {
+  display: inline-block; min-width: 5.5em;
+  font-weight: 700; color: var(--text-secondary);
+}
+.contested__settle { font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.6; }
+.contested__settle b { color: var(--accent-bright); font-weight: 700; }
+.contested__settle code { font-family: var(--mono); font-size: .92em; color: var(--text-primary); }
+@media (min-width: 900px) {
+  .contested__split { grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+}
+
 /* ── Pattern list ───────────────────────────────────────────── */
 .pat-filters { margin-bottom: calc(var(--space-3) * -1); }
 .pat-list { display: flex; flex-direction: column; gap: var(--space-3); }
@@ -1815,6 +1855,21 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 .lure--depends .lure__verdict { background: var(--violet-soft); border-color: var(--violet-line); color: var(--violet-text); }
 .lure--depends .lure__verdict::before { content: "?"; }
 
+/* Provenance badge: the entry came from third-party question banks, not
+   the guide. Clay is deliberately outside the verdict palette (rose /
+   amber / violet) so the badge never reads as a fourth verdict. */
+.lure__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.trap-beyond {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 8px; border-radius: 999px;
+  background: var(--clay-soft); border: 1px dashed var(--clay-line);
+  color: var(--text-muted);
+  font-family: var(--mono); font-size: var(--text-2xs); font-weight: 700;
+  letter-spacing: .02em; text-transform: none; white-space: nowrap;
+}
+.trap-beyond::before { content: "\2197"; font-weight: 900; line-height: 1; }
+.pair__q .trap-beyond, .check__body h4 .trap-beyond { margin-left: var(--space-2); vertical-align: 2px; }
+
 .lure__name { font-size: var(--text-base); font-weight: 650; line-height: 1.35; color: var(--text-primary); text-wrap: pretty; }
 .lure__row, .lure__unless { display: flex; flex-direction: column; gap: 3px; }
 .lure__row > span, .lure__unless > span {
@@ -1937,14 +1992,14 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 }
 
 /* ══ QUESTION DRILL LAB ════════════════════════════════════════
- * Three views the module swaps with `hidden`: setup, run, result.
+ * Four views the module swaps with `hidden`: setup, run, result, review.
  */
-.drill-setup, .drill-run, .drill-result { display: flex; flex-direction: column; gap: var(--space-5); }
+.drill-setup, .drill-run, .drill-result, .drill-review { display: flex; flex-direction: column; gap: var(--space-5); }
 .drill-result { gap: var(--space-6); }
 /* Setup is a control panel and uses the full 1180px so the chip rows stay
-   on one line. Run and result are reading surfaces and are held to a
-   column — a stem, a question and four options do not want 1148px. */
-.drill-run, .drill-result { max-width: 960px; }
+   on one line. Run, result and review are reading surfaces and are held to
+   a column — a stem, a question and four options do not want 1148px. */
+.drill-run, .drill-result, .drill-review { max-width: 960px; }
 
 /* ── Setup ──────────────────────────────────────────────────── */
 .drill-filters {
@@ -1978,6 +2033,32 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
 }
 .drill-note { font-size: var(--text-sm); line-height: 1.6; color: var(--text-muted); max-width: var(--measure); }
 .drill-note b { font-family: var(--mono); font-weight: 800; color: var(--violet-text); }
+
+/* What the logged runs say about you. Absent until a run finishes, and it
+   sits above the filters because its buttons set them. Domain rows reuse
+   .weight from the result view, including .is-weak below 70%. */
+.drill-recall {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.recall__head {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+  gap: var(--space-2) var(--space-4); margin-bottom: var(--space-1);
+}
+.recall__head h4 {
+  font-size: var(--text-xs); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted);
+}
+.recall__head h4 em {
+  font-style: normal; font-size: var(--text-2xs); font-weight: 600;
+  text-transform: none; letter-spacing: 0; color: var(--text-secondary);
+}
+.recall__head h4 em::before { content: "· "; color: var(--text-muted); }
+.recall__last { font-size: var(--text-sm); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.recall__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.recall__note { font-size: var(--text-xs); line-height: 1.6; color: var(--text-muted); max-width: var(--measure); }
 
 .drill-launch {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
@@ -2247,6 +2328,23 @@ body.exam-mode [data-tip] { text-decoration-color: var(--clay); text-decoration-
   font-size: var(--text-sm); line-height: 1.55; color: var(--text-secondary);
 }
 .result-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+/* ── Review ─────────────────────────────────────────────────────
+ * The misses re-rendered as full questions: .q and .q__reveal carry the
+ * styling, so this only needs the header and the spacing between them. */
+.drill-review { gap: var(--space-6); }
+.review__head {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--space-3); padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.review__head h4 {
+  font-size: var(--text-xs); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted);
+}
+.review__head h4 em {
+  font-style: normal; text-transform: none; letter-spacing: 0; color: var(--text-secondary);
+}
 
 /* ── Agent SDK lab ──────────────────────────────────────────────
  * A stepper (L0-L5), one level panel, then the config bench. Reuses

@@ -132,4 +132,70 @@ export const TIPS = {
     term: 'System-prompt dilution',
     body: 'As assistant replies accumulate, the brief’s share of the window shrinks and the model pattern-matches its own prose instead. Drift at 2,500 tokens is dilution, not attention decay. Counter: reinforce at breakpoints.',
   },
+
+  // ── Beyond the guide ───────────────────────────────────────
+  // Terms the official study guide does not define but third-party
+  // question banks test. Kept factually tight against current docs;
+  // where a mechanism could not be confirmed, these describe
+  // behaviour rather than asserting a signature.
+  settings_json: {
+    term: '.claude/settings.json',
+    body: 'The real settings surface for a project: permissions, hooks, environment. Checked into version control, unlike <code>~/.claude/settings.json</code> which follows the person. Note what does <em>not</em> exist: <code>.claude/config.json</code>, <code>.claude/config.yaml</code>, and <code>.claudeignore</code>.',
+  },
+  permissions_deny: {
+    term: 'permissions.deny',
+    body: 'The deny list inside <code>.claude/settings.json</code> — the actual way to keep Claude out of a path, e.g. <code>"Read(./.env)"</code>. Its counterpart <code>permissions.allow</code> pre-approves. This is the answer whenever an option offers <code>.claudeignore</code>, which is not a real file.',
+  },
+  streamable_http: {
+    term: 'Streamable HTTP',
+    body: 'The current MCP transport for a <em>remote</em> server. It replaced the older HTTP+SSE transport, deprecated in the 2025-03-26 spec revision — so an option naming SSE is dated rather than merely different. WebSocket is not an MCP transport at all.',
+  },
+  stdio_transport: {
+    term: 'stdio transport',
+    body: 'The MCP transport for a <em>local</em> server the client launches as a subprocess, speaking JSON-RPC over standard input and output. No port, no URL, no network exposure. Local versus remote is the whole decision: <code>stdio</code> or Streamable HTTP.',
+  },
+  structured_outputs: {
+    term: 'Structured Outputs',
+    body: 'Constrains Claude’s <em>final response</em> to your JSON Schema, requested through <code>output_config.format</code>. It removes the retry-and-reparse loop that "please reply in JSON" needs. Different surface from a tool’s <code>input_schema</code>, which constrains a tool <em>call</em>.',
+  },
+  input_schema: {
+    term: 'input_schema',
+    body: 'The JSON Schema on a tool definition — the contract for the arguments Claude passes. Required fields, enums instead of free strings, and a description per field are what make calls well-formed. A schema permitting nonsense will receive nonsense.',
+  },
+  prompt_caching: {
+    term: 'Prompt caching',
+    body: 'Reuses a processed prefix across calls. Five numbers decide whether it pays: a <strong>1,024</strong>-token minimum on Sonnet and Opus, <strong>2,048</strong> on Haiku, at most <strong>4</strong> <code>cache_control</code> breakpoints, a write at <strong>1.25×</strong> base input (2× for the one-hour TTL), a read at <strong>0.1×</strong>. Matching is exact-prefix, so one changed token near the top invalidates everything after it.',
+  },
+  model_tiers: {
+    term: 'Model tiers',
+    body: 'Haiku for high-volume narrow work where latency or cost binds; Sonnet as the default for ordinary agentic work; Opus for expensive open-ended reasoning at low volume. Match the tier to the task’s <em>shape</em>, not its importance — and remember a bigger model never fixes a structural failure.',
+  },
+  sdk_allowed_tools: {
+    term: 'allowedTools (SDK)',
+    body: 'Despite the name it <em>auto-approves</em> rather than restricts: listing a tool pre-approves it so no permission prompt interrupts, and leaving one out does not remove it. A friction control, not a security boundary. Not to be confused with a skill’s hyphenated <code>allowed-tools</code> frontmatter key.',
+  },
+  disallowed_tools: {
+    term: 'disallowedTools',
+    body: 'The SDK denylist, and one of the two ways to actually restrict the toolset (the other is <code>tools</code> as an allowlist). A bare name like <code>"Bash"</code> takes the tool out of the agent’s context entirely; a scoped rule like <code>"Bash(rm *)"</code> leaves it available and denies the matching calls.',
+  },
+  can_use_tool: {
+    term: 'canUseTool',
+    body: 'A callback that runs when the permission flow would otherwise stop and ask a human — your programmatic stand-in for the person at the prompt, deciding per call from the actual arguments. Because it sits at that point in the flow, a call already auto-approved by <code>allowedTools</code> never reaches it.',
+  },
+  max_turns: {
+    term: 'max turns',
+    body: 'A ceiling on how many agentic loop iterations a run may take (<code>--max-turns</code> on the CLI, <code>maxTurns</code> in the SDK). A backstop against a loop that will not terminate — not a completion signal. Completion is still <code>stop_reason</code>.',
+  },
+  temperature: {
+    term: 'temperature',
+    body: 'How randomly the next token is sampled. It cannot supply a definition the prompt never gave or a guarantee only code can make — which is why it appears 64 times across 718 bank questions and is credited <em>zero</em> times. Inconsistent format wants few-shot or a schema; a hard requirement wants a hook. Do not combine it with <code>top_p</code>.',
+  },
+  explicit_criteria: {
+    term: 'Explicit criteria',
+    body: 'Replacing a vague adjective with a testable definition — "flag a comment only when it contradicts the code", not "flag unhelpful comments". The guide’s standard fix when the boundary itself is unclear, usually paired with few-shot examples contrasting the two sides.',
+  },
+  independent_review: {
+    term: 'Independent review',
+    body: 'A <em>second</em> instance reviewing without access to the generator’s reasoning. Fresh context is the mechanism: the session that wrote the code already argued itself out of the edge case, so a self-check inside it inherits the bias. Distinct from splitting a pass by scope, which fixes attention dilution instead.',
+  },
 };

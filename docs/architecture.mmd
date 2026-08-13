@@ -37,8 +37,10 @@ flowchart TB
         sims --> utils["utils.js\nescHtml, highlightCode, toast"]
         study --> utils
         ui --> tips["tips.js\nGlossary definitions"]
+        study --> history["history.js\nDrill run log: rolling accuracy,\nweakest domains, unlearned pool"]
     end
 
     qbank -.->|"pattern label to playbook id"| studydata
     state <-->|"glassbox-state"| Storage[("localStorage")]
+    history <-->|"glassbox-drill-history"| Storage
     study <-.->|"glassbox-open-pattern"| Session[("sessionStorage")]

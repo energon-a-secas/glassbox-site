@@ -57,7 +57,7 @@ Every run is a hand-authored simulation, not a live API call, so it runs entirel
 - **Lexicon** -- the exam's operational vocabulary decoded: *synthesize* &ne; *aggregate* &ne; *consolidate*. 22 verb cards grouped by family (each with its stem-tell and the trap built on it), a ten-second test for the combination verbs, and the near-synonym pairs split by the one difference that decides the question.
 - **Traps** -- three catalogues. *Distractor lures*: answer shapes that read as senior engineering and lose here, each with the case where it is genuinely right. *Near-miss pairs*: stems that look identical until one word moves the answer, with the discriminator stated. *Before you answer*: a pre-answer routine.
 - **Anti-patterns** -- a flip-card gallery of the traps the exam loves, cross-referenced by the live flags in the other labs.
-- **Drill** -- 96 questions in the exam's own format. Filter by scenario, weighted domain or difficulty; every answer returns the reasoning for the winner *and* for each option you rejected; the result screen gives a domain-weighted score estimate and groups your misses by the pattern behind them.
+- **Drill** -- 96 questions in the exam's own format. Filter by scenario, weighted domain or difficulty; every answer returns the reasoning for the winner *and* for each option you rejected; the result screen gives a domain-weighted score estimate, groups your misses by the pattern behind them, and reopens any of them in full. It also remembers: the setup screen shows rolling per-domain accuracy across your last runs, with one button that drills your two weakest domains and one that retries the questions you have not got right yet. A run you walk away from is waiting where you left it. Nothing leaves the browser, and **Forget history** clears it.
 - **Portable bank** -- the whole bank exports to [Proctor](https://proctor.neorgon.com/)'s format ([`proctor-drill.json`](proctor-drill.json), regenerated with `make proctor`) and runs embedded on the overview -- study mode, timed simulator, PDF export, notes.
 
 ### About the question bank
@@ -105,6 +105,7 @@ glassbox-site/
 │   ├── ui.js               # Inspector drawer + glossary tooltips
 │   ├── tips.js             # Glossary definitions (hover tips)
 │   ├── utils.js            # escHtml, highlightCode, toast, copy
+│   ├── history.js          # Drill run log: rolling accuracy, weakest domains
 │   ├── data/               # Hand-authored content (pure data, no DOM)
 │   │   ├── runs.js         #   agent-loop scenarios
 │   │   ├── loop-contrast.js#   steer-with-prompt vs enforce-in-code
@@ -117,7 +118,7 @@ glassbox-site/
 │   │   ├── sdk-config.js   #   config bench: knobs, requirements, notes
 │   │   ├── exam-brief.js   #   format, scoring, domain weights, out of scope
 │   │   ├── patterns.js     #   the 21 answer patterns + their groups
-│   │   ├── traps.js        #   lures, near-miss pairs, pre-answer checks
+│   │   ├── traps/          #   lures, near-miss pairs, pre-answer checks
 │   │   ├── vocab.js        #   the exam's verbs: mechanisms, tells, traps
 │   │   └── questions/      #   question bank, one file per exam scenario
 │   │       ├── index.js    #     aggregate + scenario/domain/level vocabularies
@@ -133,7 +134,8 @@ glassbox-site/
 │       ├── vocab.js        #   the Lexicon: verb cards + distinction pairs
 │       ├── traps.js
 │       ├── antipatterns.js
-│       └── drill.js        #   question engine + scoring
+│       ├── drill.js        #   question engine + scoring + miss review
+│       └── drill-recall.js #   the drill's "Since last time" card
 └── docs/architecture.mmd   # Mermaid source for the diagram above
 ```
 

@@ -15,10 +15,18 @@
 // (inline <code> + data-tip spans). `term`, group labels/leads, and
 // QUICK_TEST fields are escaped.
 //
-// Sources: definitions trace to the official study guide's chapters
-// and practice test. Claims that appear only in third-party banks
-// (permissions.deny, /mcp__ slash-command surfacing, idempotency-key
-// mechanics, JSON-RPC protocol-error splits) are deliberately absent.
+// Sources: verbs and their glosses trace to the official study guide's
+// chapters and practice test — that is the standard for this catalogue,
+// because the whole point is the exam's own wording.
+//
+// Claims that appear only in third-party question banks are NOT mixed
+// into VERB_GROUPS. Where such a claim is worth learning it goes into
+// a surface that labels its provenance: data/traps/ entries carry
+// `beyond: true` and render a badge, and data/exam-brief.js records
+// guide-versus-banks disagreements in CONTESTED_SCOPE. The exception
+// below is deliberate: DISTINCTIONS gained four identifier pairs that
+// the banks lean on heavily (is_error/isError, allowedTools/canUseTool,
+// nullable, verify/validate) and that a wrong guess on is expensive.
 
 export const VERB_GROUPS = [
   {
@@ -136,6 +144,13 @@ export const VERB_GROUPS = [
         trap: 'Uniform “retry with backoff” across error types is the lure: retrying the same bad input is pointless, and the numbers in the stem (8% timeouts vs 4% syntax errors) usually forbid it.',
         see: { hash: 'traps', label: 'Traps · when retry is genuinely right' },
       },
+      {
+        term: 'verify',
+        gloss: 'Check a result against something <em>outside</em> the context that produced it.',
+        tell: 'A <span data-tip="independent_review">second, independent instance</span> reviews generated code with no access to the generator’s reasoning; a test run, a schema, or a hook confirms the claim rather than the model restating it.',
+        trap: 'Self-verification inside the generating session is the lure — it inherits the reasoning that dismissed the edge case in the first place. Contrast <code>validate</code>, which checks shape after the fact; verification checks <em>truth</em>, and needs independence to do it.',
+        see: { hash: 'traps', label: 'Traps · bias versus dilution' },
+      },
     ],
   },
   {
@@ -178,9 +193,9 @@ export const VERB_GROUPS = [
       },
       {
         term: 'cache',
-        gloss: 'Prompt caching reuses a processed prefix across calls for cost and latency.',
-        tell: 'Know that it exists and when it helps.',
-        trap: 'Its internals are on the official out-of-scope list — an option hinging on cache mechanics is testing whether you’ll overthink.',
+        gloss: '<span data-tip="prompt_caching">Prompt caching</span> reuses a processed prefix across calls for cost and latency.',
+        tell: 'Know that it exists and when it helps: a prefix reused many times wins, a prefix reused once does not.',
+        trap: 'The guide puts the internals out of scope, so on a guide-shaped stem an option hinging on cache mechanics is testing whether you’ll overthink. Third-party banks disagree and ask for the numbers directly — see <em>Contested scope</em> in the Playbook brief, and learn the five of them, because they are cheap.',
       },
     ],
   },
@@ -212,4 +227,8 @@ export const DISTINCTIONS = [
   { a: 'plan mode', b: 'Explore subagent', diff: 'Read-only exploration ending in a plan you approve vs context-isolated discovery that returns a summary.' },
   { a: '--resume', b: 'fork_session', diff: 'Continue the same session (stale tool results are the risk) vs branch shared context to compare two approaches cleanly.' },
   { a: 'ground', b: 'reconstruct', diff: 'Provenance carried by construction through every stage vs rebuilding citations after they were summarized away — the trap.' },
+  { a: 'verify', b: 'validate', diff: 'Check a result against something <em>outside</em> the context that produced it (independence is the mechanism) vs check its shape after the fact. A schema validates; a second instance verifies.' },
+  { a: 'is_error', b: 'isError', diff: 'Same idea, two spellings, and the banks test which is which: <code>is_error</code> on a Messages API <code>tool_result</code> block, <code>isError</code> in an MCP tool response.' },
+  { a: 'allowedTools', b: 'canUseTool', diff: 'The SDK’s <span data-tip="sdk_allowed_tools"><code>allowedTools</code></span> <em>auto-approves</em> — it does not restrict — while <span data-tip="can_use_tool"><code>canUseTool</code></span> decides per call at the point a human would have been asked. To actually restrict, use <code>tools</code> or <span data-tip="disallowed_tools"><code>disallowedTools</code></span>.' },
+  { a: 'nullable: true', b: '"type": ["string","null"]', diff: 'The first is OpenAPI 3.0 and is not JSON Schema; the second is how JSON Schema spells an optional null. A schema option using <code>nullable</code> is the wrong dialect.' },
 ];

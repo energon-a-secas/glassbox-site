@@ -18,7 +18,7 @@ import { PLANNING_CASES } from '../data/planning.js';
 import { CW_SCENARIOS } from '../data/context.js';
 import { VERB_GROUPS, DISTINCTIONS } from '../data/vocab.js';
 import { PATTERNS } from '../data/patterns.js';
-import { LURES, PAIRS } from '../data/traps.js';
+import { LURES, PAIRS } from '../data/traps/index.js';
 import { ANTIPATTERNS } from '../data/antipatterns.js';
 import { escHtml } from '../utils.js';
 

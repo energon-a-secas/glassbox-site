@@ -5,9 +5,15 @@
 // Option letters are never shuffled: `distractors` is keyed by letter
 // and the guide's own explanations refer to them ("Why C"). Question
 // order is shuffled; the set is otherwise deterministic.
+//
+// Four views. `setup` opens on what the last runs said about you, `run`
+// asks, `result` scores, `review` walks back through the misses with the
+// reasoning attached. Finished runs are logged by ../history.js.
 
 import { QUESTIONS, SCENARIOS, DOMAINS, LEVELS, SCENARIO_BY_ID, DOMAIN_BY_ID, PATTERN_ALIASES } from '../data/questions/index.js';
 import { PATTERNS } from '../data/patterns.js';
+import { readRuns, recordRun, clearRuns, weakest, pending } from '../history.js';
+import { recallHtml } from './drill-recall.js';
 import { codeify, escHtml, showToast } from '../utils.js';
 
 const PASS = 720;
@@ -26,8 +32,12 @@ function playbookId(label) {
   return id && VALID.has(id) ? id : null;
 }
 
+const BY_ID = new Map(QUESTIONS.map((q) => [q.id, q]));
+
+// Module-scope, so it outlives the DOM: the lab remounts on every tab
+// switch and a half-finished run is resumed rather than discarded.
 const D = {
-  view: 'setup',            // setup | run | result
+  view: 'setup',            // setup | run | result | review
   scenario: new Set(),      // empty set = no filter
   domain: new Set(),
   level: new Set(),
@@ -36,7 +46,10 @@ const D = {
   i: 0,
   picks: {},                // question id → chosen letter
   revealed: false,
+  logged: false,            // this run already went into the history
 };
+
+let RUNS = [];              // finished runs, oldest first; loaded on mount
 
 // ── Selection ────────────────────────────────────────────────
 
@@ -90,8 +103,12 @@ function chipRow(kind, items, sel) {
 
 function renderSetup() {
   const n = pool().length;
+  // A set that exists and has not been logged is still owed a score, even if
+  // every question is answered — you can quit on the last reveal.
+  const resumable = D.set.length > 0 && !D.logged;
   const wrap = document.getElementById('drillSetup');
   wrap.innerHTML = `
+    ${recallHtml(RUNS)}
     <div class="drill-filters">
       <div class="drill-filter">
         <span class="drill-filter__label">Scenario <em>${SCENARIOS.length}</em></span>
@@ -113,28 +130,32 @@ function renderSetup() {
         <span class="switch__track"><span class="switch__thumb"></span></span>
         <span class="switch__label">Explain after each answer</span>
       </label>
+      ${resumable ? `<button class="btn btn--secondary" id="drillResume">Resume · question ${D.i + 1} of ${D.set.length}</button>` : ''}
       <button class="btn btn--primary" id="drillStart"${n ? '' : ' disabled'}>Start drill · <span id="drillCount">${n}</span> question${n === 1 ? '' : 's'}</button>
     </div>`;
 }
 
 // ── Run view ─────────────────────────────────────────────────
 
-function optionRow(q, o) {
+// `revealed` is a parameter, not a read of D.revealed: the review view
+// renders answered questions while no run is mid-reveal.
+function optionRow(q, o, revealed) {
   const pick = D.picks[q.id];
   const cls = ['opt'];
-  if (D.revealed) {
+  if (revealed) {
     if (o.k === q.answer) cls.push('is-correct');
     else if (o.k === pick) cls.push('is-wrong');
   } else if (o.k === pick) cls.push('is-picked');
   return `
-    <button class="${cls.join(' ')}" type="button" data-k="${o.k}"${D.revealed ? ' disabled' : ''}>
+    <button class="${cls.join(' ')}" type="button" data-k="${o.k}"${revealed ? ' disabled' : ''}>
       <span class="opt__letter">${o.k}</span>
       <span class="opt__text">${codeify(o.t)}</span>
       <span class="opt__mark" aria-hidden="true"></span>
     </button>`;
 }
 
-function revealHtml(q) {
+// `nav` off drops the advance button: in review there is nothing to advance.
+function revealHtml(q, nav = true) {
   const pick = D.picks[q.id];
   const right = pick === q.answer;
   const others = q.options.filter((o) => o.k !== q.answer);
@@ -151,24 +172,15 @@ function revealHtml(q) {
         <a class="q__pattern" href="#patterns"${pid ? ` data-pattern="${escHtml(pid)}"` : ''}><span>Pattern</span>${escHtml(q.pattern)}</a>
         <span class="q__source">${escHtml(q.source)}</span>
       </div>
-      <div class="q__nav"><button class="btn btn--primary" id="drillNext">${last ? 'See results' : 'Next question'}</button></div>
+      ${nav ? `<div class="q__nav"><button class="btn btn--primary" id="drillNext">${last ? 'See results' : 'Next question'}</button></div>` : ''}
     </div>`;
 }
 
-function renderRun() {
-  const q = current();
-  const done = D.i + (D.revealed ? 1 : 0);
-  const pct = Math.round((done / D.set.length) * 100);
+function questionHtml(q, revealed, nav) {
   const s = SCENARIO_BY_ID[q.scenario];
   const d = DOMAIN_BY_ID[q.domain];
-  document.getElementById('drillRun').innerHTML = `
-    <div class="drill-bar">
-      <div class="meter"><i style="width:${pct}%"></i></div>
-      <span class="drill-bar__pos">Question ${D.i + 1} of ${D.set.length}</span>
-      <span class="drill-bar__score">${correctCount()} correct</span>
-      <button class="btn btn--ghost btn--sm" id="drillQuit">End drill</button>
-    </div>
-    <article class="q" id="drillQ">
+  return `
+    <article class="q">
       <div class="q__tags">
         <span class="tag tag--scenario">${escHtml(s.label)}</span>
         <span class="tag tag--domain">${escHtml(d.short)} &middot; ${d.pct}%</span>
@@ -176,9 +188,23 @@ function renderRun() {
       </div>
       <p class="q__situation">${codeify(q.situation)}</p>
       <h3 class="q__ask">${codeify(q.ask)}</h3>
-      <div class="q__options">${q.options.map((o) => optionRow(q, o)).join('')}</div>
-      ${D.revealed ? revealHtml(q) : ''}
+      <div class="q__options">${q.options.map((o) => optionRow(q, o, revealed)).join('')}</div>
+      ${revealed ? revealHtml(q, nav) : ''}
     </article>`;
+}
+
+function renderRun() {
+  const q = current();
+  const done = D.i + (D.revealed ? 1 : 0);
+  const pct = Math.round((done / D.set.length) * 100);
+  document.getElementById('drillRun').innerHTML = `
+    <div class="drill-bar">
+      <div class="meter"><i style="width:${pct}%"></i></div>
+      <span class="drill-bar__pos">Question ${D.i + 1} of ${D.set.length}</span>
+      <span class="drill-bar__score">${correctCount()} correct</span>
+      <button class="btn btn--ghost btn--sm" id="drillQuit">End drill</button>
+    </div>
+    ${questionHtml(q, D.revealed, true)}`;
   if (D.revealed) document.querySelector('.q__reveal')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
@@ -252,7 +278,27 @@ function renderResult() {
       ${missedHtml}
     </div>
     <div class="result-actions">
+      ${missed.length ? `<button class="btn btn--secondary" id="drillReviewOpen">Review the ${missed.length} in full</button>` : ''}
       ${missed.length ? `<button class="btn btn--primary" id="drillRetry">Retry the ${missed.length} you missed</button>` : ''}
+      <button class="btn btn--ghost" id="drillRestart">New drill</button>
+    </div>`;
+}
+
+// ── Review view ──────────────────────────────────────────────
+// Pattern labels tell you what you got wrong; this tells you why. The run
+// state is still intact after scoring, so each missed question re-renders
+// with your own pick marked and the per-option reasoning attached.
+
+function renderReview() {
+  const missed = D.set.filter((q) => D.picks[q.id] !== q.answer);
+  document.getElementById('drillReview').innerHTML = `
+    <div class="review__head">
+      <h4>Your ${missed.length} miss${missed.length === 1 ? '' : 'es'} <em>in full</em></h4>
+      <button class="btn btn--ghost btn--sm" id="drillReviewBack">Back to the score</button>
+    </div>
+    ${missed.map((q) => questionHtml(q, true, false)).join('')}
+    <div class="result-actions">
+      ${missed.length ? `<button class="btn btn--primary" id="drillRetry">Retry these ${missed.length}</button>` : ''}
       <button class="btn btn--ghost" id="drillRestart">New drill</button>
     </div>`;
 }
@@ -261,27 +307,60 @@ function renderResult() {
 
 function show(view) {
   D.view = view;
-  ['setup', 'run', 'result'].forEach((v) => {
+  ['setup', 'run', 'result', 'review'].forEach((v) => {
     const node = document.getElementById(`drill${v[0].toUpperCase()}${v.slice(1)}`);
-    if (node) node.hidden = v !== view;
+    if (!node) return;
+    node.hidden = v !== view;
+    // Every view rebuilds itself from D on entry, so a hidden one keeping
+    // its markup buys nothing and costs two things: ids duplicated across
+    // views, and dead controls (a finished run's "See results" button) still
+    // answering getElementById.
+    if (v !== view) node.innerHTML = '';
   });
   // While a drill is running the digit keys answer instead of switching labs.
   document.body.dataset.capture = view === 'run' ? 'keys' : '';
   if (view === 'setup') renderSetup();
   if (view === 'run') renderRun();
   if (view === 'result') renderResult();
+  if (view === 'review') renderReview();
 }
 
 function start(qs) {
   if (!qs.length) { showToast('No questions match those filters'); return; }
   D.set = shuffled(qs);
-  D.i = 0; D.picks = {}; D.revealed = false;
+  D.i = 0; D.picks = {}; D.revealed = false; D.logged = false;
   show('run');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+/**
+ * Log the finished run, once. Only a run played to the end is logged:
+ * quitting early would count everything unanswered as missed and poison the
+ * rolling accuracy the setup view reports. Re-entering the result view must
+ * not append the same run again — the log is persistent.
+ */
+function logRun() {
+  if (D.logged) return;
+  D.logged = true;
+  const perDomain = {};
+  D.set.forEach((q) => {
+    const t = perDomain[q.domain] || (perDomain[q.domain] = [0, 0]);
+    if (D.picks[q.id] === q.answer) t[0] += 1;
+    t[1] += 1;
+  });
+  RUNS = recordRun({
+    ts: Date.now(),
+    n: D.set.length,
+    right: correctCount(),
+    score: scaled().score,
+    perDomain,
+    missed: D.set.filter((q) => D.picks[q.id] !== q.answer).map((q) => q.id),
+  }, D.set.filter((q) => D.picks[q.id] === q.answer).map((q) => q.id));
+}
+
 function finish() {
   D.revealed = false;
+  logRun();
   show('result');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -304,9 +383,14 @@ export function mountDrill(root) {
       <div class="drill-setup" id="drillSetup"></div>
       <div class="drill-run" id="drillRun" hidden></div>
       <div class="drill-result" id="drillResult" hidden></div>
+      <div class="drill-review" id="drillReview" hidden></div>
     </section>`;
 
-  show('setup');
+  RUNS = readRuns();
+  // Come back to where you were. Leaving the lab — including through the
+  // drill's own Pattern link — used to throw the run away even though D
+  // still held it.
+  show(D.set.length ? D.view : 'setup');
 
   root.addEventListener('click', (e) => {
     const chip = e.target.closest('.chip[data-kind]');
@@ -318,10 +402,31 @@ export function mountDrill(root) {
       return;
     }
     if (e.target.closest('#drillStart')) { start(pool()); return; }
+    if (e.target.closest('#drillResume')) { show('run'); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    if (e.target.closest('#drillWeak')) {
+      // The other filters are cleared: a weakest-domains set narrowed by a
+      // leftover scenario chip is not the set the button promises.
+      D.scenario.clear(); D.level.clear();
+      D.domain = new Set(weakest(RUNS, 2));
+      start(pool());
+      return;
+    }
+    if (e.target.closest('#drillPending')) {
+      start(pending(RUNS).map((id) => BY_ID.get(id)).filter(Boolean));
+      return;
+    }
+    if (e.target.closest('#drillForget')) {
+      RUNS = clearRuns();
+      renderSetup();
+      showToast('Drill history cleared');
+      return;
+    }
     const opt = e.target.closest('.opt');
     if (opt && !opt.disabled) { pick(opt.dataset.k); return; }
     if (e.target.closest('#drillNext')) { next(); return; }
     if (e.target.closest('#drillQuit')) { show('setup'); return; }
+    if (e.target.closest('#drillReviewOpen')) { show('review'); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    if (e.target.closest('#drillReviewBack')) { show('result'); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     if (e.target.closest('#drillRestart')) { show('setup'); return; }
     if (e.target.closest('#drillRetry')) {
       start(D.set.filter((q) => D.picks[q.id] !== q.answer));

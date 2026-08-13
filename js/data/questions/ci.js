@@ -68,10 +68,10 @@ export const CI = [
     why: 'Batch is fire-and-forget: one request in, one response out. There is no point at which your code can intercept a tool call, run it, and hand the result back — so a workflow built on multiple tool round trips inside one logical interaction cannot run there at all.',
     distractors: {
       A: '`custom_id` exists precisely to correlate batch requests and responses.',
-      C: 'The blocker is not accepting tool definitions, it is that multi-turn tool calling is unsupported.',
+      C: 'A batch request is an ordinary Messages API request: it may carry `tools`, and even prior `tool_use`/`tool_result` turns. What it cannot do is pause mid-request for your code to run the tool.',
       D: 'Latency is a real drawback elsewhere, but here the workflow is structurally incompatible, not merely slow.',
     },
-    pattern: 'Batch cannot do multi-turn tool calling',
+    pattern: 'Batch cannot round-trip a tool result mid-request',
     source: 'Guide Q18',
   },
   {

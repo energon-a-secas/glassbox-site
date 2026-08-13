@@ -67,7 +67,7 @@ export const PATTERN_ALIASES = {
   'Tool descriptions are the selection mechanism': 'tool-descriptions',
   'The system prompt can steer tool choice': 'tool-descriptions',
   'Blocking is synchronous, scheduled is batch': 'blocking-vs-batch',
-  'Batch cannot do multi-turn tool calling': 'blocking-vs-batch',
+  'Batch cannot round-trip a tool result mid-request': 'blocking-vs-batch',
   'Correlate with custom_id, resubmit only failures': 'blocking-vs-batch',
   'Explicit criteria beat vague adjectives': 'explicit-criteria',
   'Critical facts live outside the summary': 'facts-outside-summary',

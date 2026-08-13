@@ -303,7 +303,7 @@ export const PATTERNS = [
     reject: [
       '"Move both to batch and poll for completion" - the window is up to 24 hours with no latency SLA.',
       '"Batch with a fallback to synchronous if it takes too long" - you cannot recover the hours already spent waiting.',
-      'Blaming latency when the real blocker is structural: the Batch API does not support multi-turn tool calling, so it cannot execute a tool mid-request and hand the result back.',
+      'Blaming latency when the real blocker is structural: a batch request cannot hand a tool result back <em>mid-request</em>, because that loop needs a client sitting between two API calls. Tool definitions and prior <code>tool_use</code>/<code>tool_result</code> history are legal in a batch request - the agentic round-trip is the part that is missing.',
     ],
     example: {
       stem: 'Your review component lets Claude request related files by tool call mid-analysis; you are evaluating batch to cut cost.',
