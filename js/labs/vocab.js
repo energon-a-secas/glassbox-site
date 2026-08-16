@@ -33,7 +33,7 @@ function groupHtml(g) {
       ${state.examMode ? `<span class="vx-trap"><b>the trap</b> ${v.trap}</span>` : ''}
     </button>`).join('');
   return `
-    <div class="lab-sub">
+    <div class="lab-sub" data-section="${escHtml(g.label)}">
       <h3>${escHtml(g.label)}</h3>
       <p class="lab__lead">${escHtml(g.lead)}</p>
       <div class="vx-grid">${cards}</div>
@@ -47,7 +47,7 @@ function quickTestHtml() {
       <span class="vx-quick__a">→ ${escHtml(t.a)}</span>
     </button>`).join('');
   return `
-    <div class="lab-sub">
+    <div class="lab-sub" data-section="Ten-second test">
       <h3>The ten-second test</h3>
       <p class="lab__lead">One question tells the combination verbs apart. Answer it about the stem, then click to check.</p>
       <div class="vx-quicklist">${rows}</div>
@@ -61,7 +61,7 @@ function distinctionsHtml() {
       <td>${d.diff}</td>
     </tr>`).join('');
   return `
-    <div class="lab-sub">
+    <div class="lab-sub" data-section="Near-synonyms">
       <h3>Near-synonyms, split</h3>
       <p class="lab__lead">The pairs the distractors lean on, and the one difference the exam cares about.</p>
       <div class="cw-tablewrap">
@@ -79,7 +79,7 @@ export function mountVocab(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">The words are signals</h2>
-          <p class="lab__lead">Every operational verb in a stem encodes a mechanism — <em>synthesize</em> means coordinator judgment, <em>enforce</em> means code, <em>delegate</em> means full context in the prompt. The verbs are not interchangeable, and the distractors rely on you reading them as synonyms. Click any term for how it appears in a stem and the trap built on it.</p>
+          <p class="lab__lead">Every operational verb in a stem encodes a mechanism: <em>synthesize</em> means coordinator judgment, <em>enforce</em> means code, <em>delegate</em> means full context in the prompt. The verbs are not interchangeable, and the distractors rely on you reading them as synonyms. Click any term for how it appears in a stem and the trap built on it.</p>
         </div>
       </header>
       ${VERB_GROUPS.map(groupHtml).join('')}

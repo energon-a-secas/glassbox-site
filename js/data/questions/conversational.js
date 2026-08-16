@@ -19,7 +19,7 @@ export const CONVERSATIONAL = [
       { k: 'D', t: 'Replace it with two tools: `preview_remove_member` returns impact details plus a single-use confirmation token, and `execute_remove_member` requires that token.' },
     ],
     answer: 'D',
-    why: 'Token binding makes execution without a preview architecturally impossible — the execute tool cannot run without a value only the preview tool can mint. That is enforcement in the interface, not compliance with a request.',
+    why: 'Token binding makes execution without a preview architecturally impossible: the execute tool cannot run without a value only the preview tool can mint. That is enforcement in the interface, not compliance with a request.',
     distractors: {
       A: 'A 60-second window is a timing heuristic. It permits execution after an unconfirmed preview and blocks a legitimate one at 61 seconds.',
       B: 'This relies on orchestration infrastructure sitting outside the tool, and confirms the call rather than binding it to a preview.',
@@ -46,7 +46,7 @@ export const CONVERSATIONAL = [
     distractors: {
       A: 'Teaching the model to classify errors it should never have to see puts a probabilistic step where a deterministic one belongs.',
       B: 'Uniform backoff is the current waste, formalised. Syntax errors will never succeed.',
-      D: 'This is a real improvement and a close second — but it hands the retry decision to the agent when the tool already knows the answer.',
+      D: 'This is a real improvement and a close second, but it hands the retry decision to the agent when the tool already knows the answer.',
     },
     pattern: 'Handle the error at the lowest level that can resolve it',
     source: 'Guide Q62',
@@ -88,7 +88,7 @@ export const CONVERSATIONAL = [
       { k: 'D', t: 'Your application is not including prior messages in the `messages` array.' },
     ],
     answer: 'D',
-    why: 'Claude has no server-side memory — every API call is stateless. If the earlier turns are not in the `messages` array of this request, they did not happen as far as the model is concerned.',
+    why: 'Claude has no server-side memory; every API call is stateless. If the earlier turns are not in the `messages` array of this request, they did not happen as far as the model is concerned.',
     distractors: {
       A: 'Vector databases are not part of Claude’s architecture, and conversation memory is just the history you send.',
       B: 'Two messages cannot exhaust a context window.',
@@ -263,7 +263,7 @@ export const CONVERSATIONAL = [
     scenario: 'conversational',
     domain: 'd4',
     level: 'hard',
-    situation: 'Users report repetitive response openings — "Certainly!" and "I’d be happy to help!" on nearly every turn.',
+    situation: 'Users report repetitive response openings: "Certainly!" and "I’d be happy to help!" on nearly every turn.',
     ask: 'What is the most effective approach?',
     options: [
       { k: 'A', t: 'Append a partial assistant message with a direct response opening.' },
@@ -298,7 +298,7 @@ export const CONVERSATIONAL = [
     why: 'The next user turn is a natural injection point that already exists. The context arrives in time to be used and the dialogue flow is untouched.',
     distractors: {
       A: 'Rebuilding the system prompt mid-session is cumbersome, and the system prompt is for behaviour, not transient events.',
-      B: 'A synthetic user message confuses attribution — the user never said it — and interrupts the exchange.',
+      B: 'A synthetic user message confuses attribution (the user never said it) and interrupts the exchange.',
       C: 'Polling a tool every turn is wasteful when the event is rare, and adds latency to every response.',
     },
     pattern: 'Inject real-time context at a natural boundary',
@@ -345,7 +345,7 @@ export const CONVERSATIONAL = [
     distractors: {
       A: 'The system prompt applies throughout; it is not a one-time initialisation.',
       B: 'Attention degradation does not operate at 2,500 tokens.',
-      D: 'False — the system prompt goes with every request. That is why this cannot be the explanation on its own.',
+      D: 'False. The system prompt goes with every request. That is why this cannot be the explanation on its own.',
     },
     pattern: 'Counter drift by reinforcing, not restarting',
     source: 'Guide Q75',
@@ -355,7 +355,7 @@ export const CONVERSATIONAL = [
     scenario: 'conversational',
     domain: 'd5',
     level: 'core',
-    situation: 'Users ask vague things like "Can you help with the report?". The assistant responds with several questions — which report, what kind of help, what deadline — and 40% abandon.',
+    situation: 'Users ask vague things like "Can you help with the report?". The assistant responds with several questions (which report, what kind of help, what deadline) and 40% abandon.',
     ask: 'What is the best solution?',
     options: [
       { k: 'A', t: 'Make reasonable assumptions, state them explicitly, and offer to adjust.' },

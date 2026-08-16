@@ -22,15 +22,16 @@ flowchart TB
 
     subgraph App["ES Modules"]
         HTML --> app["app.js\nEntry point"]
-        app --> state["state.js\n11 labs + exam mode (localStorage)"]
+        app --> state["state.js\n12 labs + exam mode (localStorage)"]
         app --> render["render.js\nShell + lab router"]
-        app --> events["events.js\nRail, exam toggle, keyboard 0-9 + c v, hash nav"]
+        app --> events["events.js\nRail, exam toggle, keyboard 0-9 + f c v, hash nav"]
+        render --> rail["rail.js\nAll labs ↔ one lab's data-section list\n+ scroll tracking"]
 
-        render --> sims["labs: see the machinery\nloop · sdk · mcp · config · planning · context"]
+        render --> sims["labs: see the machinery\nfoundations · loop (+loop-theory)\nsdk (+sdk-tools, sdk-bench, sdk-sessions)\nmcp (+mcp-lifecycle) · config · planning\ncontext (+context-stores)"]
         render --> study["labs: answer the questions\npatterns · vocab · traps · antipatterns · drill"]
 
         sims --> ui["ui.js\nInspector drawer + glossary tooltips"]
-        sims --> simdata["data/*.js\nruns · loop-contrast · sdk · sdk-config · mcp · config · planning · context"]
+        sims --> simdata["data/*.js\nfoundations · runs · loop-contrast · loop-theory\nloop-orchestration · sdk · sdk-config · sdk-tools\nsdk-ts · sdk-sessions · mcp · mcp-authoring\nmcp-lifecycle · config · planning · context\ncontext-stores"]
         study --> studydata["data/*.js\npatterns · vocab · traps · antipatterns"]
         study --> qbank["data/questions/\n96 questions, one file per exam scenario"]
 

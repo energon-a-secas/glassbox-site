@@ -29,6 +29,27 @@ export function el(tag, cls, html) {
   return node;
 }
 
+/**
+ * Centre an element inside its own scrolling parent, and *only* there.
+ * `scrollIntoView` is the wrong tool for a strip of tabs: with the strip out
+ * of sight it scrolls the *page* to reveal the tab, so a control the reader
+ * clicked far below (a language toggle, a rail tab) throws them back up to
+ * the strip. Deltas off `getBoundingClientRect`, not `offsetLeft`, so this
+ * does not care which ancestor is positioned; it no-ops when the parent is
+ * not scrollable, which is the common case at wide widths.
+ */
+export function keepInScroller(node) {
+  const box = node?.parentElement;
+  if (!node || !box) return;
+  const b = node.getBoundingClientRect();
+  const c = box.getBoundingClientRect();
+  if (box.scrollWidth > box.clientWidth + 1) {
+    box.scrollLeft += (b.left - c.left) - (c.width - b.width) / 2;
+  } else if (box.scrollHeight > box.clientHeight + 1) {
+    box.scrollTop += (b.top - c.top) - (c.height - b.height) / 2;
+  }
+}
+
 /** Show a temporary toast. */
 let _toastTimer = null;
 export function showToast(msg) {
@@ -46,7 +67,7 @@ export function showToast(msg) {
 }
 
 /**
- * Very light code "highlighter" — intentionally not a real parser.
+ * Very light code "highlighter", intentionally not a real parser.
  * One combined alternation per lang (built once, cached), applied in a
  * single left-to-right pass: a `#` inside a string is consumed by the
  * string alternative, a quote inside a comment by the comment
@@ -95,7 +116,7 @@ export function highlightCode(code, lang) {
 }
 
 /**
- * Anti-pattern Don't/Do strip — the inner markup of a .loop-flag box.
+ * Anti-pattern Don't/Do strip: the inner markup of a .loop-flag box.
  * Shared by the Loop and Config labs so the strip renders identically
  * wherever a `flag` id appears. Contract (documented in
  * data/antipatterns.js): `bad` is plain text (escaped), `fix` is raw.

@@ -1,5 +1,5 @@
 {
-  "title": "Glass Box — CCA Foundations drill bank",
+  "title": "Glass Box · CCA Foundations drill bank",
   "description": "Every question from glassbox.neorgon.com, with the reasoning for all four options",
   "category": "Claude Certified Architect (Foundations)",
   "questions": [
@@ -15,13 +15,13 @@
         "Check the tool descriptions to make sure they clearly differentiate each tool’s purpose."
       ],
       "answer": 3,
-      "explanation": "Descriptions are the model’s primary input for tool selection, so consistent wrong selection is a description problem until proven otherwise. Diagnose there before building anything.\n\nWhy not the others:\n- **A** — A classifier bypasses the selection mechanism rather than fixing it, and adds a component to maintain.\n- **B** — Four tools is not too many. Removing one of them removes a capability, not the confusion.\n- **C** — Examples paper over descriptions you have not yet read. Check the cheap thing first."
+      "explanation": "Descriptions are the model’s primary input for tool selection, so consistent wrong selection is a description problem until proven otherwise. Diagnose there before building anything.\n\nWhy not the others:\n- **A**: A classifier bypasses the selection mechanism rather than fixing it, and adds a component to maintain.\n- **B**: Four tools is not too many. Removing one of them removes a capability, not the confusion.\n- **C**: Examples paper over descriptions you have not yet read. Check the cheap thing first."
     },
     {
       "id": "sup-02",
       "type": "single",
       "category": "Prompting",
-      "prompt": "Single-issue requests resolve at 94% accuracy (\"I need a refund for order #1234\"). When a customer bundles issues into one message (\"refund for #1234 and also update the shipping address for #5678\"), tool selection accuracy falls to 58% — the agent usually solves one issue or mixes parameters across requests.\n\n**What approach most effectively improves multi-issue reliability?**",
+      "prompt": "Single-issue requests resolve at 94% accuracy (\"I need a refund for order #1234\"). When a customer bundles issues into one message (\"refund for #1234 and also update the shipping address for #5678\"), tool selection accuracy falls to 58%, and the agent usually solves one issue or mixes parameters across requests.\n\n**What approach most effectively improves multi-issue reliability?**",
       "options": [
         "Add a preprocessing layer that uses a separate model call to split multi-issue messages, handle each independently, and merge the results.",
         "Combine related tools into fewer universal tools.",
@@ -29,13 +29,13 @@
         "Add response validation that detects incomplete answers and reprompts the agent for missed issues."
       ],
       "answer": 2,
-      "explanation": "At 94% on single issues the tools and descriptions are clearly fine — what is missing is the decomposition pattern. Examples that walk through separating the issues and keeping each one’s parameters distinct teach exactly the behaviour that is absent.\n\nWhy not the others:\n- **A** — A separate decomposition model is infrastructure for a behaviour the agent can be shown how to do.\n- **B** — Merging tools makes parameter mixing more likely, not less.\n- **D** — Detecting the incomplete answer afterwards costs a full extra loop and does not teach the pattern."
+      "explanation": "At 94% on single issues the tools and descriptions are clearly fine. What is missing is the decomposition pattern. Examples that walk through separating the issues and keeping each one’s parameters distinct teach exactly the behaviour that is absent.\n\nWhy not the others:\n- **A**: A separate decomposition model is infrastructure for a behaviour the agent can be shown how to do.\n- **B**: Merging tools makes parameter mixing more likely, not less.\n- **D**: Detecting the incomplete answer afterwards costs a full extra loop and does not teach the pattern."
     },
     {
       "id": "sup-03",
       "type": "single",
       "category": "Architecture",
-      "prompt": "Simple requests (\"refund for order #1234\") resolve in 3-4 tool calls at 91% success. Complex ones (\"I was billed twice, my discount did not apply, and I want to cancel\") average 12+ tool calls at 54% — the agent investigates issues sequentially and re-fetches the same customer data for each.\n\n**What change most effectively improves complex requests?**",
+      "prompt": "Simple requests (\"refund for order #1234\") resolve in 3-4 tool calls at 91% success. Complex ones (\"I was billed twice, my discount did not apply, and I want to cancel\") average 12+ tool calls at 54%, and the agent investigates issues sequentially and re-fetches the same customer data for each.\n\n**What change most effectively improves complex requests?**",
       "options": [
         "Add explicit verification checkpoints between stages, requiring the agent to record progress after each issue.",
         "Reduce tool count by merging `get_customer`, `lookup_order` and billing tools into one `investigate_issue` tool.",
@@ -43,13 +43,13 @@
         "Add few-shot examples showing ideal tool-call sequences for multi-faceted billing scenarios."
       ],
       "answer": 2,
-      "explanation": "It removes both failure modes named in the stem. Shared customer context eliminates the redundant re-fetching, and parallel investigation collapses the sequential loops that are inflating the call count.\n\nWhy not the others:\n- **A** — Checkpoints add structure to a sequential process without making it shorter or removing the duplicate lookups.\n- **B** — One opaque mega-tool hides the very sequencing you need to control, and returns more data than any single issue needs.\n- **D** — Examples could help the ordering, but nothing about them prevents re-fetching the same customer three times."
+      "explanation": "It removes both failure modes named in the stem. Shared customer context eliminates the redundant re-fetching, and parallel investigation collapses the sequential loops that are inflating the call count.\n\nWhy not the others:\n- **A**: Checkpoints add structure to a sequential process without making it shorter or removing the duplicate lookups.\n- **B**: One opaque mega-tool hides the very sequencing you need to control, and returns more data than any single issue needs.\n- **D**: Examples could help the ordering, but nothing about them prevents re-fetching the same customer three times."
     },
     {
       "id": "sup-04",
       "type": "single",
       "category": "Context",
-      "prompt": "The agent hits 55% first-contact resolution against an 80% target. Logs show it escalates simple cases — standard replacements for damaged goods with photo proof — while trying to handle complex policy exceptions on its own.\n\n**What is the most effective way to improve escalation calibration?**",
+      "prompt": "The agent hits 55% first-contact resolution against an 80% target. Logs show it escalates simple cases (standard replacements for damaged goods with photo proof) while trying to handle complex policy exceptions on its own.\n\n**What is the most effective way to improve escalation calibration?**",
       "options": [
         "Require the agent to self-rate confidence 1-10 before each response and route to humans below a threshold.",
         "Deploy a separate classifier trained on historical tickets to predict which requests need escalation.",
@@ -57,7 +57,7 @@
         "Add sentiment analysis and escalate past a negative sentiment threshold."
       ],
       "answer": 2,
-      "explanation": "The agent is not miscalibrated in one direction, it is wrong in both — which means the decision boundary was never drawn. Explicit criteria draw it, and examples show where the hard cases fall.\n\nWhy not the others:\n- **A** — Self-rated confidence is poorly calibrated. A model can be confidently wrong, which is the failure you are already seeing.\n- **B** — A trained classifier is heavy infrastructure, needs labelled data, and does not address unclear rules.\n- **D** — Customer mood does not track case complexity. An angry customer with a simple problem escalates; a polite one with a policy exception does not."
+      "explanation": "The agent is not miscalibrated in one direction, it is wrong in both, which means the decision boundary was never drawn. Explicit criteria draw it, and examples show where the hard cases fall.\n\nWhy not the others:\n- **A**: Self-rated confidence is poorly calibrated. A model can be confidently wrong, which is the failure you are already seeing.\n- **B**: A trained classifier is heavy infrastructure, needs labelled data, and does not address unclear rules.\n- **D**: Customer mood does not track case complexity. An angry customer with a simple problem escalates; a polite one with a policy exception does not."
     },
     {
       "id": "sup-05",
@@ -65,13 +65,13 @@
       "category": "Context",
       "prompt": "After calling `get_customer` and `lookup_order`, the agent has every piece of system data available and still faces uncertainty.\n\n**Which situation most justifies calling `escalate_to_human`?**",
       "options": [
-        "A customer wants to cancel an order shipped yesterday, arriving tomorrow — escalate because they might change their mind after receiving it.",
-        "A customer claims non-delivery but tracking shows delivered and signed for three days ago — escalate because presenting contradictory evidence could harm the relationship.",
-        "A customer requests competitor price matching. Policy allows adjustments for price drops on your own site within 14 days but says nothing about competitors — escalate for policy interpretation.",
-        "A message contains both a billing question and a product return — escalate so a human can coordinate both."
+        "A customer wants to cancel an order shipped yesterday, arriving tomorrow. Escalate because they might change their mind after receiving it.",
+        "A customer claims non-delivery but tracking shows delivered and signed for three days ago. Escalate because presenting contradictory evidence could harm the relationship.",
+        "A customer requests competitor price matching. Policy allows adjustments for price drops on your own site within 14 days but says nothing about competitors. Escalate for policy interpretation.",
+        "A message contains both a billing question and a product return. Escalate so a human can coordinate both."
       ],
       "answer": 2,
-      "explanation": "This is a genuine policy gap. The rules cover your own price drops and are silent on competitors, and an agent must not invent policy — extending the rule is a human judgement call.\n\nWhy not the others:\n- **A** — Cancelling an in-transit order is a normal, covered operation. Speculating about future regret is not an escalation trigger.\n- **B** — Contradictory evidence is uncomfortable, not ambiguous. The policy for a delivered-and-signed order is defined.\n- **D** — Two issues in one message is a decomposition problem, not an escalation trigger. The agent can handle both."
+      "explanation": "This is a genuine policy gap. The rules cover your own price drops and are silent on competitors, and an agent must not invent policy, so extending the rule is a human judgement call.\n\nWhy not the others:\n- **A**: Cancelling an in-transit order is a normal, covered operation. Speculating about future regret is not an escalation trigger.\n- **B**: Contradictory evidence is uncomfortable, not ambiguous. The policy for a delivered-and-signed order is defined.\n- **D**: Two issues in one message is a decomposition problem, not an escalation trigger. The agent can handle both."
     },
     {
       "id": "sup-06",
@@ -85,7 +85,7 @@
         "Strengthen the system prompt to state that verification via `get_customer` is mandatory before any order operation."
       ],
       "answer": 2,
-      "explanation": "Money is moving to the wrong people. A precondition in code makes the unverified path impossible, which is a guarantee; everything else on this list is a request the model complies with most of the time.\n\nWhy not the others:\n- **A** — Few-shot raises compliance but not to 100%, and 12% of refunds is not a rounding error.\n- **B** — A classifier decides which tools are available; it does not enforce an ordering between two enabled tools.\n- **D** — The prompt already implies this and the agent skips it anyway. Stronger wording is still probabilistic."
+      "explanation": "Money is moving to the wrong people. A precondition in code makes the unverified path impossible, which is a guarantee; everything else on this list is a request the model complies with most of the time.\n\nWhy not the others:\n- **A**: Few-shot raises compliance but not to 100%, and 12% of refunds is not a rounding error.\n- **B**: A classifier decides which tools are available; it does not enforce an ordering between two enabled tools.\n- **D**: The prompt already implies this and the agent skips it anyway. Stronger wording is still probabilistic."
     },
     {
       "id": "sup-07",
@@ -93,13 +93,13 @@
       "category": "Prompting",
       "prompt": "On complex billing disputes and multi-order returns, satisfaction scores run 15% lower than on simple cases even when the resolution is technically correct. Root-cause analysis shows the agent solves the problem but explains it inconsistently: sometimes missing policy details, sometimes timelines, sometimes next steps. Which gap appears varies case by case. You want to improve this without adding human oversight.\n\n**What approach is most effective?**",
       "options": [
-        "Add a self-critique stage where the agent evaluates its draft response for completeness — resolves the issue, includes relevant context, anticipates follow-up questions.",
+        "Add a self-critique stage where the agent evaluates its draft response for completeness: resolves the issue, includes relevant context, anticipates follow-up questions.",
         "Add a confirmation stage asking \"Does this fully resolve your issue?\" before closing.",
         "Upgrade the model from Haiku to Sonnet for complex cases, routing on a complexity metric.",
         "Add few-shot examples showing complete explanations for five common complex case types."
       ],
       "answer": 0,
-      "explanation": "The missing element is different every time, so no fixed template can cover it. An evaluator-optimizer pass checks the draft against completeness criteria and catches whichever piece this particular case dropped.\n\nWhy not the others:\n- **B** — Asking the customer outsources quality control to them and adds a turn to every conversation.\n- **C** — The resolutions are already technically correct. This is not a capability gap.\n- **D** — Five templates cover five shapes. The stem says the gaps are case-specific, which is what defeats templating."
+      "explanation": "The missing element is different every time, so no fixed template can cover it. An evaluator-optimizer pass checks the draft against completeness criteria and catches whichever piece this particular case dropped.\n\nWhy not the others:\n- **B**: Asking the customer outsources quality control to them and adds a turn to every conversation.\n- **C**: The resolutions are already technically correct. This is not a capability gap.\n- **D**: Five templates cover five shapes. The stem says the gaps are case-specific, which is what defeats templating."
     },
     {
       "id": "sup-08",
@@ -113,7 +113,7 @@
         "Instruct Claude to bundle related tool requests into a single turn and return all results together before the next API call."
       ],
       "answer": 3,
-      "explanation": "Claude can already emit multiple tool calls in one turn; it simply is not being asked to. A prompt instruction unlocks the native capability with no architectural change and no new tools to maintain.\n\nWhy not the others:\n- **A** — Speculative calls burn quota and pollute context with results nobody asked for.\n- **B** — `max_tokens` caps response length. It has nothing to do with how many tools a turn requests.\n- **C** — Composite tools multiply as combinations grow, and return fields the current task does not need."
+      "explanation": "Claude can already emit multiple tool calls in one turn; it simply is not being asked to. A prompt instruction unlocks the native capability with no architectural change and no new tools to maintain.\n\nWhy not the others:\n- **A**: Speculative calls burn quota and pollute context with results nobody asked for.\n- **B**: `max_tokens` caps response length. It has nothing to do with how many tools a turn requests.\n- **C**: Composite tools multiply as combinations grow, and return fields the current task does not need."
     },
     {
       "id": "sup-09",
@@ -123,25 +123,25 @@
       "options": [
         "Raise the summarisation threshold from 70% to 85% so conversations have more room before summarising.",
         "Store the full history externally and retrieve when the agent detects references like \"as I mentioned\".",
-        "Extract transactional facts — amounts, dates, order numbers — into a persistent case-facts block included in every prompt, outside the summarised history.",
+        "Extract transactional facts (amounts, dates, order numbers) into a persistent case-facts block included in every prompt, outside the summarised history.",
         "Revise the summarisation prompt to preserve all numbers, percentages, dates and customer-stated expectations verbatim."
       ],
       "answer": 2,
-      "explanation": "Summarisation loses precision by definition — that is what it does. Facts that must survive have to live outside the thing being summarised, in a structured block that ships with every prompt regardless of how much history got compressed.\n\nWhy not the others:\n- **A** — A higher threshold delays the loss. At turn 40 the same details blur.\n- **B** — Retrieval on a phrase trigger fails whenever the customer references a fact without signposting it.\n- **D** — Instructing a summariser to preserve everything important is a probabilistic fix to a mechanism that is lossy by design."
+      "explanation": "Summarisation loses precision by definition; that is what it does. Facts that must survive have to live outside the thing being summarised, in a structured block that ships with every prompt regardless of how much history got compressed.\n\nWhy not the others:\n- **A**: A higher threshold delays the loss. At turn 40 the same details blur.\n- **B**: Retrieval on a phrase trigger fails whenever the customer references a fact without signposting it.\n- **D**: Instructing a summariser to preserve everything important is a probabilistic fix to a mechanism that is lossy by design."
     },
     {
       "id": "sup-10",
       "type": "single",
       "category": "Context",
-      "prompt": "`get_customer` returns all matches when searching by name. When there are several, Claude currently picks the customer with the most recent order — and production data shows that selects the wrong account 15% of the time on ambiguous matches.\n\n**How should you address this?**",
+      "prompt": "`get_customer` returns all matches when searching by name. When there are several, Claude currently picks the customer with the most recent order, and production data shows that selects the wrong account 15% of the time on ambiguous matches.\n\n**How should you address this?**",
       "options": [
         "Implement confidence scoring that acts autonomously above 85% and asks for clarification below it.",
-        "Instruct Claude to request an additional identifier — email, phone, or order number — whenever `get_customer` returns multiple matches, before taking any customer-specific action.",
+        "Instruct Claude to request an additional identifier (email, phone, or order number) whenever `get_customer` returns multiple matches, before taking any customer-specific action.",
         "Modify `get_customer` to return only the single most likely match from a ranking algorithm.",
         "Add few-shot examples demonstrating correct reasoning for ambiguous matches."
       ],
       "answer": 1,
-      "explanation": "The customer is the only party who knows which account is theirs. One extra question resolves the ambiguity with certainty, which is a trivial cost against wrong-account actions 15% of the time.\n\nWhy not the others:\n- **A** — Self-rated confidence is poorly calibrated, so the threshold does not separate the safe cases from the unsafe ones.\n- **C** — Ranking inside the tool hides the ambiguity instead of resolving it. The wrong account is now unquestionable.\n- **D** — No amount of reasoning recovers information the agent does not have. Guessing well is still guessing."
+      "explanation": "The customer is the only party who knows which account is theirs. One extra question resolves the ambiguity with certainty, which is a trivial cost against wrong-account actions 15% of the time.\n\nWhy not the others:\n- **A**: Self-rated confidence is poorly calibrated, so the threshold does not separate the safe cases from the unsafe ones.\n- **C**: Ranking inside the tool hides the ambiguity instead of resolving it. The wrong account is now unquestionable.\n- **D**: No amount of reasoning recovers information the agent does not have. Guessing well is still guessing."
     },
     {
       "id": "sup-11",
@@ -155,13 +155,13 @@
         "The tool descriptions need negative examples specifying when NOT to use each tool."
       ],
       "answer": 0,
-      "explanation": "The stem removes the usual suspect by stating the descriptions are clear, and the split is too clean and too keyword-locked to be anything but explicit routing logic. System prompt wording creates exactly this kind of unintended tool association.\n\nWhy not the others:\n- **B** — Base-training association would not produce a 78/93 split that flips on one word while descriptions stay clear.\n- **C** — Fine-tuning is out of scope for this exam, and the behaviour is configuration-driven, not a capability gap.\n- **D** — You do not fix descriptions the stem has already declared unambiguous."
+      "explanation": "The stem removes the usual suspect by stating the descriptions are clear, and the split is too clean and too keyword-locked to be anything but explicit routing logic. System prompt wording creates exactly this kind of unintended tool association.\n\nWhy not the others:\n- **B**: Base-training association would not produce a 78/93 split that flips on one word while descriptions stay clear.\n- **C**: Fine-tuning is out of scope for this exam, and the behaviour is configuration-driven, not a capability gap.\n- **D**: You do not fix descriptions the stem has already declared unambiguous."
     },
     {
       "id": "sup-12",
       "type": "single",
       "category": "Tools & MCP",
-      "prompt": "The agent often calls `get_customer` when users ask about orders (\"check my order #12345\") instead of `lookup_order`. Both tools have minimal descriptions — \"Gets customer information\" and \"Gets order details\" — and accept similar-looking identifier formats.\n\n**What is the most effective first step?**",
+      "prompt": "The agent often calls `get_customer` when users ask about orders (\"check my order #12345\") instead of `lookup_order`. Both tools have minimal descriptions (\"Gets customer information\" and \"Gets order details\") and accept similar-looking identifier formats.\n\n**What is the most effective first step?**",
       "options": [
         "Implement a routing layer that analyses input before each turn and preselects the tool from keywords and ID patterns.",
         "Combine both into a single `lookup_entity` that accepts any identifier and decides internally which backend to query.",
@@ -169,21 +169,21 @@
         "Expand each description with input formats, example queries, edge cases, and boundaries explaining when to use it over similar tools."
       ],
       "answer": 3,
-      "explanation": "Four-word descriptions plus lookalike identifiers give the model almost nothing to choose on. Filling in formats, examples and boundaries is low effort and repairs the actual selection mechanism.\n\nWhy not the others:\n- **A** — A routing layer replaces model-driven selection with hand-written rules and leaves the thin descriptions in place.\n- **B** — Merging removes the distinction rather than clarifying it, and hides the routing decision inside a tool.\n- **C** — Examples are the right move once descriptions are good. Here they compensate for the gap instead of closing it."
+      "explanation": "Four-word descriptions plus lookalike identifiers give the model almost nothing to choose on. Filling in formats, examples and boundaries is low effort and repairs the actual selection mechanism.\n\nWhy not the others:\n- **A**: A routing layer replaces model-driven selection with hand-written rules and leaves the thin descriptions in place.\n- **B**: Merging removes the distinction rather than clarifying it, and hides the routing decision inside a tool.\n- **C**: Examples are the right move once descriptions are good. Here they compensate for the gap instead of closing it."
     },
     {
       "id": "sup-13",
       "type": "single",
       "category": "Architecture",
-      "prompt": "You are implementing the agent loop. After each Claude API call you must decide whether to continue — run the requested tools and call again — or stop and present the final answer.\n\n**What determines this decision?**",
+      "prompt": "You are implementing the agent loop. After each Claude API call you must decide whether to continue, running the requested tools and calling again, or stop and present the final answer.\n\n**What determines this decision?**",
       "options": [
         "Check `stop_reason`: continue if it is `tool_use`, stop if it is `end_turn`.",
         "Parse the text for phrases like \"I’m done\" or \"Can I help with anything else?\".",
         "Set a maximum iteration count (say 10) and stop when it is reached.",
-        "Check whether the response contains assistant text content — if Claude wrote explanatory text, terminate."
+        "Check whether the response contains assistant text content: if Claude wrote explanatory text, terminate."
       ],
       "answer": 0,
-      "explanation": "`stop_reason` is the explicit structured control signal. `tool_use` means Claude wants a result back; `end_turn` means it is finished. Nothing else is a reliable completion signal.\n\nWhy not the others:\n- **B** — Text is not a control channel. The model can say \"done\" mid-plan or never say it at all.\n- **C** — An iteration cap is a safety net, not a stop condition. As the primary signal it truncates real work.\n- **D** — Claude routinely writes explanatory text alongside a tool call. This would end the loop mid-task."
+      "explanation": "`stop_reason` is the explicit structured control signal. `tool_use` means Claude wants a result back; `end_turn` means it is finished. Nothing else is a reliable completion signal.\n\nWhy not the others:\n- **B**: Text is not a control channel. The model can say \"done\" mid-plan or never say it at all.\n- **C**: An iteration cap is a safety net, not a stop condition. As the primary signal it truncates real work.\n- **D**: Claude routinely writes explanatory text alongside a tool call. This would end the loop mid-task."
     },
     {
       "id": "sup-14",
@@ -197,7 +197,7 @@
         "Document each tool’s data conventions in detail in the system prompt."
       ],
       "answer": 0,
-      "explanation": "One interception point covers every tool, including the servers you do not own, and the transformation lives in code rather than in the model’s interpretation. That is both deterministic and the only place a third-party output can be reached.\n\nWhy not the others:\n- **B** — A wrapper per third-party server is N components to maintain where a hook is one.\n- **C** — It relies on the agent remembering to call it, doubles the tool calls, and adds a round trip per retrieval.\n- **D** — Documenting formats leaves the conversion to the model on every single value."
+      "explanation": "One interception point covers every tool, including the servers you do not own, and the transformation lives in code rather than in the model’s interpretation. That is both deterministic and the only place a third-party output can be reached.\n\nWhy not the others:\n- **B**: A wrapper per third-party server is N components to maintain where a hook is one.\n- **C**: It relies on the agent remembering to call it, doubles the tool calls, and adds a round trip per retrieval.\n- **D**: Documenting formats leaves the conversion to the model on every single value."
     },
     {
       "id": "sup-15",
@@ -206,26 +206,26 @@
       "prompt": "The agent sometimes chooses `get_customer` where `lookup_order` fits better, especially on ambiguous queries like \"I need help with my recent purchase\". You have decided to add few-shot examples to the system prompt.\n\n**Which approach most effectively addresses the problem?**",
       "options": [
         "Add explicit \"use when\" and \"don’t use when\" guidance to each tool description covering ambiguous cases.",
-        "Add examples grouped by tool — all `get_customer` scenarios together, then all `lookup_order` scenarios.",
+        "Add examples grouped by tool: all `get_customer` scenarios together, then all `lookup_order` scenarios.",
         "Add 4-6 examples targeted at ambiguous scenarios, each with the rationale for choosing one tool over a plausible alternative.",
         "Add 10-15 examples of clear, unambiguous requests demonstrating correct tool choice for typical scenarios."
       ],
       "answer": 2,
-      "explanation": "Errors happen at the boundary, so the examples belong at the boundary. Attaching the rationale teaches the comparison itself — why this tool beat that one here — which is what generalises to the next ambiguous phrasing.\n\nWhy not the others:\n- **A** — Reasonable in general, but the question stipulates few-shot; and declarative rules are what already failed on edge cases.\n- **B** — Grouping by tool demonstrates each tool in isolation and never shows the two being weighed against each other.\n- **D** — Fifteen easy cases teach the model what it already gets right, and cost tokens doing it."
+      "explanation": "Errors happen at the boundary, so the examples belong at the boundary. Attaching the rationale teaches the comparison itself, why this tool beat that one here, which is what generalises to the next ambiguous phrasing.\n\nWhy not the others:\n- **A**: Reasonable in general, but the question stipulates few-shot; and declarative rules are what already failed on edge cases.\n- **B**: Grouping by tool demonstrates each tool in isolation and never shows the two being weighed against each other.\n- **D**: Fifteen easy cases teach the model what it already gets right, and cost tokens doing it."
     },
     {
       "id": "cg-01",
       "type": "single",
       "category": "Claude Code",
-      "prompt": "You asked Claude Code to write a function transforming API responses into an internal normalised format. Two iterations in, the structure is still wrong — some fields nested differently, timestamps formatted incorrectly. You described the requirements in prose and Claude interprets them differently each time.\n\n**Which approach is most effective for the next iteration?**",
+      "prompt": "You asked Claude Code to write a function transforming API responses into an internal normalised format. Two iterations in, the structure is still wrong: some fields nested differently, timestamps formatted incorrectly. You described the requirements in prose and Claude interprets them differently each time.\n\n**Which approach is most effective for the next iteration?**",
       "options": [
         "Write a JSON schema for the expected output and validate Claude’s result against it after each iteration.",
         "Provide 2-3 concrete input-output examples showing the expected transformation for representative API responses.",
-        "Rewrite the requirements with more technical precision — exact field mappings, nesting rules, timestamp format strings.",
+        "Rewrite the requirements with more technical precision: exact field mappings, nesting rules, timestamp format strings.",
         "Ask Claude to explain its current understanding of the requirements to find where interpretations diverge."
       ],
       "answer": 1,
-      "explanation": "Prose about nesting is exactly the thing that admits multiple readings, which is why two iterations diverged. A worked pair shows the nesting and the timestamp format with no room to interpret.\n\nWhy not the others:\n- **A** — A schema catches a wrong result after the fact; it does not communicate the transformation you want.\n- **C** — More precise prose is the approach that has already failed twice.\n- **D** — Diagnosing the divergence costs a turn and still leaves you describing the target in words."
+      "explanation": "Prose about nesting is exactly the thing that admits multiple readings, which is why two iterations diverged. A worked pair shows the nesting and the timestamp format with no room to interpret.\n\nWhy not the others:\n- **A**: A schema catches a wrong result after the fact; it does not communicate the transformation you want.\n- **C**: More precise prose is the approach that has already failed twice.\n- **D**: Diagnosing the divergence costs a turn and still leaves you describing the target in words."
     },
     {
       "id": "cg-02",
@@ -239,7 +239,7 @@
         "Direct execution with a bot token so delivery confirmation stays possible."
       ],
       "answer": 1,
-      "explanation": "Two plan triggers fire at once: multiple viable approaches with materially different architecture, and ambiguous requirements. Planning mode explores the trade-offs safely and gets agreement before code exists to throw away.\n\nWhy not the others:\n- **A** — Picking webhooks by analogy assumes one-way is acceptable, which is precisely what nobody has decided.\n- **C** — A scaffold that defers the decision bakes in structural assumptions the decision may invalidate.\n- **D** — Choosing bot tokens for a capability nobody asked for buys workspace-approval complexity on a guess."
+      "explanation": "Two plan triggers fire at once: multiple viable approaches with materially different architecture, and ambiguous requirements. Planning mode explores the trade-offs safely and gets agreement before code exists to throw away.\n\nWhy not the others:\n- **A**: Picking webhooks by analogy assumes one-way is acceptable, which is precisely what nobody has decided.\n- **C**: A scaffold that defers the decision bakes in structural assumptions the decision may invalidate.\n- **D**: Choosing bot tokens for a capability nobody asked for buys workspace-approval complexity on a guess."
     },
     {
       "id": "cg-03",
@@ -253,7 +253,7 @@
         "Keep universal standards in `CLAUDE.md` and create Skills for the workflow-specific guidance (PR review, deploy, migrations) with trigger keywords."
       ],
       "answer": 3,
-      "explanation": "The split in the stem is always-on versus task-triggered, and that maps directly onto the two surfaces. `CLAUDE.md` loads every session, so standards live there; Skills are invoked on demand, which is exactly what \"only when doing those tasks\" means.\n\nWhy not the others:\n- **A** — Moving the coding standards into Skills means they are absent unless someone remembers to invoke them.\n- **B** — `@path` imports keep the content modular but every import still loads every session. Nothing becomes conditional.\n- **C** — Path globs trigger on which file you edit. Deployment and PR review are activities, not file types."
+      "explanation": "The split in the stem is always-on versus task-triggered, and that maps directly onto the two surfaces. `CLAUDE.md` loads every session, so standards live there; Skills are invoked on demand, which is exactly what \"only when doing those tasks\" means.\n\nWhy not the others:\n- **A**: Moving the coding standards into Skills means they are absent unless someone remembers to invoke them.\n- **B**: `@path` imports keep the content modular but every import still loads every session. Nothing becomes conditional.\n- **C**: Path globs trigger on which file you edit. Deployment and PR review are activities, not file types."
     },
     {
       "id": "cg-04",
@@ -267,13 +267,13 @@
         "Use direct execution with detailed upfront instructions specifying each service structure."
       ],
       "answer": 0,
-      "explanation": "Every plan trigger is present: dozens of files, several defensible boundary decisions, and architectural consequences. Planning mode explores with no side effects and produces a plan you approve before anything is rewritten.\n\nWhy not the others:\n- **B** — Reactive switching means you discover the complexity by having already made expensive changes.\n- **C** — Boundaries that \"emerge\" from incremental edits are the ones you are stuck with, not the ones you chose.\n- **D** — Specifying each service upfront assumes you already know the dependency structure. That is the thing you need to find out."
+      "explanation": "Every plan trigger is present: dozens of files, several defensible boundary decisions, and architectural consequences. Planning mode explores with no side effects and produces a plan you approve before anything is rewritten.\n\nWhy not the others:\n- **B**: Reactive switching means you discover the complexity by having already made expensive changes.\n- **C**: Boundaries that \"emerge\" from incremental edits are the ones you are stuck with, not the ones you chose.\n- **D**: Specifying each service upfront assumes you already know the dependency structure. That is the thing you need to find out."
     },
     {
       "id": "cg-05",
       "type": "single",
       "category": "Claude Code",
-      "prompt": "Your team created an `/analyze-codebase` skill that does deep analysis — dependency scanning, coverage counts, quality metrics. After running it, developers report Claude becomes less responsive and loses track of the original task.\n\n**How do you fix this while keeping full analysis capability?**",
+      "prompt": "Your team created an `/analyze-codebase` skill that does deep analysis: dependency scanning, coverage counts, quality metrics. After running it, developers report Claude becomes less responsive and loses track of the original task.\n\n**How do you fix this while keeping full analysis capability?**",
       "options": [
         "Add `context: fork` to the skill frontmatter so the analysis runs in an isolated subagent context.",
         "Add `model: haiku` to use a faster, cheaper model for the analysis.",
@@ -281,13 +281,13 @@
         "Instruct the skill to compress all results into a short summary before displaying them."
       ],
       "answer": 0,
-      "explanation": "The verbose output is flooding the main session, which is what `context: fork` exists for. The analysis runs at full depth in an isolated subagent and only its result crosses back, so the main session keeps the original task.\n\nWhy not the others:\n- **B** — A cheaper model produces the same volume of output into the same context window.\n- **C** — Three skills producing a third each still dump the whole analysis into the main session.\n- **D** — Summarising after generation means the verbose output has already been produced in the main context."
+      "explanation": "The verbose output is flooding the main session, which is what `context: fork` exists for. The analysis runs at full depth in an isolated subagent and only its result crosses back, so the main session keeps the original task.\n\nWhy not the others:\n- **B**: A cheaper model produces the same volume of output into the same context window.\n- **C**: Three skills producing a third each still dump the whole analysis into the main session.\n- **D**: Summarising after generation means the verbose output has already been produced in the main context."
     },
     {
       "id": "cg-06",
       "type": "single",
       "category": "Claude Code",
-      "prompt": "Your team uses a `/commit` skill at `.claude/skills/commit/SKILL.md`. A developer wants to customise it for their own workflow — different commit message format, extra checks — without affecting teammates.\n\n**What do you recommend?**",
+      "prompt": "Your team uses a `/commit` skill at `.claude/skills/commit/SKILL.md`. A developer wants to customise it for their own workflow (different commit message format, extra checks) without affecting teammates.\n\n**What do you recommend?**",
       "options": [
         "Create a personal version under `~/.claude/skills/` with a different name, e.g. `/my-commit`.",
         "Add conditional logic based on username in the project skill frontmatter.",
@@ -295,7 +295,7 @@
         "Set `override: true` in the personal skill frontmatter to prioritise it over the project version."
       ],
       "answer": 0,
-      "explanation": "A different name avoids the collision entirely: the developer keeps the team’s maintained `/commit` — and every update the team ships to it — plus a clearly named personal skill. No teammate is affected and nothing is silently shadowed.\n\nWhy not the others:\n- **B** — Username branching pushes one person’s preferences into the shared, version-controlled file.\n- **C** — Works mechanically — personal skills take precedence over project skills with the same name — but that is the trap: the shadowing is silent, so this developer quietly stops receiving team updates to `/commit` and has to remember they run a different skill under the same command.\n- **D** — No such frontmatter key. Precedence is positional, not declared."
+      "explanation": "A different name avoids the collision entirely: the developer keeps the team’s maintained `/commit`, and every update the team ships to it, plus a clearly named personal skill. No teammate is affected and nothing is silently shadowed.\n\nWhy not the others:\n- **B**: Username branching pushes one person’s preferences into the shared, version-controlled file.\n- **C**: Works mechanically, since personal skills take precedence over project skills with the same name, but that is the trap: the shadowing is silent, so this developer quietly stops receiving team updates to `/commit` and has to remember they run a different skill under the same command.\n- **D**: No such frontmatter key. Precedence is positional, not declared."
     },
     {
       "id": "cg-07",
@@ -309,13 +309,13 @@
         "Claude Code caches `CLAUDE.md` after first read and the original developers are on cached versions. Everyone should clear the cache."
       ],
       "answer": 0,
-      "explanation": "Same repo, same code, different behaviour per person — the instruction is not in the repo. User-level config is not version controlled, so it reached three laptops and never reached the fourth. Project level is where shared standards belong.\n\nWhy not the others:\n- **B** — Possible in principle, but it does not explain why three separate developers all get behaviour the repo does not specify.\n- **C** — Claude Code does not learn preferences across sessions this way. Persistence comes from config files.\n- **D** — Invented mechanism, and caching would not differ by developer on identical files."
+      "explanation": "Same repo, same code, different behaviour per person. The instruction is not in the repo. User-level config is not version controlled, so it reached three laptops and never reached the fourth. Project level is where shared standards belong.\n\nWhy not the others:\n- **B**: Possible in principle, but it does not explain why three separate developers all get behaviour the repo does not specify.\n- **C**: Claude Code does not learn preferences across sessions this way. Persistence comes from config files.\n- **D**: Invented mechanism, and caching would not differ by developer on identical files."
     },
     {
       "id": "cg-08",
       "type": "single",
       "category": "Claude Code",
-      "prompt": "You find that including 2-3 full endpoint implementations as context markedly improves consistency when generating new API endpoints. That context is only useful when creating endpoints — not when debugging, reviewing, or doing other work in the API directory.\n\n**Which configuration approach is most effective?**",
+      "prompt": "You find that including 2-3 full endpoint implementations as context markedly improves consistency when generating new API endpoints. That context is only useful when creating endpoints, not when debugging, reviewing, or doing other work in the API directory.\n\n**Which configuration approach is most effective?**",
       "options": [
         "Add the endpoint examples and pattern documentation to the project `CLAUDE.md` so they are always available.",
         "Reference the endpoint examples manually in every generation request by pasting code into the prompt.",
@@ -323,7 +323,7 @@
         "Create a skill that references the examples and the pattern instructions, invoked on demand via a slash command."
       ],
       "answer": 3,
-      "explanation": "The trigger is the task, not the file. A skill loads the examples when you are generating an endpoint and stays out of the way when you are debugging one — which is the distinction the stem draws explicitly.\n\nWhy not the others:\n- **A** — Always-loaded means those examples sit in context during every debugging and review session too.\n- **B** — Manual pasting works but is unrepeatable and inconsistent across the team.\n- **C** — Path rules fire on any edit in the API directory, including the debugging and review work you want them absent from."
+      "explanation": "The trigger is the task, not the file. A skill loads the examples when you are generating an endpoint and stays out of the way when you are debugging one, which is the distinction the stem draws explicitly.\n\nWhy not the others:\n- **A**: Always-loaded means those examples sit in context during every debugging and review session too.\n- **B**: Manual pasting works but is unrepeatable and inconsistent across the team.\n- **C**: Path rules fire on any edit in the API directory, including the debugging and review work you want them absent from."
     },
     {
       "id": "cg-09",
@@ -337,7 +337,7 @@
         "Add validation instructions to `SKILL.md` for `$ARGUMENTS`, add prompts telling Claude to ignore prior conversation context, and list prohibited operations."
       ],
       "answer": 1,
-      "explanation": "Three symptoms, three frontmatter keys. `argument-hint` prompts for the missing name, `context: fork` isolates the run so unrelated conversation cannot leak in, and `allowed-tools` makes the destructive command unavailable rather than discouraged.\n\nWhy not the others:\n- **A** — Positional parameters do not prompt when omitted, and a \"warning\" in a description is not enforcement.\n- **C** — Splitting the skill addresses none of the three causes; the naming and context-leak problems survive in both halves.\n- **D** — All three fixes are prompt instructions — probabilistic where two of the three problems demand a guarantee."
+      "explanation": "Three symptoms, three frontmatter keys. `argument-hint` prompts for the missing name, `context: fork` isolates the run so unrelated conversation cannot leak in, and `allowed-tools` makes the destructive command unavailable rather than discouraged.\n\nWhy not the others:\n- **A**: Positional parameters do not prompt when omitted, and a \"warning\" in a description is not enforcement.\n- **C**: Splitting the skill addresses none of the three causes; the naming and context-leak problems survive in both halves.\n- **D**: All three fixes are prompt instructions: probabilistic where two of the three problems demand a guarantee."
     },
     {
       "id": "cg-10",
@@ -351,7 +351,7 @@
         "Create rule files under `.claude/rules/` with YAML frontmatter glob patterns that apply conventions by file path."
       ],
       "answer": 3,
-      "explanation": "The trigger is which file is being edited, which is what `paths:` globs match. A pattern like `**/*.test.tsx` catches every co-located test regardless of directory, and the rule only loads when it is relevant.\n\nWhy not the others:\n- **A** — One flat file relies on the model inferring which section applies, which is the thing you are trying to make deterministic.\n- **B** — Skills are on-demand. Conventions should apply whenever the file is touched, not when someone remembers a command.\n- **C** — Directory-level files break exactly on the case described: tests scattered beside their source across the whole tree."
+      "explanation": "The trigger is which file is being edited, which is what `paths:` globs match. A pattern like `**/*.test.tsx` catches every co-located test regardless of directory, and the rule only loads when it is relevant.\n\nWhy not the others:\n- **A**: One flat file relies on the model inferring which section applies, which is the thing you are trying to make deterministic.\n- **B**: Skills are on-demand. Conventions should apply whenever the file is touched, not when someone remembers a command.\n- **C**: Directory-level files break exactly on the case described: tests scattered beside their source across the whole tree."
     },
     {
       "id": "cg-11",
@@ -365,7 +365,7 @@
         "In the root project `CLAUDE.md`."
       ],
       "answer": 1,
-      "explanation": "Project commands live in the repo, so they are version controlled and arrive automatically with a clone or pull. That is precisely the \"available to everyone\" requirement.\n\nWhy not the others:\n- **A** — User-level commands are personal and not shared, so every developer would have to install it themselves.\n- **C** — No such file. Commands are markdown files in a directory, not entries in a config array.\n- **D** — `CLAUDE.md` holds instructions, not command definitions."
+      "explanation": "Project commands live in the repo, so they are version controlled and arrive automatically with a clone or pull. That is precisely the \"available to everyone\" requirement.\n\nWhy not the others:\n- **A**: User-level commands are personal and not shared, so every developer would have to install it themselves.\n- **C**: No such file. Commands are markdown files in a directory, not entries in a config array.\n- **D**: `CLAUDE.md` holds instructions, not command definitions."
     },
     {
       "id": "cg-12",
@@ -379,13 +379,13 @@
         "Multiple `CLAUDE.md` files at different levels of the directory tree, each overriding its parent."
       ],
       "answer": 1,
-      "explanation": "`.claude/rules/` is the supported alternative to a monolithic `CLAUDE.md`: one Markdown file per topic, each independently maintainable, and each able to carry `paths:` frontmatter for conditional loading.\n\nWhy not the others:\n- **A** — No such file. Section-level mapping inside `CLAUDE.md` is not a Claude Code feature.\n- **C** — `README.md` files are documentation for humans; Claude Code does not load them as instructions.\n- **D** — Directory-level files exist, but they scope by location rather than by topic, and they do not \"override\" parents."
+      "explanation": "`.claude/rules/` is the supported alternative to a monolithic `CLAUDE.md`: one Markdown file per topic, each independently maintainable, and each able to carry `paths:` frontmatter for conditional loading.\n\nWhy not the others:\n- **A**: No such file. Section-level mapping inside `CLAUDE.md` is not a Claude Code feature.\n- **C**: `README.md` files are documentation for humans; Claude Code does not load them as instructions.\n- **D**: Directory-level files exist, but they scope by location rather than by topic, and they do not \"override\" parents."
     },
     {
       "id": "cg-13",
       "type": "single",
       "category": "Claude Code",
-      "prompt": "You created an `/explore-alternatives` skill your team uses to brainstorm and evaluate implementation approaches before choosing one. Developers report that afterwards Claude’s responses are coloured by the discussion — referencing rejected approaches, retaining exploration context that interferes with the actual implementation.\n\n**How should you configure this skill?**",
+      "prompt": "You created an `/explore-alternatives` skill your team uses to brainstorm and evaluate implementation approaches before choosing one. Developers report that afterwards Claude’s responses are coloured by the discussion: referencing rejected approaches, retaining exploration context that interferes with the actual implementation.\n\n**How should you configure this skill?**",
       "options": [
         "Use the `!` prefix in the skill to run the exploration logic as a bash subprocess.",
         "Add `context: fork` to the skill frontmatter.",
@@ -393,7 +393,7 @@
         "Create the skill in `~/.claude/skills/` instead of `.claude/skills/`."
       ],
       "answer": 1,
-      "explanation": "`context: fork` runs the skill in an isolated subagent, so the brainstorm — including every rejected approach — never enters the main conversation history and cannot bias the implementation that follows.\n\nWhy not the others:\n- **A** — A bash subprocess runs shell commands. It has nothing to do with conversation context.\n- **C** — Marker commands cannot remove text that is already in the transcript.\n- **D** — Where a skill is stored controls who can run it, not how its output pollutes context."
+      "explanation": "`context: fork` runs the skill in an isolated subagent, so the brainstorm, including every rejected approach, never enters the main conversation history and cannot bias the implementation that follows.\n\nWhy not the others:\n- **A**: A bash subprocess runs shell commands. It has nothing to do with conversation context.\n- **C**: Marker commands cannot remove text that is already in the transcript.\n- **D**: Where a skill is stored controls who can run it, not how its output pollutes context."
     },
     {
       "id": "cg-14",
@@ -407,7 +407,7 @@
         "Configure the server in project scope with a placeholder token and tell developers to override it locally."
       ],
       "answer": 2,
-      "explanation": "This is what `.mcp.json` env substitution is for: one version-controlled definition of the server that everyone shares, with each developer supplying their own token through the environment. No secret is ever committed.\n\nWhy not the others:\n- **A** — Six independent user-scope configs drift. There is no single source of truth for the team.\n- **B** — A custom proxy is a service to build and maintain for something the config format already does.\n- **D** — A committed placeholder plus local overrides recreates the drift problem and invites someone to commit a real token."
+      "explanation": "This is what `.mcp.json` env substitution is for: one version-controlled definition of the server that everyone shares, with each developer supplying their own token through the environment. No secret is ever committed.\n\nWhy not the others:\n- **A**: Six independent user-scope configs drift. There is no single source of truth for the team.\n- **B**: A custom proxy is a service to build and maintain for something the config format already does.\n- **D**: A committed placeholder plus local overrides recreates the drift problem and invites someone to commit a real token."
     },
     {
       "id": "cg-15",
@@ -421,7 +421,7 @@
         "Define the error-handling pattern in `CLAUDE.md`, then process files in batches across multiple sessions."
       ],
       "answer": 0,
-      "explanation": "Discovery is verbose and disposable; design and implementation need retained context. An Explore subagent absorbs the hundreds of call sites in its own window and returns a summary, leaving the main context free for the two phases that actually benefit from it.\n\nWhy not the others:\n- **B** — `/compact` blurs specifics, and the call-site list is exactly the specifics phase 3 depends on.\n- **C** — Headless batching removes the collaborative design phase the task explicitly requires.\n- **D** — `CLAUDE.md` carries the pattern but not the discovered call sites, so consistency across sessions is unenforced."
+      "explanation": "Discovery is verbose and disposable; design and implementation need retained context. An Explore subagent absorbs the hundreds of call sites in its own window and returns a summary, leaving the main context free for the two phases that actually benefit from it.\n\nWhy not the others:\n- **B**: `/compact` blurs specifics, and the call-site list is exactly the specifics phase 3 depends on.\n- **C**: Headless batching removes the collaborative design phase the task explicitly requires.\n- **D**: `CLAUDE.md` carries the pattern but not the discovered call sites, so consistency across sessions is unenforced."
     },
     {
       "id": "res-01",
@@ -435,7 +435,7 @@
         "Complete the analysis with both numbers, explicitly annotate the conflict with source attribution, and let the coordinator decide how to reconcile before synthesis."
       ],
       "answer": 3,
-      "explanation": "It keeps the separation of responsibilities intact. The analysis agent finishes its own job without blocking, both values survive with attribution, and reconciliation lands on the coordinator, which is the only component with the broader context needed to judge.\n\nWhy not the others:\n- **A** — Arbitrating with heuristics destroys the information the coordinator needs. A footnote does not restore a value you already discarded.\n- **B** — Unmarked, the conflict is invisible. Synthesis will silently pick one and present it as settled fact.\n- **C** — Blocking mid-task wastes the analysis it could have finished, and hands the coordinator a decision with no completed work attached."
+      "explanation": "It keeps the separation of responsibilities intact. The analysis agent finishes its own job without blocking, both values survive with attribution, and reconciliation lands on the coordinator, which is the only component with the broader context needed to judge.\n\nWhy not the others:\n- **A**: Arbitrating with heuristics destroys the information the coordinator needs. A footnote does not restore a value you already discarded.\n- **B**: Unmarked, the conflict is invisible. Synthesis will silently pick one and present it as settled fact.\n- **C**: Blocking mid-task wastes the analysis it could have finished, and hands the coordinator a decision with no completed work attached."
     },
     {
       "id": "res-02",
@@ -449,7 +449,7 @@
         "The coordinator concatenates the raw outputs from both agents and returns them as the final result."
       ],
       "answer": 2,
-      "explanation": "In hub-and-spoke, the coordinator owns every hop between subagents. It forwards both result sets to the synthesis agent, which is the component whose job is merging, and keeps control and observability over the handoff.\n\nWhy not the others:\n- **A** — Direct subagent-to-subagent traffic breaks the hub. The coordinator loses visibility, uniform error handling, and control of what each agent sees.\n- **B** — Merging inside a specialist agent duplicates the synthesis role and gives one subagent context it was never scoped for.\n- **D** — Concatenation is not synthesis. Raw dumps leave the reader to do the integration the system was built to do."
+      "explanation": "In hub-and-spoke, the coordinator owns every hop between subagents. It forwards both result sets to the synthesis agent, which is the component whose job is merging, and keeps control and observability over the handoff.\n\nWhy not the others:\n- **A**: Direct subagent-to-subagent traffic breaks the hub. The coordinator loses visibility, uniform error handling, and control of what each agent sees.\n- **B**: Merging inside a specialist agent duplicates the synthesis role and gives one subagent context it was never scoped for.\n- **D**: Concatenation is not synthesis. Raw dumps leave the reader to do the integration the system was built to do."
     },
     {
       "id": "res-03",
@@ -463,7 +463,7 @@
         "Implement local recovery in the subagent for transient failures, escalating to the coordinator only what it cannot resolve, with attempted steps and partial results attached."
       ],
       "answer": 3,
-      "explanation": "Handle an error at the lowest level that can actually resolve it. A hung parser and a retryable read are the subagent’s business; only genuinely unrecoverable failures deserve coordinator attention, and those arrive with full context and partial progress.\n\nWhy not the others:\n- **A** — A separate error agent messaging subagents directly bypasses the coordinator, which is exactly the hub-and-spoke property you rely on.\n- **B** — Marking failures as success is silent suppression. The coordinator can no longer tell a gap from a genuine empty result.\n- **C** — Pre-validation cannot predict a parser hang, and it moves work to the component with the least information about parsing."
+      "explanation": "Handle an error at the lowest level that can actually resolve it. A hung parser and a retryable read are the subagent’s business; only genuinely unrecoverable failures deserve coordinator attention, and those arrive with full context and partial progress.\n\nWhy not the others:\n- **A**: A separate error agent messaging subagents directly bypasses the coordinator, which is exactly the hub-and-spoke property you rely on.\n- **B**: Marking failures as success is silent suppression. The coordinator can no longer tell a gap from a genuine empty result.\n- **C**: Pre-validation cannot predict a parser hang, and it moves work to the component with the least information about parsing."
     },
     {
       "id": "res-04",
@@ -477,7 +477,7 @@
         "The web-search agent’s queries are too shallow and should be broadened to more sectors."
       ],
       "answer": 2,
-      "explanation": "The logs settle it. Three visual-only subtasks went out, three visual-only results came back. Subagents executed their assignments correctly, so the defect is in what they were assigned, and decomposition is the coordinator’s job.\n\nWhy not the others:\n- **A** — Gap detection at synthesis would surface the problem later; it would not put music or film into the research.\n- **B** — Nothing was filtered. Non-visual sources were never requested in the first place.\n- **D** — The queries matched their subtasks. Broadening a query cannot cover a sector nobody was asked about."
+      "explanation": "The logs settle it. Three visual-only subtasks went out, three visual-only results came back. Subagents executed their assignments correctly, so the defect is in what they were assigned, and decomposition is the coordinator’s job.\n\nWhy not the others:\n- **A**: Gap detection at synthesis would surface the problem later; it would not put music or film into the research.\n- **B**: Nothing was filtered. Non-visual sources were never requested in the first place.\n- **D**: The queries matched their subtasks. Broadening a query cannot cover a sector nobody was asked about."
     },
     {
       "id": "res-05",
@@ -491,7 +491,7 @@
         "Structure the synthesis output with coverage annotations marking which conclusions are well supported and where gaps exist."
       ],
       "answer": 3,
-      "explanation": "Graceful degradation with transparency. The completed work keeps its value, and the uncertainty travels with the report so whoever reads it can calibrate confidence instead of trusting a silently partial answer.\n\nWhy not the others:\n- **A** — An unannotated partial report reads as complete. That is the most dangerous of the four outcomes.\n- **B** — Discarding three good categories because two failed throws away most of the work for no gain.\n- **C** — Blocking synthesis on a speculative retry adds latency without any signal that a longer timeout would help."
+      "explanation": "Graceful degradation with transparency. The completed work keeps its value, and the uncertainty travels with the report so whoever reads it can calibrate confidence instead of trusting a silently partial answer.\n\nWhy not the others:\n- **A**: An unannotated partial report reads as complete. That is the most dangerous of the four outcomes.\n- **B**: Discarding three good categories because two failed throws away most of the work for no gain.\n- **C**: Blocking synthesis on a speculative retry adds latency without any signal that a longer timeout would help."
     },
     {
       "id": "res-06",
@@ -505,7 +505,7 @@
         "Throw an exception that terminates the entire research workflow."
       ],
       "answer": 0,
-      "explanation": "The coordinator has options the subagent does not: skip the file, try another parser, or tell the user. An error carrying context gives it what it needs to choose, and keeps the failure visible.\n\nWhy not the others:\n- **B** — Silent skipping hides a real gap. The final report will look complete while missing a source.\n- **C** — Corruption is not transient. Retrying a broken file three times just burns time on a guaranteed failure.\n- **D** — One unreadable file is not a reason to lose every other result in the run."
+      "explanation": "The coordinator has options the subagent does not: skip the file, try another parser, or tell the user. An error carrying context gives it what it needs to choose, and keeps the failure visible.\n\nWhy not the others:\n- **B**: Silent skipping hides a real gap. The final report will look complete while missing a source.\n- **C**: Corruption is not transient. Retrying a broken file three times just burns time on a guaranteed failure.\n- **D**: One unreadable file is not a reason to lose every other result in the run."
     },
     {
       "id": "res-07",
@@ -519,7 +519,7 @@
         "Expand the document analysis tool description with examples like \"use for uploaded PDFs, Word docs and spreadsheets\", leaving the web-search tool unchanged."
       ],
       "answer": 1,
-      "explanation": "The two names and the two descriptions are near-synonyms, so the selection mechanism itself is ambiguous. Renaming one and pointing its description at web search and URLs removes the overlap rather than compensating for it.\n\nWhy not the others:\n- **A** — A classifier is a routing layer bolted on top of a naming problem. The overlap survives underneath it.\n- **C** — Few-shot examples teach around the ambiguity. The tools still describe themselves identically.\n- **D** — Sharpening one side leaves `analyze_content` still claiming to analyse content, which is exactly what an uploaded report is."
+      "explanation": "The two names and the two descriptions are near-synonyms, so the selection mechanism itself is ambiguous. Renaming one and pointing its description at web search and URLs removes the overlap rather than compensating for it.\n\nWhy not the others:\n- **A**: A classifier is a routing layer bolted on top of a naming problem. The overlap survives underneath it.\n- **C**: Few-shot examples teach around the ambiguity. The tools still describe themselves identically.\n- **D**: Sharpening one side leaves `analyze_content` still claiming to analyse content, which is exactly what an uploaded report is."
     },
     {
       "id": "res-08",
@@ -533,7 +533,7 @@
         "Subagents use isolated memory, and direct communication would need complex serialisation only the coordinator can do."
       ],
       "answer": 0,
-      "explanation": "A star topology buys three things: centralised visibility into every hop, one place where error handling is defined, and fine-grained control over which context each subagent gets. Those are the reasons the pattern exists.\n\nWhy not the others:\n- **B** — Hub-and-spoke is about control, not throughput. It usually adds a hop rather than removing one.\n- **C** — Retry logic is implementable anywhere. It is a consequence of centralisation, not the advantage itself.\n- **D** — Isolated context is a property of subagents, not a serialisation problem the coordinator solves."
+      "explanation": "A star topology buys three things: centralised visibility into every hop, one place where error handling is defined, and fine-grained control over which context each subagent gets. Those are the reasons the pattern exists.\n\nWhy not the others:\n- **B**: Hub-and-spoke is about control, not throughput. It usually adds a hop rather than removing one.\n- **C**: Retry logic is implementable anywhere. It is a consequence of centralisation, not the advantage itself.\n- **D**: Isolated context is a property of subagents, not a serialisation problem the coordinator solves."
     },
     {
       "id": "res-09",
@@ -547,7 +547,7 @@
         "Propagate the timeout exception to a top-level handler that terminates the research workflow."
       ],
       "answer": 0,
-      "explanation": "Every recovery move the coordinator might make needs a different fact. Retry with a narrower query needs the query; continuing needs the partial results; delegating elsewhere needs the alternatives. Structured context carries all of them.\n\nWhy not the others:\n- **B** — An empty result marked successful is a lie the coordinator cannot detect. It will report \"no sources found\".\n- **C** — Backoff inside the subagent is fine; collapsing the outcome to \"search unavailable\" is what destroys the recovery decision.\n- **D** — One timed-out category should not end a run that has other categories completed."
+      "explanation": "Every recovery move the coordinator might make needs a different fact. Retry with a narrower query needs the query; continuing needs the partial results; delegating elsewhere needs the alternatives. Structured context carries all of them.\n\nWhy not the others:\n- **B**: An empty result marked successful is a lie the coordinator cannot detect. It will report \"no sources found\".\n- **C**: Backoff inside the subagent is fine; collapsing the outcome to \"search unavailable\" is what destroys the recovery decision.\n- **D**: One timed-out category should not end a run that has other categories completed."
     },
     {
       "id": "res-10",
@@ -561,7 +561,7 @@
         "Add instructions to the document agent prompt saying `fetch_url` is only for document URLs, never for search."
       ],
       "answer": 0,
-      "explanation": "Constrain the capability at the interface. A tool that only accepts document formats makes the unwanted behaviour impossible rather than discouraged, which is least privilege applied to tool design.\n\nWhy not the others:\n- **B** — Round-tripping every document fetch through the coordinator adds latency and removes a capability the agent legitimately needs.\n- **C** — A domain blocklist is a moving target. Any URL that serves a results page and is not on the list still works.\n- **D** — Prompt instructions are probabilistic. The tool still physically permits exactly what you are trying to prevent."
+      "explanation": "Constrain the capability at the interface. A tool that only accepts document formats makes the unwanted behaviour impossible rather than discouraged, which is least privilege applied to tool design.\n\nWhy not the others:\n- **B**: Round-tripping every document fetch through the coordinator adds latency and removes a capability the agent legitimately needs.\n- **C**: A domain blocklist is a moving target. Any URL that serves a results page and is not on the list still works.\n- **D**: Prompt instructions are probabilistic. The tool still physically permits exactly what you are trying to prevent."
     },
     {
       "id": "res-11",
@@ -575,7 +575,7 @@
         "Run sequentially: document analysis starts only after web search completes, using its results as context."
       ],
       "answer": 1,
-      "explanation": "The root cause is unclear task boundaries, and boundaries are set at delegation time. Partitioning up front prevents the duplicated work from ever being done, and it keeps the agents running in parallel.\n\nWhy not the others:\n- **A** — Deduplicating afterwards still pays for both agents to do the same research. The tokens are already spent.\n- **C** — Shared state introduces cross-agent coupling that hub-and-spoke deliberately avoids, and it races.\n- **D** — Serialising doubles the wall-clock time to fix a problem that partitioning solves without giving up parallelism."
+      "explanation": "The root cause is unclear task boundaries, and boundaries are set at delegation time. Partitioning up front prevents the duplicated work from ever being done, and it keeps the agents running in parallel.\n\nWhy not the others:\n- **A**: Deduplicating afterwards still pays for both agents to do the same research. The tokens are already spent.\n- **C**: Shared state introduces cross-agent coupling that hub-and-spoke deliberately avoids, and it races.\n- **D**: Serialising doubles the wall-clock time to fix a problem that partitioning solves without giving up parallelism."
     },
     {
       "id": "res-12",
@@ -589,7 +589,7 @@
         "Distinguish access failures (timeout) that need a retry decision from valid empty results (\"0 results\") that represent successful queries."
       ],
       "answer": 3,
-      "explanation": "A timeout and a zero-row result are semantically opposite. One means \"we do not know\", the other means \"we looked and there is nothing there\" — a finding in its own right. Only by separating them can the coordinator retry the patents and accept the industry reports.\n\nWhy not the others:\n- **A** — A coverage percentage flattens both outcomes into one number and hides which category needs what.\n- **B** — Calling a successful empty query a failure triggers pointless retries and discards a real finding.\n- **C** — Internal retries are reasonable, but reporting only persistent errors still leaves \"0 results\" and \"timeout\" indistinguishable."
+      "explanation": "A timeout and a zero-row result are semantically opposite. One means \"we do not know\", the other means \"we looked and there is nothing there\", a finding in its own right. Only by separating them can the coordinator retry the patents and accept the industry reports.\n\nWhy not the others:\n- **A**: A coverage percentage flattens both outcomes into one number and hides which category needs what.\n- **B**: Calling a successful empty query a failure triggers pointless retries and discards a real finding.\n- **C**: Internal retries are reasonable, but reporting only persistent errors still leaves \"0 results\" and \"timeout\" indistinguishable."
     },
     {
       "id": "res-13",
@@ -603,7 +603,7 @@
         "Rotate which subagent’s results appear first across research tasks so both sources get top positioning over time."
       ],
       "answer": 2,
-      "explanation": "This is lost-in-the-middle. A key-findings block at the top puts the critical material in the most reliably read position, and explicit headings give the model navigational structure through the middle instead of undifferentiated text.\n\nWhy not the others:\n- **A** — Compressing to 20K throws away the detail the report is made of, and summarisation blurs the numbers first.\n- **B** — Incremental streaming reorders the problem without fixing it; whatever lands in the middle of each chunk still fades.\n- **D** — Rotation makes the failure fairer, not rarer. Something is always in the middle."
+      "explanation": "This is lost-in-the-middle. A key-findings block at the top puts the critical material in the most reliably read position, and explicit headings give the model navigational structure through the middle instead of undifferentiated text.\n\nWhy not the others:\n- **A**: Compressing to 20K throws away the detail the report is made of, and summarisation blurs the numbers first.\n- **B**: Incremental streaming reorders the problem without fixing it; whatever lands in the middle of each chunk still fades.\n- **D**: Rotation makes the failure fairer, not rarer. Something is always in the middle."
     },
     {
       "id": "res-14",
@@ -611,19 +611,19 @@
       "category": "Context",
       "prompt": "In testing, the web-search agent returns 85K tokens including full page content and the document analysis agent returns 70K including chains of thought. That is 155K into a synthesis agent that performs best under 50K.\n\n**Which solution is most effective?**",
       "options": [
-        "Modify the upstream agents to return structured data — key facts, quotes, relevance scores — instead of verbose content and reasoning.",
+        "Modify the upstream agents to return structured data (key facts, quotes, relevance scores) instead of verbose content and reasoning.",
         "Add an intermediate summarisation agent that condenses findings before synthesis.",
         "Have synthesis process findings in sequential batches, maintaining state between calls.",
         "Store findings in a vector database and give synthesis search tools to query during its work."
       ],
       "answer": 0,
-      "explanation": "Cut the tokens where they are produced. Page bodies and reasoning traces were never the payload; forcing subagents to emit structured findings removes the bulk at the source while preserving everything synthesis actually consumes.\n\nWhy not the others:\n- **B** — An extra summarisation hop adds a model call and a lossy step to compress content that should not have been sent.\n- **C** — Batching keeps the full volume and adds state management plus cross-batch inconsistency.\n- **D** — Retrieval infrastructure is a large architectural bet to work around agents that dump raw content."
+      "explanation": "Cut the tokens where they are produced. Page bodies and reasoning traces were never the payload; forcing subagents to emit structured findings removes the bulk at the source while preserving everything synthesis actually consumes.\n\nWhy not the others:\n- **B**: An extra summarisation hop adds a model call and a lossy step to compress content that should not have been sent.\n- **C**: Batching keeps the full volume and adds state management plus cross-batch inconsistency.\n- **D**: Retrieval infrastructure is a large architectural bet to work around agents that dump raw content."
     },
     {
       "id": "res-15",
       "type": "single",
       "category": "Tools & MCP",
-      "prompt": "The synthesis agent often needs to verify claims while merging. Today it hands control back to the coordinator, which calls the web-search agent and re-invokes synthesis with the results — 2 to 3 extra round trips per task and 40% more latency. Assessment shows 85% of these checks are simple facts (dates, names, statistics) and 15% need deeper research.\n\n**Which approach cuts overhead while preserving reliability?**",
+      "prompt": "The synthesis agent often needs to verify claims while merging. Today it hands control back to the coordinator, which calls the web-search agent and re-invokes synthesis with the results: 2 to 3 extra round trips per task and 40% more latency. Assessment shows 85% of these checks are simple facts (dates, names, statistics) and 15% need deeper research.\n\n**Which approach cuts overhead while preserving reliability?**",
       "options": [
         "Give the synthesis agent access to all web-search tools so it can handle any verification directly.",
         "Have synthesis accumulate every verification need and return them as one batch to the coordinator at the end.",
@@ -631,7 +631,7 @@
         "Give synthesis a limited-scope `verify_fact` tool for simple checks, routing complex verification through the coordinator."
       ],
       "answer": 3,
-      "explanation": "Least privilege sized to the traffic. The narrow tool covers the 85% case and removes almost all the round trips; the 15% that genuinely needs research still goes through the coordinator, so the separation of responsibilities survives.\n\nWhy not the others:\n- **A** — Full web-search access turns the synthesis agent into a second research agent and dissolves the role boundary.\n- **B** — Batching at the end blocks: later synthesis steps often depend on facts verified earlier.\n- **C** — Speculative caching cannot predict which claims synthesis will question, and inflates every search result."
+      "explanation": "Least privilege sized to the traffic. The narrow tool covers the 85% case and removes almost all the round trips; the 15% that genuinely needs research still goes through the coordinator, so the separation of responsibilities survives.\n\nWhy not the others:\n- **A**: Full web-search access turns the synthesis agent into a second research agent and dissolves the role boundary.\n- **B**: Batching at the end blocks: later synthesis steps often depend on facts verified earlier.\n- **C**: Speculative caching cannot predict which claims synthesis will question, and inflates every search result."
     },
     {
       "id": "ci-01",
@@ -645,13 +645,13 @@
         "Keep the narrative format and add a summarisation step that asks Claude to produce a structured JSON summary of the findings."
       ],
       "answer": 1,
-      "explanation": "The CLI has purpose-built flags for exactly this. `--output-format json` plus `--json-schema` enforces the shape at the tool level, so the pipeline gets well-formed JSON with the required fields every run instead of hoping the prose parses.\n\nWhy not the others:\n- **A** — `CLAUDE.md` shapes behaviour probabilistically. One malformed run breaks the parser and the comment job.\n- **C** — A hand-rolled bracket template is the same probabilistic bet with a more fragile parser on the other end.\n- **D** — A second model call to restructure the first one adds cost and latency, and can still emit invalid JSON."
+      "explanation": "The CLI has purpose-built flags for exactly this. `--output-format json` plus `--json-schema` enforces the shape at the tool level, so the pipeline gets well-formed JSON with the required fields every run instead of hoping the prose parses.\n\nWhy not the others:\n- **A**: `CLAUDE.md` shapes behaviour probabilistically. One malformed run breaks the parser and the comment job.\n- **C**: A hand-rolled bracket template is the same probabilistic bet with a more fragile parser on the other end.\n- **D**: A second model call to restructure the first one adds cost and latency, and can still emit invalid JSON."
     },
     {
       "id": "ci-02",
       "type": "single",
       "category": "Prompting",
-      "prompt": "Your team uses Claude Code to generate code. A pattern emerges: non-obvious problems — performance tweaks that break edge cases, cleanups that quietly change behaviour — are only caught when a human reviews the PR. Claude’s reasoning during generation shows it considered those cases and concluded its approach was fine.\n\n**Which approach addresses the root cause of this self-check limitation?**",
+      "prompt": "Your team uses Claude Code to generate code. A pattern emerges: non-obvious problems (performance tweaks that break edge cases, cleanups that quietly change behaviour) are only caught when a human reviews the PR. Claude’s reasoning during generation shows it considered those cases and concluded its approach was fine.\n\n**Which approach addresses the root cause of this self-check limitation?**",
       "options": [
         "Run a second independent instance of Claude Code to review the changes without access to the generator’s reasoning.",
         "Enable extended thinking during generation so the model deliberates more thoroughly before producing suggestions.",
@@ -659,7 +659,7 @@
         "Include full test files and documentation in the prompt so Claude understands expected behaviour during generation."
       ],
       "answer": 0,
-      "explanation": "The session that produced the code carries its own justification for it and is measurably less willing to overturn that reasoning. A fresh instance with no generation context is the software equivalent of a second pair of eyes.\n\nWhy not the others:\n- **B** — More deliberation inside the same context reinforces the same conclusion. The reasoning already considered these cases.\n- **C** — Self-critique from within the generation context inherits the confirmation bias that caused the miss.\n- **D** — Better context improves generation quality; it does not create an independent reviewer."
+      "explanation": "The session that produced the code carries its own justification for it and is measurably less willing to overturn that reasoning. A fresh instance with no generation context is the software equivalent of a second pair of eyes.\n\nWhy not the others:\n- **B**: More deliberation inside the same context reinforces the same conclusion. The reasoning already considered these cases.\n- **C**: Self-critique from within the generation context inherits the confirmation bias that caused the miss.\n- **D**: Better context improves generation quality; it does not create an independent reviewer."
     },
     {
       "id": "ci-03",
@@ -673,7 +673,7 @@
         "Up to 24 hours of latency is too slow for PR feedback, though the workflow would otherwise work."
       ],
       "answer": 1,
-      "explanation": "Batch is fire-and-forget: one request in, one response out. There is no point at which your code can intercept a tool call, run it, and hand the result back — so a workflow built on multiple tool round trips inside one logical interaction cannot run there at all.\n\nWhy not the others:\n- **A** — `custom_id` exists precisely to correlate batch requests and responses.\n- **C** — A batch request is an ordinary Messages API request: it may carry `tools`, and even prior `tool_use`/`tool_result` turns. What it cannot do is pause mid-request for your code to run the tool.\n- **D** — Latency is a real drawback elsewhere, but here the workflow is structurally incompatible, not merely slow."
+      "explanation": "Batch is fire-and-forget: one request in, one response out. There is no point at which your code can intercept a tool call, run it, and hand the result back, so a workflow built on multiple tool round trips inside one logical interaction cannot run there at all.\n\nWhy not the others:\n- **A**: `custom_id` exists precisely to correlate batch requests and responses.\n- **C**: A batch request is an ordinary Messages API request: it may carry `tools`, and even prior `tool_use`/`tool_result` turns. What it cannot do is pause mid-request for your code to run the tool.\n- **D**: Latency is a real drawback elsewhere, but here the workflow is structurally incompatible, not merely slow."
     },
     {
       "id": "ci-04",
@@ -687,21 +687,21 @@
         "Synchronous for PR style checks and nightly test generation; Message Batches only for the weekly audits."
       ],
       "answer": 1,
-      "explanation": "Only one of the three has a human waiting on it. Blocking work goes synchronous; anything on a schedule with hours of slack — weekly audits, nightly generation — absorbs the 24-hour window and takes the 50% discount.\n\nWhy not the others:\n- **A** — Putting the blocking pre-merge check on a 24-hour window stalls every merge in the repo.\n- **C** — Keeping everything synchronous leaves the discount on the table for two workloads that have no latency requirement.\n- **D** — Nightly generation has a full night of slack. There is no reason to pay full price for it."
+      "explanation": "Only one of the three has a human waiting on it. Blocking work goes synchronous; anything on a schedule with hours of slack (weekly audits, nightly generation) absorbs the 24-hour window and takes the 50% discount.\n\nWhy not the others:\n- **A**: Putting the blocking pre-merge check on a 24-hour window stalls every merge in the repo.\n- **C**: Keeping everything synchronous leaves the discount on the table for two workloads that have no latency requirement.\n- **D**: Nightly generation has a full night of slack. There is no reason to pay full price for it."
     },
     {
       "id": "ci-05",
       "type": "single",
       "category": "Prompting",
-      "prompt": "Your automated reviews find real issues, but developers say the feedback is not actionable: findings read \"complex ticket routing logic\" or \"potential null pointer\" without saying what to change. Adding instructions like \"always include concrete fix suggestions\" produces inconsistent output — sometimes detailed, sometimes vague.\n\n**Which prompting technique most reliably produces actionable feedback?**",
+      "prompt": "Your automated reviews find real issues, but developers say the feedback is not actionable: findings read \"complex ticket routing logic\" or \"potential null pointer\" without saying what to change. Adding instructions like \"always include concrete fix suggestions\" produces inconsistent output: sometimes detailed, sometimes vague.\n\n**Which prompting technique most reliably produces actionable feedback?**",
       "options": [
         "Refine the instructions further with explicit requirements for each part of the feedback format.",
         "Expand the context window to include more of the surrounding codebase so the model can propose concrete fixes.",
         "Use a two-pass approach: one prompt identifies issues, a second generates fixes.",
-        "Add 3-4 few-shot examples showing the exact required format — identified issue, location in code, concrete fix."
+        "Add 3-4 few-shot examples showing the exact required format: identified issue, location in code, concrete fix."
       ],
       "answer": 3,
-      "explanation": "You already tried instructions and got variance. Examples show the target instead of describing it, and the model generalises the pattern to new findings rather than reinterpreting an adjective each run.\n\nWhy not the others:\n- **A** — More precise wording of the same instruction is the approach that already failed.\n- **B** — The model is not short of context; it is short of a definition of \"actionable\".\n- **C** — Two passes double the cost and still leave the second pass working from a vague instruction."
+      "explanation": "You already tried instructions and got variance. Examples show the target instead of describing it, and the model generalises the pattern to new findings rather than reinterpreting an adjective each run.\n\nWhy not the others:\n- **A**: More precise wording of the same instruction is the approach that already failed.\n- **B**: The model is not short of context; it is short of a definition of \"actionable\".\n- **C**: Two passes double the cost and still leave the second pass working from a vague instruction."
     },
     {
       "id": "ci-06",
@@ -715,13 +715,13 @@
         "Neither mode."
       ],
       "answer": 1,
-      "explanation": "Deep analysis already runs overnight and already polls before publishing — its architecture is the batch architecture. The pre-merge hook blocks a human and cannot absorb a 24-hour window.\n\nWhy not the others:\n- **A** — Exactly backwards: the blocking check is the one workload that must stay synchronous.\n- **C** — Batching the blocking hook stalls merges for up to a day.\n- **D** — The overnight job has no latency requirement at all. Declining the discount there is pure waste."
+      "explanation": "Deep analysis already runs overnight and already polls before publishing, so its architecture is the batch architecture. The pre-merge hook blocks a human and cannot absorb a 24-hour window.\n\nWhy not the others:\n- **A**: Exactly backwards: the blocking check is the one workload that must stay synchronous.\n- **C**: Batching the blocking hook stalls merges for up to a day.\n- **D**: The overnight job has no latency requirement at all. Declining the discount there is pure waste."
     },
     {
       "id": "ci-07",
       "type": "single",
       "category": "Prompting",
-      "prompt": "Your automated review analyses comments and docstrings. The prompt tells Claude to \"check that comments are accurate and up to date\". Findings often flag acceptable patterns — TODO markers, plain descriptions — while missing comments that describe behaviour the code no longer implements.\n\n**What change addresses the root cause?**",
+      "prompt": "Your automated review analyses comments and docstrings. The prompt tells Claude to \"check that comments are accurate and up to date\". Findings often flag acceptable patterns (TODO markers, plain descriptions) while missing comments that describe behaviour the code no longer implements.\n\n**What change addresses the root cause?**",
       "options": [
         "Include git blame data so Claude can spot comments that predate recent code changes.",
         "Add few-shot examples of misleading comments so the model recognises similar patterns.",
@@ -729,7 +729,7 @@
         "Specify explicit criteria: flag a comment only when the behaviour it claims contradicts the code’s actual behaviour."
       ],
       "answer": 3,
-      "explanation": "\"Accurate and up to date\" is an adjective, and the model is guessing at its boundary in both directions. A precise definition of what counts as a problem removes the false positives and the misses at once.\n\nWhy not the others:\n- **A** — Age does not imply inaccuracy. A five-year-old comment can be perfectly correct.\n- **B** — Examples help once a category is defined; here the category itself is undefined.\n- **C** — Pre-filtering suppresses false positives but does nothing about the contradictory comments being missed."
+      "explanation": "\"Accurate and up to date\" is an adjective, and the model is guessing at its boundary in both directions. A precise definition of what counts as a problem removes the false positives and the misses at once.\n\nWhy not the others:\n- **A**: Age does not imply inaccuracy. A five-year-old comment can be perfectly correct.\n- **B**: Examples help once a category is defined; here the category itself is undefined.\n- **C**: Pre-filtering suppresses false positives but does nothing about the contradictory comments being missed."
     },
     {
       "id": "ci-08",
@@ -743,7 +743,7 @@
         "Post-process to filter suggestions whose descriptions overlap existing test names by keyword."
       ],
       "answer": 0,
-      "explanation": "Claude cannot avoid duplicating tests it has never seen. Putting the existing suite in context is the missing input, and it turns the same 10 suggestions into 10 genuinely new ones.\n\nWhy not the others:\n- **B** — Asking for fewer suggestions gives you 5 suggestions of which 3 are still duplicates.\n- **C** — Edge cases can be covered already too. The blindness is about coverage, not category.\n- **D** — Keyword overlap is a lossy proxy that drops good suggestions and keeps differently-worded duplicates."
+      "explanation": "Claude cannot avoid duplicating tests it has never seen. Putting the existing suite in context is the missing input, and it turns the same 10 suggestions into 10 genuinely new ones.\n\nWhy not the others:\n- **B**: Asking for fewer suggestions gives you 5 suggestions of which 3 are still duplicates.\n- **C**: Edge cases can be covered already too. The blindness is about coverage, not category.\n- **D**: Keyword overlap is a lossy proxy that drops good suggestions and keeps differently-worded duplicates."
     },
     {
       "id": "ci-09",
@@ -757,7 +757,7 @@
         "Include the previous review findings in context and instruct Claude to report only new or still-unresolved issues."
       ],
       "answer": 3,
-      "explanation": "Same shape as the duplicate-tests problem: the reviewer is missing the record of what it already said. With prior findings in context, Claude can tell a fixed issue from an outstanding one — a judgement no string match can make.\n\nWhy not the others:\n- **A** — Reviewing less often reduces the count of duplicates by reducing review, which is not the same as fixing it.\n- **B** — Text matching cannot distinguish \"already fixed\" from \"still broken, described the same way\".\n- **C** — A fix in one file can leave a related file untouched and still broken. Scope narrowing hides real findings."
+      "explanation": "Same shape as the duplicate-tests problem: the reviewer is missing the record of what it already said. With prior findings in context, Claude can tell a fixed issue from an outstanding one, a judgement no string match can make.\n\nWhy not the others:\n- **A**: Reviewing less often reduces the count of duplicates by reducing review, which is not the same as fixing it.\n- **B**: Text matching cannot distinguish \"already fixed\" from \"still broken, described the same way\".\n- **C**: A fix in one file can leave a related file untouched and still broken. Scope narrowing hides real findings."
     },
     {
       "id": "ci-10",
@@ -771,13 +771,13 @@
         "Set the environment variable `CLAUDE_HEADLESS=true`."
       ],
       "answer": 1,
-      "explanation": "`-p` (or `--print`) is the documented non-interactive mode: process the prompt, print to stdout, exit. It is the only correct way to run Claude Code in CI/CD.\n\nWhy not the others:\n- **A** — No such flag. Invented flags are a recurring distractor shape on this exam.\n- **C** — A Unix workaround that suppresses the prompt without putting the CLI into the mode designed for this.\n- **D** — No such environment variable."
+      "explanation": "`-p` (or `--print`) is the documented non-interactive mode: process the prompt, print to stdout, exit. It is the only correct way to run Claude Code in CI/CD.\n\nWhy not the others:\n- **A**: No such flag. Invented flags are a recurring distractor shape on this exam.\n- **C**: A Unix workaround that suppresses the prompt without putting the CLI into the mode designed for this.\n- **D**: No such environment variable."
     },
     {
       "id": "ci-11",
       "type": "single",
       "category": "Prompting",
-      "prompt": "A pull request changes 14 files in an inventory module. A single pass over all of them gives inconsistent results: detailed feedback on some files, shallow comments on others, obvious bugs missed, and contradictory verdicts — a pattern flagged in one file and the identical code approved in another.\n\n**How should you restructure the review?**",
+      "prompt": "A pull request changes 14 files in an inventory module. A single pass over all of them gives inconsistent results: detailed feedback on some files, shallow comments on others, obvious bugs missed, and contradictory verdicts, with a pattern flagged in one file and the identical code approved in another.\n\n**How should you restructure the review?**",
       "options": [
         "Run three independent full-PR passes and flag only issues that appear in at least two of the three.",
         "Split into focused passes: review each file individually for local issues, then run a separate integration pass over cross-file data flows.",
@@ -785,7 +785,7 @@
         "Switch to a larger model with a bigger context window so it can attend to all 14 files at once."
       ],
       "answer": 1,
-      "explanation": "The symptoms are textbook attention dilution. Per-file passes give every file the same depth, and a dedicated integration pass covers the cross-file concerns that per-file review structurally cannot see.\n\nWhy not the others:\n- **A** — Consensus voting across inconsistent runs suppresses real bugs that only one run happened to catch.\n- **C** — Pushing the work onto developers changes their behaviour, not the system that is failing.\n- **D** — A bigger window is a bigger container. Attention quality across many files is not a capacity problem."
+      "explanation": "The symptoms are textbook attention dilution. Per-file passes give every file the same depth, and a dedicated integration pass covers the cross-file concerns that per-file review structurally cannot see.\n\nWhy not the others:\n- **A**: Consensus voting across inconsistent runs suppresses real bugs that only one run happened to catch.\n- **C**: Pushing the work onto developers changes their behaviour, not the system that is failing.\n- **D**: A bigger window is a bigger container. Attention quality across many files is not a capacity problem."
     },
     {
       "id": "ci-12",
@@ -799,13 +799,13 @@
         "Configure Claude to show only high-confidence findings, filtering uncertain flags out."
       ],
       "answer": 0,
-      "explanation": "The constraint rules out filtering, so the only lever left is the cost of triaging each finding. Inlining rationale and confidence lets a developer judge from the list instead of opening every item, and every finding stays visible.\n\nWhy not the others:\n- **B** — Suppression is filtering, which stakeholders explicitly rejected.\n- **C** — Severity buckets reorder the queue but each finding still needs opening to judge.\n- **D** — Also filtering, and it hides exactly the borderline findings a human should adjudicate."
+      "explanation": "The constraint rules out filtering, so the only lever left is the cost of triaging each finding. Inlining rationale and confidence lets a developer judge from the list instead of opening every item, and every finding stays visible.\n\nWhy not the others:\n- **B**: Suppression is filtering, which stakeholders explicitly rejected.\n- **C**: Severity buckets reorder the queue but each finding still needs opening to judge.\n- **D**: Also filtering, and it hides exactly the borderline findings a human should adjudicate."
     },
     {
       "id": "ci-13",
       "type": "single",
       "category": "Prompting",
-      "prompt": "False-positive rates differ sharply by category: security and correctness 8%, performance 18%, style and naming 52%, documentation 48%. Surveys show growing distrust — developers dismiss findings unread because \"half are wrong\" — and the noisy categories are eroding trust in the accurate ones.\n\n**Which approach best restores developer trust?**",
+      "prompt": "False-positive rates differ sharply by category: security and correctness 8%, performance 18%, style and naming 52%, documentation 48%. Surveys show growing distrust, with developers dismissing findings unread because \"half are wrong\", and the noisy categories are eroding trust in the accurate ones.\n\n**Which approach best restores developer trust?**",
       "options": [
         "Temporarily disable the high-false-positive categories (style, naming, documentation), keeping the high-precision ones while you improve the prompts.",
         "Keep every category enabled but show a confidence score with each finding so developers can decide what to investigate.",
@@ -813,7 +813,7 @@
         "Apply a uniform strictness reduction across all categories to bring the overall false-positive rate down."
       ],
       "answer": 0,
-      "explanation": "Trust is being destroyed right now by two categories that are wrong half the time. Switching them off stops the bleeding immediately, preserves the 8% categories that are genuinely useful, and buys time to fix the prompts before re-enabling.\n\nWhy not the others:\n- **B** — Confidence scores add a number next to noise. The reader is already dismissing the list wholesale.\n- **C** — Weeks of improvement while a 52% category keeps firing lets the trust problem compound.\n- **D** — Uniform tightening also suppresses the security and correctness findings that were working at 8%."
+      "explanation": "Trust is being destroyed right now by two categories that are wrong half the time. Switching them off stops the bleeding immediately, preserves the 8% categories that are genuinely useful, and buys time to fix the prompts before re-enabling.\n\nWhy not the others:\n- **B**: Confidence scores add a number next to noise. The reader is already dismissing the list wholesale.\n- **C**: Weeks of improvement while a 52% category keeps firing lets the trust problem compound.\n- **D**: Uniform tightening also suppresses the security and correctness findings that were working at 8%."
     },
     {
       "id": "ci-14",
@@ -827,7 +827,7 @@
         "Keep both synchronous to avoid issues with batch result ordering."
       ],
       "answer": 2,
-      "explanation": "Half the proposal is right. The overnight report has a whole night of slack and should take the discount; the pre-merge check has a developer waiting and cannot tolerate a window measured in hours.\n\nWhy not the others:\n- **A** — A \"fallback if too slow\" still means the merge is blocked while you wait to find out.\n- **B** — Polling does not shorten the window. The blocking check still stalls.\n- **D** — Ordering is not the issue — `custom_id` handles correlation — and this declines a free 50% on the overnight job."
+      "explanation": "Half the proposal is right. The overnight report has a whole night of slack and should take the discount; the pre-merge check has a developer waiting and cannot tolerate a window measured in hours.\n\nWhy not the others:\n- **A**: A \"fallback if too slow\" still means the merge is blocked while you wait to find out.\n- **B**: Polling does not shorten the window. The blocking check still stalls.\n- **D**: Ordering is not the issue, since `custom_id` handles correlation, and this declines a free 50% on the overnight job."
     },
     {
       "id": "cv-01",
@@ -841,7 +841,7 @@
         "Replace it with two tools: `preview_remove_member` returns impact details plus a single-use confirmation token, and `execute_remove_member` requires that token."
       ],
       "answer": 3,
-      "explanation": "Token binding makes execution without a preview architecturally impossible — the execute tool cannot run without a value only the preview tool can mint. That is enforcement in the interface, not compliance with a request.\n\nWhy not the others:\n- **A** — A 60-second window is a timing heuristic. It permits execution after an unconfirmed preview and blocks a legitimate one at 61 seconds.\n- **B** — This relies on orchestration infrastructure sitting outside the tool, and confirms the call rather than binding it to a preview.\n- **C** — Instructions in a description are probabilistic, and the stem already shows the agent ignoring the intended sequence."
+      "explanation": "Token binding makes execution without a preview architecturally impossible: the execute tool cannot run without a value only the preview tool can mint. That is enforcement in the interface, not compliance with a request.\n\nWhy not the others:\n- **A**: A 60-second window is a timing heuristic. It permits execution after an unconfirmed preview and blocks a legitimate one at 61 seconds.\n- **B**: This relies on orchestration infrastructure sitting outside the tool, and confirms the call rather than binding it to a preview.\n- **C**: Instructions in a description are probabilistic, and the stem already shows the agent ignoring the intended sequence."
     },
     {
       "id": "cv-02",
@@ -855,7 +855,7 @@
         "Return all errors with a `retryable` boolean flag and error type details."
       ],
       "answer": 2,
-      "explanation": "The tool has definitive knowledge of which error it just hit, so it is the right abstraction boundary for the retry. Transient failures resolve invisibly; syntax errors come back immediately with the detail needed to fix the parameters.\n\nWhy not the others:\n- **A** — Teaching the model to classify errors it should never have to see puts a probabilistic step where a deterministic one belongs.\n- **B** — Uniform backoff is the current waste, formalised. Syntax errors will never succeed.\n- **D** — This is a real improvement and a close second — but it hands the retry decision to the agent when the tool already knows the answer."
+      "explanation": "The tool has definitive knowledge of which error it just hit, so it is the right abstraction boundary for the retry. Transient failures resolve invisibly; syntax errors come back immediately with the detail needed to fix the parameters.\n\nWhy not the others:\n- **A**: Teaching the model to classify errors it should never have to see puts a probabilistic step where a deterministic one belongs.\n- **B**: Uniform backoff is the current waste, formalised. Syntax errors will never succeed.\n- **D**: This is a real improvement and a close second, but it hands the retry decision to the agent when the tool already knows the answer."
     },
     {
       "id": "cv-03",
@@ -869,7 +869,7 @@
         "Recommend a balanced portfolio without addressing the conflict."
       ],
       "answer": 0,
-      "explanation": "These two goals are fundamentally incompatible, and only the user can say which wins. Every other option makes an assumption on their behalf about a decision that is theirs.\n\nWhy not the others:\n- **B** — Two recommendations push the unresolved decision back onto the user without naming the conflict causing it.\n- **C** — Recency is not priority. The earlier statement may well be the binding constraint.\n- **D** — A balanced portfolio silently splits the difference and satisfies neither stated goal."
+      "explanation": "These two goals are fundamentally incompatible, and only the user can say which wins. Every other option makes an assumption on their behalf about a decision that is theirs.\n\nWhy not the others:\n- **B**: Two recommendations push the unresolved decision back onto the user without naming the conflict causing it.\n- **C**: Recency is not priority. The earlier statement may well be the binding constraint.\n- **D**: A balanced portfolio silently splits the difference and satisfies neither stated goal."
     },
     {
       "id": "cv-04",
@@ -883,7 +883,7 @@
         "Your application is not including prior messages in the `messages` array."
       ],
       "answer": 3,
-      "explanation": "Claude has no server-side memory — every API call is stateless. If the earlier turns are not in the `messages` array of this request, they did not happen as far as the model is concerned.\n\nWhy not the others:\n- **A** — Vector databases are not part of Claude’s architecture, and conversation memory is just the history you send.\n- **B** — Two messages cannot exhaust a context window.\n- **C** — There is no `session_id` parameter. State is carried by the request, not by a session handle."
+      "explanation": "Claude has no server-side memory; every API call is stateless. If the earlier turns are not in the `messages` array of this request, they did not happen as far as the model is concerned.\n\nWhy not the others:\n- **A**: Vector databases are not part of Claude’s architecture, and conversation memory is just the history you send.\n- **B**: Two messages cannot exhaust a context window.\n- **C**: There is no `session_id` parameter. State is carried by the request, not by a session handle."
     },
     {
       "id": "cv-05",
@@ -897,7 +897,7 @@
         "Store the full conversation externally and retrieve relevant parts by semantic search."
       ],
       "answer": 2,
-      "explanation": "Three kinds of content, three treatments. Allergies and quantities are exactly what summarisation destroys, so they get extracted into a structured block; discussion compresses cheaply; recent turns stay verbatim for coherence.\n\nWhy not the others:\n- **A** — Summarising everything blurs the allergy list, which is the one thing in this transcript that must be exact.\n- **B** — A recency window drops the allergies stated at minute three.\n- **D** — Retrieval infrastructure is architectural overkill for a single 40-minute session, and it can miss a fact the query does not resemble."
+      "explanation": "Three kinds of content, three treatments. Allergies and quantities are exactly what summarisation destroys, so they get extracted into a structured block; discussion compresses cheaply; recent turns stay verbatim for coherence.\n\nWhy not the others:\n- **A**: Summarising everything blurs the allergy list, which is the one thing in this transcript that must be exact.\n- **B**: A recency window drops the allergies stated at minute three.\n- **D**: Retrieval infrastructure is architectural overkill for a single 40-minute session, and it can miss a fact the query does not resemble."
     },
     {
       "id": "cv-06",
@@ -911,7 +911,7 @@
         "Summarise dropped messages every turn and prepend the running summary."
       ],
       "answer": 0,
-      "explanation": "Both halves of the problem get addressed: recent turns stay exact for conversational coherence, and older ones survive in compressed form instead of being deleted outright.\n\nWhy not the others:\n- **B** — Semantic search can miss context that is important but not similar to the current query, and it is heavy for one session.\n- **C** — Doubling the window postpones the identical failure to pair 51.\n- **D** — Re-summarising every turn accumulates summarisation error and adds per-turn overhead."
+      "explanation": "Both halves of the problem get addressed: recent turns stay exact for conversational coherence, and older ones survive in compressed form instead of being deleted outright.\n\nWhy not the others:\n- **B**: Semantic search can miss context that is important but not similar to the current query, and it is heavy for one session.\n- **C**: Doubling the window postpones the identical failure to pair 51.\n- **D**: Re-summarising every turn accumulates summarisation error and adds per-turn overhead."
     },
     {
       "id": "cv-07",
@@ -925,7 +925,7 @@
         "The model builds an internal user profile requiring more processing."
       ],
       "answer": 0,
-      "explanation": "The API is stateless, so every request re-sends the whole transcript. Input tokens grow linearly with the conversation, and both cost and processing time grow with them.\n\nWhy not the others:\n- **B** — Response length is not tied to conversation length.\n- **C** — Your storage may or may not slow down, but it is not what makes the model call slower.\n- **D** — The model keeps no state between calls. There is no profile being built."
+      "explanation": "The API is stateless, so every request re-sends the whole transcript. Input tokens grow linearly with the conversation, and both cost and processing time grow with them.\n\nWhy not the others:\n- **B**: Response length is not tied to conversation length.\n- **C**: Your storage may or may not slow down, but it is not what makes the model call slower.\n- **D**: The model keeps no state between calls. There is no profile being built."
     },
     {
       "id": "cv-08",
@@ -939,7 +939,7 @@
         "Structured XML tags marking discussion conclusions."
       ],
       "answer": 2,
-      "explanation": "This is the case where retrieval earns its complexity: months of material, and the user is asking for one specific past exchange by topic. Semantic search is the only option here that can surface that exchange on demand.\n\nWhy not the others:\n- **A** — Truncation discards almost all three months of discussion.\n- **B** — Summarisation abstracts away the specific conclusions the user is asking to see.\n- **D** — Tagging requires restructuring all past content and still leaves you without a way to retrieve at this scale."
+      "explanation": "This is the case where retrieval earns its complexity: months of material, and the user is asking for one specific past exchange by topic. Semantic search is the only option here that can surface that exchange on demand.\n\nWhy not the others:\n- **A**: Truncation discards almost all three months of discussion.\n- **B**: Summarisation abstracts away the specific conclusions the user is asking to see.\n- **D**: Tagging requires restructuring all past content and still leaves you without a way to retrieve at this scale."
     },
     {
       "id": "cv-09",
@@ -953,7 +953,7 @@
         "Use post-response validation to regenerate non-compliant responses."
       ],
       "answer": 2,
-      "explanation": "Periodic reinforcement re-establishes the constraints as history accumulates, which is the direct counter to instruction drift and costs a small message rather than a conversation.\n\nWhy not the others:\n- **A** — Moving guidelines out of the system prompt reduces their authority rather than increasing it.\n- **B** — Starting over destroys the context the conversation is built on.\n- **D** — Regeneration is corrective rather than preventive, and it adds significant latency to every non-compliant turn."
+      "explanation": "Periodic reinforcement re-establishes the constraints as history accumulates, which is the direct counter to instruction drift and costs a small message rather than a conversation.\n\nWhy not the others:\n- **A**: Moving guidelines out of the system prompt reduces their authority rather than increasing it.\n- **B**: Starting over destroys the context the conversation is built on.\n- **D**: Regeneration is corrective rather than preventive, and it adds significant latency to every non-compliant turn."
     },
     {
       "id": "cv-10",
@@ -967,7 +967,7 @@
         "Evaluate responses and regenerate when the difficulty level mismatches."
       ],
       "answer": 1,
-      "explanation": "A 2,800-token wall of declarative rules has to be reasoned about fresh on every turn, which is what decays. Examples give a pattern to match instead of rules to apply, and pattern matching holds up far better across many turns.\n\nWhy not the others:\n- **A** — Reminder injection treats the symptom; the underlying prompt is still abstract rules the model must re-derive.\n- **C** — End placement helps at turn one and does nothing about turn-by-turn drift.\n- **D** — Regeneration is expensive and corrective, catching failures rather than preventing them."
+      "explanation": "A 2,800-token wall of declarative rules has to be reasoned about fresh on every turn, which is what decays. Examples give a pattern to match instead of rules to apply, and pattern matching holds up far better across many turns.\n\nWhy not the others:\n- **A**: Reminder injection treats the symptom; the underlying prompt is still abstract rules the model must re-derive.\n- **C**: End placement helps at turn one and does nothing about turn-by-turn drift.\n- **D**: Regeneration is expensive and corrective, catching failures rather than preventing them."
     },
     {
       "id": "cv-11",
@@ -981,13 +981,13 @@
         "In environment variables."
       ],
       "answer": 1,
-      "explanation": "The system prompt exists for persistent behavioural constraints that apply across the whole conversation, and it outranks user messages.\n\nWhy not the others:\n- **A** — Repeating them on every user turn is redundant token overhead for something sent once.\n- **C** — The model can deviate from its own prior statements; a self-declaration is not a constraint.\n- **D** — Environment variables have no effect on model behaviour."
+      "explanation": "The system prompt exists for persistent behavioural constraints that apply across the whole conversation, and it outranks user messages.\n\nWhy not the others:\n- **A**: Repeating them on every user turn is redundant token overhead for something sent once.\n- **C**: The model can deviate from its own prior statements; a self-declaration is not a constraint.\n- **D**: Environment variables have no effect on model behaviour."
     },
     {
       "id": "cv-12",
       "type": "single",
       "category": "Prompting",
-      "prompt": "Users report repetitive response openings — \"Certainly!\" and \"I’d be happy to help!\" on nearly every turn.\n\n**What is the most effective approach?**",
+      "prompt": "Users report repetitive response openings: \"Certainly!\" and \"I’d be happy to help!\" on nearly every turn.\n\n**What is the most effective approach?**",
       "options": [
         "Append a partial assistant message with a direct response opening.",
         "Lower the temperature setting.",
@@ -995,7 +995,7 @@
         "Add system prompt instructions to avoid those phrases."
       ],
       "answer": 0,
-      "explanation": "Prefilling the assistant turn means generation continues from your opening instead of producing one. The greeting is prevented at the generation level rather than discouraged or cleaned up afterwards.\n\nWhy not the others:\n- **B** — Temperature controls randomness, not which specific phrases the model favours.\n- **C** — String stripping is fragile and leaves awkward seams when the greeting is woven into the sentence.\n- **D** — Instructions help but the model still produces variants of the banned phrases."
+      "explanation": "Prefilling the assistant turn means generation continues from your opening instead of producing one. The greeting is prevented at the generation level rather than discouraged or cleaned up afterwards.\n\nWhy not the others:\n- **B**: Temperature controls randomness, not which specific phrases the model favours.\n- **C**: String stripping is fragile and leaves awkward seams when the greeting is woven into the sentence.\n- **D**: Instructions help but the model still produces variants of the banned phrases."
     },
     {
       "id": "cv-13",
@@ -1009,7 +1009,7 @@
         "Append the status update as a prefix to the next user message."
       ],
       "answer": 3,
-      "explanation": "The next user turn is a natural injection point that already exists. The context arrives in time to be used and the dialogue flow is untouched.\n\nWhy not the others:\n- **A** — Rebuilding the system prompt mid-session is cumbersome, and the system prompt is for behaviour, not transient events.\n- **B** — A synthetic user message confuses attribution — the user never said it — and interrupts the exchange.\n- **C** — Polling a tool every turn is wasteful when the event is rare, and adds latency to every response."
+      "explanation": "The next user turn is a natural injection point that already exists. The context arrives in time to be used and the dialogue flow is untouched.\n\nWhy not the others:\n- **A**: Rebuilding the system prompt mid-session is cumbersome, and the system prompt is for behaviour, not transient events.\n- **B**: A synthetic user message confuses attribution (the user never said it) and interrupts the exchange.\n- **C**: Polling a tool every turn is wasteful when the event is rare, and adds latency to every response."
     },
     {
       "id": "cv-14",
@@ -1023,7 +1023,7 @@
         "Use a structured intake form."
       ],
       "answer": 2,
-      "explanation": "The user gets something useful immediately and keeps full control, because every assumption is visible and correctable. That removes the interrogation without removing the user’s authority over the details.\n\nWhy not the others:\n- **A** — Hidden defaults produce a result the user cannot audit; they find out what was assumed when it is wrong.\n- **B** — One long question still demands the same upfront effort that is driving abandonment.\n- **D** — A form is more friction, not less, which is the opposite of the goal."
+      "explanation": "The user gets something useful immediately and keeps full control, because every assumption is visible and correctable. That removes the interrogation without removing the user’s authority over the details.\n\nWhy not the others:\n- **A**: Hidden defaults produce a result the user cannot audit; they find out what was assumed when it is wrong.\n- **B**: One long question still demands the same upfront effort that is driving abandonment.\n- **D**: A form is more friction, not less, which is the opposite of the goal."
     },
     {
       "id": "cv-15",
@@ -1037,13 +1037,13 @@
         "The system prompt is only sent once."
       ],
       "answer": 2,
-      "explanation": "As the assistant’s own output piles up, the share of the context reflecting the persona shrinks against a growing body of its own generic text, and the model increasingly pattern-matches to itself.\n\nWhy not the others:\n- **A** — The system prompt applies throughout; it is not a one-time initialisation.\n- **B** — Attention degradation does not operate at 2,500 tokens.\n- **D** — False — the system prompt goes with every request. That is why this cannot be the explanation on its own."
+      "explanation": "As the assistant’s own output piles up, the share of the context reflecting the persona shrinks against a growing body of its own generic text, and the model increasingly pattern-matches to itself.\n\nWhy not the others:\n- **A**: The system prompt applies throughout; it is not a one-time initialisation.\n- **B**: Attention degradation does not operate at 2,500 tokens.\n- **D**: False. The system prompt goes with every request. That is why this cannot be the explanation on its own."
     },
     {
       "id": "cv-16",
       "type": "single",
       "category": "Context",
-      "prompt": "Users ask vague things like \"Can you help with the report?\". The assistant responds with several questions — which report, what kind of help, what deadline — and 40% abandon.\n\n**What is the best solution?**",
+      "prompt": "Users ask vague things like \"Can you help with the report?\". The assistant responds with several questions (which report, what kind of help, what deadline) and 40% abandon.\n\n**What is the best solution?**",
       "options": [
         "Make reasonable assumptions, state them explicitly, and offer to adjust.",
         "Classify the ambiguity with a smaller model before responding.",
@@ -1051,7 +1051,7 @@
         "Limit the assistant to one clarifying question per turn."
       ],
       "answer": 0,
-      "explanation": "It eliminates the back-and-forth entirely while keeping the user informed and able to redirect. Progress happens on the first turn instead of the fourth.\n\nWhy not the others:\n- **B** — A classification model adds latency and infrastructure without changing what the user experiences.\n- **C** — Silent interpretations leave the user confused when the answer does not match what they meant.\n- **D** — One question per turn is still a sequence of turns before anything useful happens."
+      "explanation": "It eliminates the back-and-forth entirely while keeping the user informed and able to redirect. Progress happens on the first turn instead of the fourth.\n\nWhy not the others:\n- **B**: A classification model adds latency and infrastructure without changing what the user experiences.\n- **C**: Silent interpretations leave the user confused when the answer does not match what they meant.\n- **D**: One question per turn is still a sequence of turns before anything useful happens."
     },
     {
       "id": "ext-01",
@@ -1059,13 +1059,13 @@
       "category": "Prompting",
       "prompt": "Your invoice extraction pipeline uses `tool_use` with a strict JSON schema. Output is always syntactically valid JSON with every required field present. But auditors find that 9% of extracted invoices have a `total` that does not equal the sum of their line items, and 4% carry a supplier VAT number in the `customer_vat` field.\n\n**What does this tell you about the schema, and what should you do?**",
       "options": [
-        "The schema is not strict enough — add `minLength`, `pattern` and `format` constraints to every string field.",
+        "The schema is not strict enough, so add `minLength`, `pattern` and `format` constraints to every string field.",
         "JSON schemas eliminate syntax errors but not semantic ones. Add validation of business rules after extraction and retry with the specific error in context.",
         "Switch `tool_choice` from `auto` to `any` so the model is forced to produce structured output.",
         "Mark `total` and `customer_vat` as optional so the model can omit them when unsure."
       ],
       "answer": 1,
-      "explanation": "A schema guarantees shape, never meaning. Totals that do not reconcile and a value in the wrong field are both semantic errors, which is what post-extraction validation plus a retry carrying the concrete error (\"total = 150 but sum(line_items) = 145\") is for.\n\nWhy not the others:\n- **A** — String constraints catch malformed values, not correct-looking values that are wrong or misplaced.\n- **C** — You are already getting structured output every time. `tool_choice` changes whether a tool is called, not whether its arguments are right.\n- **D** — Making them optional hides the problem: the invoice does have a total, and the model would simply omit the field it gets wrong."
+      "explanation": "A schema guarantees shape, never meaning. Totals that do not reconcile and a value in the wrong field are both semantic errors, which is what post-extraction validation plus a retry carrying the concrete error (\"total = 150 but sum(line_items) = 145\") is for.\n\nWhy not the others:\n- **A**: String constraints catch malformed values, not correct-looking values that are wrong or misplaced.\n- **C**: You are already getting structured output every time. `tool_choice` changes whether a tool is called, not whether its arguments are right.\n- **D**: Making them optional hides the problem: the invoice does have a total, and the model would simply omit the field it gets wrong."
     },
     {
       "id": "ext-02",
@@ -1075,11 +1075,11 @@
       "options": [
         "Add a post-extraction step that cross-checks each funder against a known-funders list and blanks anything unmatched.",
         "Keep the field required and add a prompt instruction saying \"never guess a funding source\".",
-        "Make the field nullable — `\"type\": [\"string\", \"null\"]` — with a description saying null means the information was not found in the source.",
+        "Make the field nullable (`\"type\": [\"string\", \"null\"]`) with a description saying null means the information was not found in the source.",
         "Retry extraction on the documents that produce unmatched funders, including the previous incorrect answer."
       ],
       "answer": 2,
-      "explanation": "A required field pushes the model to fabricate rather than admit a gap. A nullable type gives it a way to be honest, which is what you want when a fifth of your corpus legitimately has nothing to report.\n\nWhy not the others:\n- **A** — A whitelist cannot recognise a real funder that is not on it, and it treats the symptom rather than the schema forcing the fabrication.\n- **B** — The instruction conflicts with the schema, which still says the field must be present. The schema wins.\n- **D** — Retry cannot recover information that is absent from the source document. This is the classic case where retrying does not help."
+      "explanation": "A required field pushes the model to fabricate rather than admit a gap. A nullable type gives it a way to be honest, which is what you want when a fifth of your corpus legitimately has nothing to report.\n\nWhy not the others:\n- **A**: A whitelist cannot recognise a real funder that is not on it, and it treats the symptom rather than the schema forcing the fabrication.\n- **B**: The instruction conflicts with the schema, which still says the field must be present. The schema wins.\n- **D**: Retry cannot recover information that is absent from the source document. This is the classic case where retrying does not help."
     },
     {
       "id": "ext-03",
@@ -1093,7 +1093,7 @@
         "Add a `confidence` number to the schema and route anything below 0.7 to a human."
       ],
       "answer": 1,
-      "explanation": "Two different failures need two escape hatches. `\"other\"` plus a detail string catches real categories outside your list without losing the data; `\"unclear\"` lets the model say it cannot tell, which beats a confidently wrong label.\n\nWhy not the others:\n- **A** — A longer enum still has an edge, and it does nothing for tickets that are genuinely too vague to classify.\n- **C** — Free text destroys the consistency the enum was giving you and makes downstream routing unreliable.\n- **D** — Confidence scoring is a routing mechanism layered on top of a schema that still has nowhere to put a billing question."
+      "explanation": "Two different failures need two escape hatches. `\"other\"` plus a detail string catches real categories outside your list without losing the data; `\"unclear\"` lets the model say it cannot tell, which beats a confidently wrong label.\n\nWhy not the others:\n- **A**: A longer enum still has an edge, and it does nothing for tickets that are genuinely too vague to classify.\n- **C**: Free text destroys the consistency the enum was giving you and makes downstream routing unreliable.\n- **D**: Confidence scoring is a routing mechanism layered on top of a schema that still has nowhere to put a billing question."
     },
     {
       "id": "ext-04",
@@ -1107,7 +1107,7 @@
         "Add few-shot examples of contracts where the start date appears in unusual places."
       ],
       "answer": 1,
-      "explanation": "Retry-with-feedback fixes format errors, misplaced fields and arithmetic the model can recheck. It cannot conjure a date that is not in the input. The fix is upstream — supply the missing document — or route the case to a human.\n\nWhy not the others:\n- **A** — More attempts at an impossible task produce more fabrications, not more answers.\n- **C** — Temperature does not create information the prompt never contained.\n- **D** — Examples teach where to look inside a document. The date is in a different document entirely."
+      "explanation": "Retry-with-feedback fixes format errors, misplaced fields and arithmetic the model can recheck. It cannot conjure a date that is not in the input. The fix is upstream: supply the missing document, or route the case to a human.\n\nWhy not the others:\n- **A**: More attempts at an impossible task produce more fabrications, not more answers.\n- **C**: Temperature does not create information the prompt never contained.\n- **D**: Examples teach where to look inside a document. The date is in a different document entirely."
     },
     {
       "id": "ext-05",
@@ -1121,7 +1121,7 @@
         "Split the batch into ten batches of 1,000 and resubmit all of them."
       ],
       "answer": 2,
-      "explanation": "`custom_id` exists to correlate each response to its source document, which is exactly what lets you isolate the 340 failures, change strategy for them alone, and avoid paying to re-process 9,660 documents that already succeeded.\n\nWhy not the others:\n- **A** — Reprocessing everything doubles the cost of the successful 9,660 for no benefit.\n- **B** — Synchronous costs twice as much for a workload with a month of slack and nobody waiting.\n- **D** — Smaller batches do not make an over-length document fit. The same 340 fail again."
+      "explanation": "`custom_id` exists to correlate each response to its source document, which is exactly what lets you isolate the 340 failures, change strategy for them alone, and avoid paying to re-process 9,660 documents that already succeeded.\n\nWhy not the others:\n- **A**: Reprocessing everything doubles the cost of the successful 9,660 for no benefit.\n- **B**: Synchronous costs twice as much for a workload with a month of slack and nobody waiting.\n- **D**: Smaller batches do not make an over-length document fit. The same 340 fail again."
     },
     {
       "id": "ext-06",
@@ -1135,7 +1135,7 @@
         "Use synchronous calls, since 30 hours is inside the batch window and the risk is not worth 50%."
       ],
       "answer": 0,
-      "explanation": "Subtract the worst case from the deadline: 30 minus 24 leaves a 6-hour submission window. Anything submitted inside it still lands in time even if processing takes the full 24 hours.\n\nWhy not the others:\n- **B** — Submitting at hour 24 leaves 6 hours for a job that may take 24. It misses the deadline in the worst case.\n- **C** — Resubmitting a batch that is still legitimately processing duplicates the cost and does not shorten the window.\n- **D** — Thirty hours is not inside the window, it contains it. With correct planning this workload is a clean batch fit."
+      "explanation": "Subtract the worst case from the deadline: 30 minus 24 leaves a 6-hour submission window. Anything submitted inside it still lands in time even if processing takes the full 24 hours.\n\nWhy not the others:\n- **B**: Submitting at hour 24 leaves 6 hours for a job that may take 24. It misses the deadline in the worst case.\n- **C**: Resubmitting a batch that is still legitimately processing duplicates the cost and does not shorten the window.\n- **D**: Thirty hours is not inside the window, it contains it. With correct planning this workload is a clean batch fit."
     },
     {
       "id": "ext-07",
@@ -1149,7 +1149,7 @@
         "Have the model self-rate confidence per document and automate only those above 90%."
       ],
       "answer": 1,
-      "explanation": "An aggregate can hide a 40% error rate on one document type. Segmenting by type and field is what surfaces that, and stratified sampling of the high-confidence bucket is what catches errors the confidence score is not flagging.\n\nWhy not the others:\n- **A** — A tighter interval on the wrong number. The problem is that the average conceals the segments, not that it is imprecise.\n- **C** — The aggregate that is hiding the pocket now will keep hiding it in production.\n- **D** — Model self-rated confidence is poorly calibrated. Field-level scores tuned against labelled data are the guide’s answer, not a self-assessment threshold."
+      "explanation": "An aggregate can hide a 40% error rate on one document type. Segmenting by type and field is what surfaces that, and stratified sampling of the high-confidence bucket is what catches errors the confidence score is not flagging.\n\nWhy not the others:\n- **A**: A tighter interval on the wrong number. The problem is that the average conceals the segments, not that it is imprecise.\n- **C**: The aggregate that is hiding the pocket now will keep hiding it in production.\n- **D**: Model self-rated confidence is poorly calibrated. Field-level scores tuned against labelled data are the guide’s answer, not a self-assessment threshold."
     },
     {
       "id": "ext-08",
@@ -1163,13 +1163,13 @@
         "A `tool_choice` forcing a dedicated `normalize_values` tool after extraction."
       ],
       "answer": 0,
-      "explanation": "The model is being asked for a value without being told what form it should take, so it copies the source. Explicit normalisation rules in the prompt define the target form, including the \"yesterday\" case that needs computing rather than reformatting.\n\nWhy not the others:\n- **B** — A `format` keyword rejects \"yesterday\" without telling the model what to produce instead, so you get a validation failure rather than a date.\n- **C** — A parser handles the variants you anticipated. \"Five bucks\" and \"a pinch\" are exactly the long tail that defeats rule-based normalisation.\n- **D** — A second tool call per record to reformat values the first call could have produced correctly."
+      "explanation": "The model is being asked for a value without being told what form it should take, so it copies the source. Explicit normalisation rules in the prompt define the target form, including the \"yesterday\" case that needs computing rather than reformatting.\n\nWhy not the others:\n- **B**: A `format` keyword rejects \"yesterday\" without telling the model what to produce instead, so you get a validation failure rather than a date.\n- **C**: A parser handles the variants you anticipated. \"Five bucks\" and \"a pinch\" are exactly the long tail that defeats rule-based normalisation.\n- **D**: A second tool call per record to reformat values the first call could have produced correctly."
     },
     {
       "id": "ext-09",
       "type": "single",
       "category": "Prompting",
-      "prompt": "You extract totals from receipts. Occasionally the printed total is itself wrong — it does not match the items above it. Right now the pipeline silently returns whichever number the model favoured, and downstream reconciliation cannot tell a model error from a genuinely wrong receipt.\n\n**How should you design the extraction?**",
+      "prompt": "You extract totals from receipts. Occasionally the printed total is itself wrong and does not match the items above it. Right now the pipeline silently returns whichever number the model favoured, and downstream reconciliation cannot tell a model error from a genuinely wrong receipt.\n\n**How should you design the extraction?**",
       "options": [
         "Have the model return only the computed sum of line items, since it is derivable and therefore more reliable.",
         "Have the model return the printed total, and reconcile against line items in a separate downstream service.",
@@ -1177,7 +1177,7 @@
         "Route every receipt whose fields fail an arithmetic check to human review."
       ],
       "answer": 2,
-      "explanation": "Extracting both values turns an invisible ambiguity into structured data. `conflict_detected` says a discrepancy exists without deciding what it means, so downstream can distinguish a misread from a genuinely incorrect receipt.\n\nWhy not the others:\n- **A** — Discarding the printed total loses the evidence that the receipt itself is wrong.\n- **B** — Reconciliation downstream needs both numbers, and this option only returns one of them.\n- **D** — Sensible as a follow-up, but the arithmetic check needs both values to exist first — this is the consequence of C, not an alternative to it."
+      "explanation": "Extracting both values turns an invisible ambiguity into structured data. `conflict_detected` says a discrepancy exists without deciding what it means, so downstream can distinguish a misread from a genuinely incorrect receipt.\n\nWhy not the others:\n- **A**: Discarding the printed total loses the evidence that the receipt itself is wrong.\n- **B**: Reconciliation downstream needs both numbers, and this option only returns one of them.\n- **D**: Sensible as a follow-up, but the arithmetic check needs both values to exist first, so this is the consequence of C, not an alternative to it."
     },
     {
       "id": "ext-10",
@@ -1185,13 +1185,13 @@
       "category": "Prompting",
       "prompt": "You have four extraction tools, one per document family (invoice, contract, receipt, purchase order). Incoming documents are unlabelled. Occasionally the model answers a request with a paragraph of prose describing the document instead of calling any extraction tool at all, and the pipeline throws a parse error.\n\n**Which `tool_choice` setting fixes this?**",
       "options": [
-        "`{\"type\": \"auto\"}` — the model still decides, and you handle the prose case with a retry.",
-        "`{\"type\": \"any\"}` — the model must call one of the tools, and it still picks which one fits.",
-        "`{\"type\": \"tool\", \"name\": \"extract_invoice\"}` — force a specific tool so output is always structured.",
+        "`{\"type\": \"auto\"}`: the model still decides, and you handle the prose case with a retry.",
+        "`{\"type\": \"any\"}`: the model must call one of the tools, and it still picks which one fits.",
+        "`{\"type\": \"tool\", \"name\": \"extract_invoice\"}`: force a specific tool so output is always structured.",
         "Merge the four tools into one `extract_document` with a union schema."
       ],
       "answer": 1,
-      "explanation": "`any` guarantees a tool call — so structured output every time — while leaving the model free to choose which of the four schemas fits the document in front of it. That is exactly the shape of this problem.\n\nWhy not the others:\n- **A** — `auto` is what is producing the prose responses today.\n- **C** — Forcing one specific tool guarantees structure and the wrong schema for three families out of four. Forced selection is for guaranteeing a first step, not for classification.\n- **D** — A union schema surrenders the per-family required fields and validation that make the four tools useful."
+      "explanation": "`any` guarantees a tool call, and so structured output every time, while leaving the model free to choose which of the four schemas fits the document in front of it. That is exactly the shape of this problem.\n\nWhy not the others:\n- **A**: `auto` is what is producing the prose responses today.\n- **C**: Forcing one specific tool guarantees structure and the wrong schema for three families out of four. Forced selection is for guaranteeing a first step, not for classification.\n- **D**: A union schema surrenders the per-family required fields and validation that make the four tools useful."
     },
     {
       "id": "ext-11",
@@ -1205,7 +1205,7 @@
         "Add a `precision` enum to the schema so the model marks these as approximate."
       ],
       "answer": 0,
-      "explanation": "Informal units are too diverse for rules, which is why the instruction failed. Examples showing the full output shape — the estimate, the original phrase preserved, and the precision marker — give the model a pattern it generalises to glugs and pinches it has never seen.\n\nWhy not the others:\n- **B** — A lookup table covers the terms you thought of. The tail is the entire problem here.\n- **C** — Rejecting them hands a large fraction of real recipes to humans.\n- **D** — A precision field labels the uncertainty without improving the estimate or preserving the source phrase."
+      "explanation": "Informal units are too diverse for rules, which is why the instruction failed. Examples showing the full output shape (the estimate, the original phrase preserved, the precision marker) give the model a pattern it generalises to glugs and pinches it has never seen.\n\nWhy not the others:\n- **B**: A lookup table covers the terms you thought of. The tail is the entire problem here.\n- **C**: Rejecting them hands a large fraction of real recipes to humans.\n- **D**: A precision field labels the uncertainty without improving the estimate or preserving the source phrase."
     },
     {
       "id": "dev-01",
@@ -1214,12 +1214,12 @@
       "prompt": "An engineer new to a service asks the agent where a `PaymentDeclined` error originates. The agent immediately reads twelve files under `src/payments/` in full and exhausts most of the context window before locating anything.\n\n**What is the correct investigation strategy?**",
       "options": [
         "Glob the payments directory first, then Read each match in dependency order.",
-        "Grep for the error string to find where it is raised, Read those files, Grep for their callers, Read those — building understanding incrementally.",
+        "Grep for the error string to find where it is raised, Read those files, Grep for their callers, Read those, building understanding incrementally.",
         "Read every file once and rely on `/compact` when the window fills.",
         "Ask the engineer to narrow the question to a specific file before starting."
       ],
       "answer": 1,
-      "explanation": "Grep finds content, Read consumes it. Alternating the two — entry points, then the files that contain them, then their callers — expands only along the path that matters, instead of loading a directory to find one string.\n\nWhy not the others:\n- **A** — Glob finds files by name pattern; it cannot find which file raises a particular error. Reading all matches is the behaviour that caused the problem.\n- **C** — `/compact` blurs the specifics — file paths, line numbers, class names — that the investigation exists to produce.\n- **D** — The engineer does not know which file; that is why they asked."
+      "explanation": "Grep finds content, Read consumes it. Alternating the two (entry points, then the files that contain them, then their callers) expands only along the path that matters, instead of loading a directory to find one string.\n\nWhy not the others:\n- **A**: Glob finds files by name pattern; it cannot find which file raises a particular error. Reading all matches is the behaviour that caused the problem.\n- **C**: `/compact` blurs the specifics the investigation exists to produce: file paths, line numbers, class names.\n- **D**: The engineer does not know which file; that is why they asked."
     },
     {
       "id": "dev-02",
@@ -1233,21 +1233,21 @@
         "Glob for similar files to work out which occurrence was intended."
       ],
       "answer": 0,
-      "explanation": "When Edit cannot find a unique match, Read plus Write is the documented fallback: load the whole file, make the change with full context about which occurrence is which, and write the result back.\n\nWhy not the others:\n- **B** — Line-number editing through the shell is fragile and bypasses the file tools built for this.\n- **C** — Repeating a call that failed on ambiguity produces the same ambiguity.\n- **D** — Other files cannot disambiguate four occurrences inside this one."
+      "explanation": "When Edit cannot find a unique match, Read plus Write is the documented fallback: load the whole file, make the change with full context about which occurrence is which, and write the result back.\n\nWhy not the others:\n- **B**: Line-number editing through the shell is fragile and bypasses the file tools built for this.\n- **C**: Repeating a call that failed on ambiguity produces the same ambiguity.\n- **D**: Other files cannot disambiguate four occurrences inside this one."
     },
     {
       "id": "dev-03",
       "type": "single",
       "category": "Tools & MCP",
-      "prompt": "You built an MCP server exposing `search_internal_docs`, which searches your company wiki, ADRs and runbooks — none of it in the repository. Logs show the agent almost always reaches for the built-in Grep instead, searching the codebase for information that only exists in the wiki, and reports it cannot find anything.\n\n**What is the most effective fix?**",
+      "prompt": "You built an MCP server exposing `search_internal_docs`, which searches your company wiki, ADRs and runbooks, none of it in the repository. Logs show the agent almost always reaches for the built-in Grep instead, searching the codebase for information that only exists in the wiki, and reports it cannot find anything.\n\n**What is the most effective fix?**",
       "options": [
         "Remove Grep from the agent’s `allowed_tools` so it must use the MCP tool.",
-        "Strengthen the MCP tool description to state the unique data it reaches — wiki pages, ADRs and runbooks that are not in the repository — and when to prefer it over a code search.",
+        "Strengthen the MCP tool description to state the unique data it reaches (wiki pages, ADRs and runbooks that are not in the repository) and when to prefer it over a code search.",
         "Add a system prompt instruction to always try `search_internal_docs` before Grep.",
         "Rename the MCP tool to `grep_docs` so it reads as the natural counterpart to Grep."
       ],
       "answer": 1,
-      "explanation": "Agents tend to prefer built-in tools over MCP tools with similar-sounding functions, and the counter is a description that spells out the concrete advantage — data that simply is not in the codebase — plus the boundary against the built-in alternative.\n\nWhy not the others:\n- **A** — Removing Grep breaks every legitimate code search to fix a documentation search.\n- **C** — \"Always try X first\" is a blanket rule that misroutes genuine code searches, and it is probabilistic anyway.\n- **D** — A name that mimics Grep increases the overlap between the two tools rather than separating them."
+      "explanation": "Agents tend to prefer built-in tools over MCP tools with similar-sounding functions, and the counter is a description that spells out the concrete advantage, data that simply is not in the codebase, plus the boundary against the built-in alternative.\n\nWhy not the others:\n- **A**: Removing Grep breaks every legitimate code search to fix a documentation search.\n- **C**: \"Always try X first\" is a blanket rule that misroutes genuine code searches, and it is probabilistic anyway.\n- **D**: A name that mimics Grep increases the overlap between the two tools rather than separating them."
     },
     {
       "id": "dev-04",
@@ -1256,12 +1256,12 @@
       "prompt": "Four hours into mapping an unfamiliar billing subsystem, the agent starts giving unstable answers: it refers to \"the typical repository pattern\" instead of the actual class names it read earlier, and contradicts a dependency it established two hours ago.\n\n**What is the most effective practice for this phase of work?**",
       "options": [
         "Run `/compact` and continue in the same session.",
-        "Write the key findings — concrete classes, call sites, external limits, migration dates — to a scratchpad file the agent can consult later.",
+        "Write the key findings (concrete classes, call sites, external limits, migration dates) to a scratchpad file the agent can consult later.",
         "Start a new session and re-run the discovery from the beginning.",
         "Use `--resume` on the session tomorrow, when the context has been cleared."
       ],
       "answer": 1,
-      "explanation": "Those symptoms are context degradation, and a scratchpad survives it. Specific findings written to a file can be re-read after compaction or in a new session, so discovery does not have to be repeated to be trusted.\n\nWhy not the others:\n- **A** — `/compact` is what turns \"PaymentProcessor extends BaseProcessor\" into \"the typical repository pattern\". It accelerates the failure.\n- **C** — Re-running four hours of discovery to recover findings you already had is the cost the scratchpad exists to avoid.\n- **D** — `--resume` restores the degraded context along with tool results that may now be stale."
+      "explanation": "Those symptoms are context degradation, and a scratchpad survives it. Specific findings written to a file can be re-read after compaction or in a new session, so discovery does not have to be repeated to be trusted.\n\nWhy not the others:\n- **A**: `/compact` is what turns \"PaymentProcessor extends BaseProcessor\" into \"the typical repository pattern\". It accelerates the failure.\n- **C**: Re-running four hours of discovery to recover findings you already had is the cost the scratchpad exists to avoid.\n- **D**: `--resume` restores the degraded context along with tool results that may now be stale."
     },
     {
       "id": "dev-05",
@@ -1275,7 +1275,7 @@
         "Resume the session and instruct the agent to re-read every file before continuing."
       ],
       "answer": 1,
-      "explanation": "The session’s tool results describe files that no longer exist in that form, and stale results actively mislead. A new session seeded with a short summary of the findings is more reliable than resuming a transcript full of outdated file contents.\n\nWhy not the others:\n- **A** — Resuming restores exactly the stale tool results that will make the agent reason about a codebase that has changed.\n- **C** — Forking is for exploring alternative approaches from shared context. It copies the stale context rather than fixing it.\n- **D** — Re-reading adds fresh content alongside the old, leaving contradictory versions of the same files in one context."
+      "explanation": "The session’s tool results describe files that no longer exist in that form, and stale results actively mislead. A new session seeded with a short summary of the findings is more reliable than resuming a transcript full of outdated file contents.\n\nWhy not the others:\n- **A**: Resuming restores exactly the stale tool results that will make the agent reason about a codebase that has changed.\n- **C**: Forking is for exploring alternative approaches from shared context. It copies the stale context rather than fixing it.\n- **D**: Re-reading adds fresh content alongside the old, leaving contradictory versions of the same files in one context."
     },
     {
       "id": "dev-06",
@@ -1289,13 +1289,13 @@
         "Remove `run_migration` from `allowed_tools` entirely."
       ],
       "answer": 0,
-      "explanation": "A production migration is exactly the class of rule — destructive, irreversible — that belongs in code, not in a prompt. The hook fires on 100% of calls and blocks before the tool runs; a prompt instruction is followed most of the time, and this stem has already measured the exceptions.\n\nWhy not the others:\n- **B** — Stronger wording raises compliance without ever reaching 100%. Two incidents in a month is what \"most of the time\" looks like.\n- **C** — Few-shot improves judgment on ambiguous cases; it does not make a guarantee out of a probability.\n- **D** — Removing the tool breaks the staging drills the assistant exists to run — capability lost, problem intact."
+      "explanation": "A production migration is exactly the class of rule that belongs in code, being destructive and irreversible, not in a prompt. The hook fires on 100% of calls and blocks before the tool runs; a prompt instruction is followed most of the time, and this stem has already measured the exceptions.\n\nWhy not the others:\n- **B**: Stronger wording raises compliance without ever reaching 100%. Two incidents in a month is what \"most of the time\" looks like.\n- **C**: Few-shot improves judgment on ambiguous cases; it does not make a guarantee out of a probability.\n- **D**: Removing the tool breaks the staging drills the assistant exists to run: capability lost, problem intact."
     },
     {
       "id": "dev-07",
       "type": "single",
       "category": "Architecture",
-      "prompt": "You define a repo-insights coordinator with `allowed_tools: [\"Read\", \"Grep\"]` and three specialist subagents for churn, ownership and test-coverage analysis. At runtime the coordinator never delegates — it grinds through every analysis itself, sequentially, and the run times out.\n\n**What is the most likely cause?**",
+      "prompt": "You define a repo-insights coordinator with `allowed_tools: [\"Read\", \"Grep\"]` and three specialist subagents for churn, ownership and test-coverage analysis. At runtime the coordinator never delegates. It grinds through every analysis itself, sequentially, and the run times out.\n\n**What is the most likely cause?**",
       "options": [
         "The coordinator’s `allowed_tools` does not include `\"Task\"`, so it cannot spawn a subagent at all.",
         "Subagents must be registered in `.mcp.json` before a coordinator can reach them.",
@@ -1303,7 +1303,7 @@
         "The coordinator’s `max_tokens` is too low to plan a delegation."
       ],
       "answer": 0,
-      "explanation": "Task is the tool that spawns subagents, and an agent can only call tools on its whitelist. Without `\"Task\"` in `allowed_tools`, delegation is silently impossible — the coordinator does the only thing it can: everything, itself.\n\nWhy not the others:\n- **B** — `.mcp.json` wires MCP servers, not subagents. Subagents are reached through the Task tool.\n- **C** — `tool_choice: \"any\"` forces some tool call; it does not grant access to a tool outside the whitelist.\n- **D** — A low cap truncates output; it does not remove a capability."
+      "explanation": "Task is the tool that spawns subagents, and an agent can only call tools on its whitelist. Without `\"Task\"` in `allowed_tools`, delegation is silently impossible, and the coordinator does the only thing it can: everything, itself.\n\nWhy not the others:\n- **B**: `.mcp.json` wires MCP servers, not subagents. Subagents are reached through the Task tool.\n- **C**: `tool_choice: \"any\"` forces some tool call; it does not grant access to a tool outside the whitelist.\n- **D**: A low cap truncates output; it does not remove a capability."
     },
     {
       "id": "dev-08",
@@ -1312,12 +1312,12 @@
       "prompt": "Your weekly engineering digest always aggregates the same four sources in the same order: merged PRs, incident reports, deploy logs, on-call notes. A teammate proposes rebuilding it around a coordinator that decides each week how to decompose the work.\n\n**How should you evaluate the proposal?**",
       "options": [
         "Keep a fixed pipeline: the steps are known, stable and identical every run, so deterministic stages beat run-time decomposition.",
-        "Adopt dynamic decomposition — a coordinator is always the more capable architecture.",
+        "Adopt dynamic decomposition; a coordinator is always the more capable architecture.",
         "Merge everything into one agent with a larger context window.",
         "Spawn one subagent per repository instead of per source."
       ],
       "answer": 0,
-      "explanation": "Dynamic decomposition earns its overhead when the shape of the work varies per request. Here the sources, the order and the output are fixed — a pipeline of deterministic stages is simpler, cheaper and easier to debug, with an LLM call only where judgment is needed.\n\nWhy not the others:\n- **B** — A coordinator deciding what to do each week adds cost and nondeterminism to a task whose decomposition never changes.\n- **C** — One agent carrying four sources in one window is the coverage-thins-as-it-fills failure the split exists to avoid.\n- **D** — Partitioning by repository cuts across all four sources, recreating the aggregation problem inside every subagent."
+      "explanation": "Dynamic decomposition earns its overhead when the shape of the work varies per request. Here the sources, the order and the output are fixed, so a pipeline of deterministic stages is simpler, cheaper and easier to debug, with an LLM call only where judgment is needed.\n\nWhy not the others:\n- **B**: A coordinator deciding what to do each week adds cost and nondeterminism to a task whose decomposition never changes.\n- **C**: One agent carrying four sources in one window is the coverage-thins-as-it-fills failure the split exists to avoid.\n- **D**: Partitioning by repository cuts across all four sources, recreating the aggregation problem inside every subagent."
     },
     {
       "id": "dev-09",
@@ -1331,21 +1331,21 @@
         "Resume the investigation session twice in parallel with `--resume`."
       ],
       "answer": 0,
-      "explanation": "Forking branches independent sessions from the shared context up to the branch point: both forks inherit the investigation, then diverge with no cross-contamination — exactly the compare-two-approaches case fork_session exists for.\n\nWhy not the others:\n- **B** — Sequential attempts in one session contaminate each other: the second approach is reasoned about through the residue of the first.\n- **C** — Fresh sessions throw away the shared investigation both approaches depend on, so each fork re-derives it — differently.\n- **D** — Resuming the same named session twice does not create independent branches; it re-enters one history."
+      "explanation": "Forking branches independent sessions from the shared context up to the branch point: both forks inherit the investigation, then diverge with no cross-contamination. That is exactly the compare-two-approaches case fork_session exists for.\n\nWhy not the others:\n- **B**: Sequential attempts in one session contaminate each other: the second approach is reasoned about through the residue of the first.\n- **C**: Fresh sessions throw away the shared investigation both approaches depend on, so each fork re-derives it, differently.\n- **D**: Resuming the same named session twice does not create independent branches; it re-enters one history."
     },
     {
       "id": "dev-10",
       "type": "single",
       "category": "Architecture",
-      "prompt": "Your changelog agent delegates to three summarizers — features, fixes, breaking changes — whose inputs are fully independent. Logs show the coordinator issues one `Task` call, waits for the result, then issues the next: total latency is the sum of all three.\n\n**What change gets the parallelism back?**",
+      "prompt": "Your changelog agent delegates to three summarizers (features, fixes, breaking changes) whose inputs are fully independent. Logs show the coordinator issues one `Task` call, waits for the result, then issues the next: total latency is the sum of all three.\n\n**What change gets the parallelism back?**",
       "options": [
-        "Have the coordinator emit all three `Task` calls in a single turn — multiple Task calls in one turn run concurrently.",
+        "Have the coordinator emit all three `Task` calls in a single turn, since multiple Task calls in one turn run concurrently.",
         "Raise the coordinator’s `max_tokens` so it can plan all three delegations at once.",
         "Insert a fourth \"dispatcher\" subagent whose job is to spawn the other three.",
         "Switch the summarizers to a faster model so the sequential chain completes sooner."
       ],
       "answer": 0,
-      "explanation": "Parallel fan-out is a property of how the Task calls are issued: several Task calls in one coordinator turn run in parallel; one call per turn serializes them. The prompt should tell the coordinator to dispatch all independent slices together.\n\nWhy not the others:\n- **B** — The cap limits response length. It has no effect on whether tool calls in separate turns serialize.\n- **C** — A dispatcher just moves the same one-call-per-turn behaviour down a level and adds a hop.\n- **D** — A faster model shrinks each stage but keeps the sum-of-stages shape — the structural fix is concurrency."
+      "explanation": "Parallel fan-out is a property of how the Task calls are issued: several Task calls in one coordinator turn run in parallel; one call per turn serializes them. The prompt should tell the coordinator to dispatch all independent slices together.\n\nWhy not the others:\n- **B**: The cap limits response length. It has no effect on whether tool calls in separate turns serialize.\n- **C**: A dispatcher just moves the same one-call-per-turn behaviour down a level and adds a hop.\n- **D**: A faster model shrinks each stage but keeps the sum-of-stages shape; the structural fix is concurrency."
     }
   ]
 }

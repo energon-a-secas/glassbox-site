@@ -5,10 +5,11 @@
 const STORAGE_KEY = 'glassbox-state';
 
 // key: the digit that jumps to the lab (0 = overview). half: which skill the
-// lab trains, used by the overview map — "machinery" labs simulate Claude's
+// lab trains, used by the overview map. "machinery" labs simulate Claude's
 // internals, "questions" labs train the exam format itself.
 export const LABS = [
   { id: 'overview', key: '0', half: 'map', label: 'Overview', hint: 'The exam, mapped to the labs that train it' },
+  { id: 'foundations', key: 'f', half: 'machinery', label: 'Foundations', hint: 'Tokens, prediction, temperature: the layer under every other lab' },
   { id: 'loop', key: '1', half: 'machinery', label: 'Agent Loop', hint: 'Watch a coordinator spin subagents, step by step' },
   { id: 'sdk', key: '2', half: 'machinery', label: 'Agent SDK', hint: 'Build one yourself: six levels of setup and their caveats' },
   { id: 'mcp', key: '3', half: 'machinery', label: 'MCP', hint: 'Improvised integration vs a defined MCP server' },
@@ -26,6 +27,10 @@ export const LABS = [
 export const state = {
   activeLab: 'overview',
   examMode: false,
+  // Rail view for the *current* lab: 'auto' shows its declared sections when
+  // it has more than one, 'labs' is the reader having climbed back out. Never
+  // persisted, so a new visit starts on the lab list.
+  railView: 'auto',
 };
 
 function labFromHash() {

@@ -4,14 +4,17 @@
 // point is the gap between "this works" and "this is guaranteed".
 // Pure data. No DOM. Evaluated by js/labs/sdk.js.
 //
-// Escaping: goal `why`/`gap` and note `text` render RAW — inline
+// Escaping: goal `why`/`gap` and note `text` render RAW: inline
 // <code>/<em> and data-tip glossary spans (keys in js/tips.js).
 // Everything else is plain text via escHtml.
 
-/** The knobs. `def` is the starting value. */
+/** The knobs. `def` is the starting value; `level` is the SDK level that
+ *  introduces the knob, which the bench renders as a jump back into it.
+ *  A bench setting with no level is a setting the reader never met. */
 export const CFG_FIELDS = [
   {
     id: 'scope',
+    level: 'l2',
     label: 'Toolset',
     hint: 'How many tools this agent may reach for',
     options: [
@@ -22,6 +25,7 @@ export const CFG_FIELDS = [
   },
   {
     id: 'toolChoice',
+    level: 'l1',
     label: 'tool_choice',
     hint: 'Whether a tool call is optional, required, or pinned',
     options: [
@@ -33,6 +37,7 @@ export const CFG_FIELDS = [
   },
   {
     id: 'pre',
+    level: 'l3',
     label: 'PreToolUse hook',
     hint: 'Block or redirect a call before the tool runs',
     options: [{ v: 'off', label: 'off' }, { v: 'on', label: 'on' }],
@@ -40,6 +45,7 @@ export const CFG_FIELDS = [
   },
   {
     id: 'post',
+    level: 'l3',
     label: 'PostToolUse hook',
     hint: 'Reshape the result before the model reads it',
     options: [{ v: 'off', label: 'off' }, { v: 'on', label: 'on' }],
@@ -47,6 +53,7 @@ export const CFG_FIELDS = [
   },
   {
     id: 'task',
+    level: 'l4',
     label: 'Task tool',
     hint: 'Whether this agent can spawn subagents',
     options: [{ v: 'off', label: 'off' }, { v: 'on', label: 'on' }],
@@ -56,7 +63,7 @@ export const CFG_FIELDS = [
 
 /**
  * Requirements you can put on the agent. `need` lists the settings that
- * satisfy it — an array means any of those values will do. Anything not
+ * satisfy it: an array means any of those values will do. Anything not
  * satisfied is reported as a gap, with the reason it matters.
  */
 export const CFG_GOALS = [
@@ -88,7 +95,7 @@ export const CFG_GOALS = [
     id: 'order',
     label: 'A specific tool must run first',
     need: { toolChoice: 'forced' },
-    why: 'A named tool guarantees the first step — extract metadata before enrichment, for example.',
+    why: 'A named tool guarantees the first step: extract metadata before enrichment, for example.',
     gap: 'Neither <code>auto</code> nor <code>any</code> pins <em>which</em> tool goes first.',
     refs: 'Ch.2.3',
   },
@@ -123,7 +130,7 @@ export const CFG_NOTES = [
   {
     when: { scope: 'wide' },
     tone: 'warn',
-    text: 'Eighteen tools measurably degrades selection. Scope an agent to its role plus a few shared utilities — four or five.',
+    text: 'Eighteen tools measurably degrades selection. Scope an agent to its role plus a few shared utilities: four or five.',
   },
   {
     when: { scope: 'narrow' },
@@ -138,12 +145,12 @@ export const CFG_NOTES = [
   {
     when: { toolChoice: 'any' },
     tone: 'ok',
-    text: 'A tool call is guaranteed, so output is always structured — and the model still chooses which schema fits.',
+    text: 'A tool call is guaranteed, so output is always structured, and the model still chooses which schema fits.',
   },
   {
     when: { toolChoice: 'forced' },
     tone: 'warn',
-    text: 'Pinning one tool guarantees the first step, but it is the wrong instrument for classification — every document gets the same schema whether it fits or not.',
+    text: 'Pinning one tool guarantees the first step, but it is the wrong instrument for classification: every document gets the same schema whether it fits or not.',
   },
   {
     when: { task: 'on' },

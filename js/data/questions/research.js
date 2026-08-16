@@ -271,7 +271,7 @@ export const RESEARCH = [
       { k: 'D', t: 'Distinguish access failures (timeout) that need a retry decision from valid empty results ("0 results") that represent successful queries.' },
     ],
     answer: 'D',
-    why: 'A timeout and a zero-row result are semantically opposite. One means "we do not know", the other means "we looked and there is nothing there" — a finding in its own right. Only by separating them can the coordinator retry the patents and accept the industry reports.',
+    why: 'A timeout and a zero-row result are semantically opposite. One means "we do not know", the other means "we looked and there is nothing there", a finding in its own right. Only by separating them can the coordinator retry the patents and accept the industry reports.',
     distractors: {
       A: 'A coverage percentage flattens both outcomes into one number and hides which category needs what.',
       B: 'Calling a successful empty query a failure triggers pointless retries and discards a real finding.',
@@ -311,7 +311,7 @@ export const RESEARCH = [
     situation: 'In testing, the web-search agent returns 85K tokens including full page content and the document analysis agent returns 70K including chains of thought. That is 155K into a synthesis agent that performs best under 50K.',
     ask: 'Which solution is most effective?',
     options: [
-      { k: 'A', t: 'Modify the upstream agents to return structured data — key facts, quotes, relevance scores — instead of verbose content and reasoning.' },
+      { k: 'A', t: 'Modify the upstream agents to return structured data (key facts, quotes, relevance scores) instead of verbose content and reasoning.' },
       { k: 'B', t: 'Add an intermediate summarisation agent that condenses findings before synthesis.' },
       { k: 'C', t: 'Have synthesis process findings in sequential batches, maintaining state between calls.' },
       { k: 'D', t: 'Store findings in a vector database and give synthesis search tools to query during its work.' },
@@ -331,7 +331,7 @@ export const RESEARCH = [
     scenario: 'research',
     domain: 'd2',
     level: 'hard',
-    situation: 'The synthesis agent often needs to verify claims while merging. Today it hands control back to the coordinator, which calls the web-search agent and re-invokes synthesis with the results — 2 to 3 extra round trips per task and 40% more latency. Assessment shows 85% of these checks are simple facts (dates, names, statistics) and 15% need deeper research.',
+    situation: 'The synthesis agent often needs to verify claims while merging. Today it hands control back to the coordinator, which calls the web-search agent and re-invokes synthesis with the results: 2 to 3 extra round trips per task and 40% more latency. Assessment shows 85% of these checks are simple facts (dates, names, statistics) and 15% need deeper research.',
     ask: 'Which approach cuts overhead while preserving reliability?',
     options: [
       { k: 'A', t: 'Give the synthesis agent access to all web-search tools so it can handle any verification directly.' },

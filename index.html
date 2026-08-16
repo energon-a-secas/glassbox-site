@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glass Box | Claude Under the Hood</title>
-  <meta name="description" content="Study labs for the Claude Certified Architect - Foundations exam: a level-by-level Agent SDK build, clickable agent runs, an answer playbook, the traps, and 96 scored practice questions">
+  <meta name="description" content="Study labs for the Claude Certified Architect - Foundations exam: tokens and temperature from scratch, a level-by-level Agent SDK build, clickable agent runs, an answer playbook, the traps, and 96 scored practice questions">
   <meta property="og:title" content="Glass Box | Claude Under the Hood">
-  <meta property="og:description" content="Eleven study labs for the Claude Certified Architect - Foundations exam: agent runs you can click through, an answer playbook, the traps, and 96 scored practice questions">
+  <meta property="og:description" content="Twelve study labs for the Claude Certified Architect - Foundations exam: agent runs you can click through, an answer playbook, the traps, and 96 scored practice questions">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://glassbox.neorgon.com/">
   <meta property="og:site_name" content="Neorgon">
@@ -38,9 +38,9 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Glass Box",
-    "description": "Interactive study labs for the Claude Certified Architect - Foundations exam: a level-by-level Claude Agent SDK build (AgentDefinition, hooks, Task subagents, sessions) with an interactive config bench, simulated agent loops, MCP, Claude Code config and planning mode, plus an answer playbook, a distractor-trap catalogue, and a bank of 96 scored practice questions.",
+    "description": "Interactive study labs for the Claude Certified Architect - Foundations exam: tokenization, next-token prediction and temperature built from scratch, a level-by-level Claude Agent SDK build (AgentDefinition, hooks, Task subagents, sessions) with an interactive config bench, agent loops in both practice and theory (hub-and-spoke, isolated context, the built-in tools), MCP servers with transports and code, Claude Code config, planning mode and the context stores a fact can live in, plus an answer playbook, a distractor-trap catalogue, and a bank of 96 scored practice questions.",
     "educationalUse": "Exam preparation",
-    "teaches": "Claude Agent SDK, Model Context Protocol, Claude Code configuration, prompt engineering, context management",
+    "teaches": "Tokenization and sampling, Claude Agent SDK, the agentic loop and hub-and-spoke orchestration, Model Context Protocol, Claude Code configuration, prompt engineering, context management",
     "url": "https://glassbox.neorgon.com/",
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Any",
@@ -79,14 +79,17 @@
     </div>
   </header>
 
-  <!-- Lab navigation rail (sticky under header) -->
-  <nav class="lab-rail" id="labRail" aria-label="Labs">
-    <div class="lab-rail__inner" id="labRailInner"><!-- built by render.js --></div>
-  </nav>
+  <!-- Shell: on wide screens the lab nav becomes a sticky side menu (see
+       style.css .shell); on narrow ones it stays a horizontal rail. -->
+  <div class="shell">
+    <nav class="lab-rail" id="labRail" aria-label="Labs">
+      <div class="lab-rail__inner" id="labRailInner"><!-- built by render.js --></div>
+    </nav>
 
-  <main id="main">
-    <div class="lab-mount" id="labMount"><!-- active lab mounts here --></div>
-  </main>
+    <main id="main">
+      <div class="lab-mount" id="labMount"><!-- active lab mounts here --></div>
+    </main>
+  </div>
 
   <!-- Floating tooltip for glossary terms (data-tip) -->
   <div class="tip" id="tip" role="tooltip" hidden></div>
@@ -109,7 +112,7 @@
     Every run here is a hand-authored simulation, not a live API call.
     <template data-neo-disclaimer data-label="How this study material was built" data-title="How this study material was built">
       <p>Every run in the machinery labs is a <strong>hand-authored simulation</strong>, not a live API call. Nothing here talks to a model; the point is to make the mechanism inspectable, not to demo it.</p>
-      <p>Built as study fuel for the Claude Certified Architect (Foundations) exam. Drill questions follow the official study guide&rsquo;s practice test. The two exam scenarios the guide lists but never exercises &mdash; Structured Data Extraction and Developer Productivity Tools &mdash; are written here from its theory chapters and are marked as such where they appear.</p>
+      <p>Built as study fuel for the Claude Certified Architect (Foundations) exam. Drill questions follow the official study guide&rsquo;s practice test. The two exam scenarios the guide lists but never exercises (Structured Data Extraction and Developer Productivity Tools) are written here from its theory chapters and are marked as such where they appear.</p>
       <p>Scores are a domain-weighted estimate on the published 100&ndash;1000 scale, <strong>not an official conversion</strong>. Treat them as a study signal, not a prediction.</p>
     </template>
   </footer>

@@ -5,6 +5,7 @@
 // a symptom → cause → fix gallery of the recurring failures.
 
 import { CW_ORDER, CW_SCENARIOS, CW_MATRIX, CW_ISSUES } from '../data/context.js';
+import { storesHtml } from './context-stores.js';
 import { ANTIPATTERNS } from '../data/antipatterns.js';
 import { state } from '../state.js';
 import { el, escHtml, flagHtml } from '../utils.js';
@@ -223,11 +224,11 @@ export function mountContext(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">Conversation memory: what ships in the next request</h2>
-          <p class="lab__lead">The API is stateless — each turn re-sends the whole <span data-tip="context_window">context window</span>: system prompt, history, tool results. When a chat outgrows its budget, <em>something</em> must be dropped, and the strategy you pick decides what the model can still know. Left: the chat both sides see. Right: what actually reaches the model. (Watch drift happen live in the <a href="#loop" id="cwLoopLink">Agent Loop lab’s “Sixty turns in character” run</a>.)</p>
+          <p class="lab__lead">The API is stateless: each turn re-sends the whole <span data-tip="context_window">context window</span>: system prompt, history, tool results. When a chat outgrows its budget, <em>something</em> must be dropped, and the strategy you pick decides what the model can still know. Left: the chat both sides see. Right: what actually reaches the model. (Watch drift happen live in the <a href="#loop" id="cwLoopLink">Agent Loop lab’s “Sixty turns in character” run</a>.)</p>
         </div>
       </header>
 
-      <div class="chip-row" id="cwScenarios"></div>
+      <div class="chip-row" id="cwScenarios" data-section="Replay a conversation"></div>
       <p class="loop-blurb" id="cwBlurb"></p>
 
       <div class="loop-toolbar">
@@ -258,15 +259,17 @@ export function mountContext(root) {
       <div class="loop-flag" id="cwFlag" hidden></div>
       <div class="cw-verdict" id="cwVerdict"></div>
 
-      <div class="lab-sub">
+      <div class="lab-sub" data-section="Technique matrix">
         <h3>Pick the technique by what must survive</h3>
-        <p class="lab__lead">Five tools, one question: what happens to an exact number — and to a topic from forty turns ago? Click a row for the full trade-off.</p>
+        <p class="lab__lead">Five tools, one question: what happens to an exact number, and to a topic from forty turns ago? Click a row for the full trade-off.</p>
         ${matrixHtml()}
       </div>
 
-      <div class="lab-sub">
+      ${storesHtml()}
+
+      <div class="lab-sub" data-section="Recurring failures">
         <h3>The recurring failures</h3>
-        <p class="lab__lead">Four symptoms long conversations keep producing. The cause is never “the model forgot” — it is always something about what the request did or didn’t contain.</p>
+        <p class="lab__lead">Four symptoms long conversations keep producing. The cause is never “the model forgot”; it is always something about what the request did or didn’t contain.</p>
         <div class="cw-issues">${issuesHtml()}</div>
       </div>
     </section>`;

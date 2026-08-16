@@ -4,10 +4,9 @@
 //
 // Escaping contract (see data/patterns.js): oneline, tells, pick and
 // reject carry inline <code>/<b>/<em> and render raw. Everything else
-// is plain text and goes through escHtml. In the brief, the only raw
-// field is a contested-scope row's `settle` (see data/exam-brief.js).
+// is plain text and goes through escHtml; the brief has no raw field.
 
-import { EXAM_BRIEF, CONTESTED_SCOPE } from '../data/exam-brief.js';
+import { EXAM_BRIEF } from '../data/exam-brief.js';
 import { PATTERNS, PATTERN_GROUPS } from '../data/patterns.js';
 import { state } from '../state.js';
 import { escHtml } from '../utils.js';
@@ -37,21 +36,8 @@ function brief() {
       <span class="weight__pct">${w.pct}%</span>
     </div>`).join('');
 
-  const contested = CONTESTED_SCOPE.map((c) => `
-    <li class="contested">
-      <div class="contested__head">
-        <span class="contested__topic">${escHtml(c.topic)}</span>
-        <span class="contested__n">${c.n}&times; in the banks</span>
-      </div>
-      <div class="contested__split">
-        <p><span>The guide</span>${escHtml(c.guideSays)}</p>
-        <p><span>The banks</span>${escHtml(c.banksTest)}</p>
-      </div>
-      <p class="contested__settle"><b>How to settle it</b> ${c.settle}</p>
-    </li>`).join('');
-
   return `
-    <div class="brief">
+    <div class="brief" data-section="Exam brief">
       <div class="brief__stats">${stats}</div>
       <div class="brief__weights">
         <div class="brief__sub">Domain weights · where the questions actually come from</div>
@@ -61,11 +47,6 @@ function brief() {
       <details class="brief__scope">
         <summary>Not on the exam: stop studying these</summary>
         <ul>${EXAM_BRIEF.outOfScope.map((o) => `<li>${escHtml(o)}</li>`).join('')}</ul>
-      </details>
-      <details class="brief__scope brief__scope--contested">
-        <summary>Contested scope: the guide says skip it, the question banks ask anyway</summary>
-        <p class="contested__lead">Measured across 718 third-party practice questions. The official out-of-scope list above is quoted as written — these are the places it and the banks disagree, and what is actually worth learning in each.</p>
-        <ul class="contested-list">${contested}</ul>
       </details>
     </div>`;
 }
@@ -147,7 +128,7 @@ export function mountPatterns(root) {
 
       ${brief()}
 
-      <div class="pat-filters chip-row" id="patFilters"></div>
+      <div class="pat-filters chip-row" id="patFilters" data-section="The 21 patterns"></div>
       <div class="pat-list" id="patList"></div>
     </section>`;
 

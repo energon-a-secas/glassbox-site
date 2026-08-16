@@ -8,7 +8,7 @@
 // Ch.2 (tools, tool_choice), Ch.3 (AgentDefinition, hub-and-spoke,
 // Task, hooks), Ch.5.10 (sessions), Ch.11.5 (subagent context budgets).
 //
-// Escaping: caveat `body`, `breaks` and `exam` render RAW — they carry
+// Escaping: caveat `body`, `breaks` and `exam` render RAW; they carry
 // inline <code>/<em>/<strong> and data-tip glossary spans (keys must
 // exist in js/tips.js). Everything else is plain text via escHtml.
 
@@ -17,7 +17,7 @@ export const SDK_LEVELS = [
     id: 'l0',
     n: 0,
     title: 'One request, no tools',
-    tagline: 'The whole API in five fields — and the property that shapes everything after it.',
+    tagline: 'The whole API in five fields, and the property that shapes everything after it.',
     goal: 'Send a message, get an answer back.',
     lang: 'py',
     code: `import anthropic
@@ -38,7 +38,7 @@ print(resp.content[0].text)`,
       { key: 'system', why: 'Behavioural rules. A top-level field, not a message. Outranks user turns.' },
       { key: 'messages', why: 'The conversation. user and assistant turns, in order.' },
     ],
-    buys: 'A single answer. Nothing more — the model cannot act on anything yet.',
+    buys: 'A single answer. Nothing more: the model cannot act on anything yet.',
     breaks: 'It has no memory. The next call knows nothing about this one, because the API keeps no state between requests.',
     caveats: [
       {
@@ -111,7 +111,7 @@ while True:
     caveats: [
       {
         title: 'stop_reason is the only completion signal',
-        body: 'Not the presence of assistant text — Claude routinely writes prose <em>alongside</em> a tool call. Not a phrase like "task complete". Not an iteration cap: <code>max_iterations=5</code> as the primary stop condition truncates real work. An iteration cap is a safety net, never the signal.',
+        body: 'Not the presence of assistant text; Claude routinely writes prose <em>alongside</em> a tool call. Not a phrase like "task complete". Not an iteration cap: <code>max_iterations=5</code> as the primary stop condition truncates real work. An iteration cap is a safety net, never the signal.',
       },
       {
         title: 'The description is the router',
@@ -119,7 +119,7 @@ while True:
       },
       {
         title: 'tool_choice is how you guarantee structure',
-        body: '<code>auto</code> can answer in prose, which breaks a parser downstream. <code data-tip="tool_choice">any</code> forces a tool call — structured output guaranteed, model still picks which tool. A named tool forces a specific first step, so use it for ordering, not for classification.',
+        body: '<code>auto</code> can answer in prose, which breaks a parser downstream. <code data-tip="tool_choice">any</code> forces a tool call: structured output guaranteed, model still picks which tool. A named tool forces a specific first step, so use it for ordering, not for classification.',
       },
     ],
     exam: 'The anti-patterns here are tested directly: parsing assistant text for completion, using an arbitrary iteration limit, and treating "the response contains text" as done. All three lose to <code data-tip="stop_reason">stop_reason</code>.',
@@ -151,10 +151,10 @@ support_agent = AgentDefinition(
     ],
 )`,
     keys: [
-      { key: 'name', why: 'Identifies the agent — and is how a coordinator addresses it later.' },
+      { key: 'name', why: 'Identifies the agent, and is how a coordinator addresses it later.' },
       { key: 'description', why: 'What this agent is for. A coordinator reads it to decide whether to delegate here.' },
       { key: 'system_prompt', why: 'Its behavioural brief. Applies to every turn this agent takes.' },
-      { key: 'allowed_tools', why: 'The whitelist. Least privilege — fewer tools, more reliable selection, cheaper context.' },
+      { key: 'allowed_tools', why: 'The whitelist. Least privilege: fewer tools, more reliable selection, cheaper context.' },
     ],
     buys: 'The loop is handled for you, and the agent is now scoped: it physically cannot call a tool outside its list.',
     breaks: 'Everything in the system prompt is still a request. The model complies most of the time, which is not the same as always.',
@@ -220,14 +220,14 @@ def normalize_dates(result):
       },
       {
         title: 'PostToolUse is a context-management tool',
-        body: 'When a tool returns 40 fields and 5 matter, the other 35 consume the window on every call. Trimming in a hook is deterministic and central — better than asking the model to ignore them, and better than a wrapper per tool.',
+        body: 'When a tool returns 40 fields and 5 matter, the other 35 consume the window on every call. Trimming in a hook is deterministic and central, better than asking the model to ignore them, and better than a wrapper per tool.',
       },
       {
         title: 'It reaches third-party MCP servers too',
         body: 'A <span data-tip="hook">hook</span> is the only place you can normalise output from a server you do not own. That is exactly why it beats "modify the tools you control and write wrappers for the rest".',
       },
     ],
-    exam: 'Watch for the near-miss: sometimes the right answer is not a hook but a <em>tool-level</em> fix, when the tool itself has definitive knowledge — a tool that knows a failure was a network timeout should retry internally rather than surface a flag for the agent to interpret.',
+    exam: 'Watch for the near-miss: sometimes the right answer is not a hook but a <em>tool-level</em> fix, when the tool itself has definitive knowledge: a tool that knows a failure was a network timeout should retry internally rather than surface a flag for the agent to interpret.',
     refs: 'Ch.3.5, 11.2 · Practice Q51, Q59, Q61, Q62',
   },
 
@@ -286,7 +286,7 @@ Return JSON only, no prose:
       },
       {
         title: 'Bad coverage is usually a decomposition bug',
-        body: 'When every subagent succeeds and the report still misses whole areas, the subagents did their jobs — the coordinator handed out the wrong slices. Partition the space explicitly <em>before</em> delegating, or two agents research the same subtopic and double the token bill.',
+        body: 'When every subagent succeeds and the report still misses whole areas, the subagents did their jobs and the coordinator handed out the wrong slices. Partition the space explicitly <em>before</em> delegating, or two agents research the same subtopic and double the token bill.',
       },
     ],
     exam: 'A coordinator without <code data-tip="task_tool">"Task"</code> in <code data-tip="allowed_tools">allowed_tools</code> cannot delegate at all. And when subagents all succeed but the output is wrong, look up the chain, not down.',
@@ -297,29 +297,27 @@ Return JSON only, no prose:
     id: 'l5',
     n: 5,
     title: 'Sessions: resume and fork',
-    tagline: 'Work that outlives one terminal — and knows when to be thrown away.',
+    tagline: 'Work that outlives one terminal, and knows when to be thrown away.',
     goal: 'Continue a long investigation, or branch it to compare two approaches.',
     lang: 'bash',
+    demo: 'sessions',
     code: `# Continue a named session with its full prior context
-claude --resume investigation-auth-bug
+claude --resume cart-flicker
 
-# fork_session branches from shared context up to the branch point:
+# Or branch from that context instead of continuing it. Both children
+# inherit everything up to the branch point, then diverge independently -
+# no cross-contamination between the two attempts:
 #
-#   codebase investigation
-#            |
-#        fork_session
-#         /        \\
-#   Approach A:   Approach B:
-#     Redux       Context API
+#   query(prompt="Implement the Redux version.",
+#         options={"resume": "cart-flicker", "fork_session": True})
 #
-# Both forks inherit everything before the split, then diverge
-# independently - no cross-contamination between the two attempts.`,
+# Run it both ways below.`,
     keys: [
       { key: '--resume <name>', why: 'Reopens a named session with the context it had when you left.' },
       { key: 'fork_session', why: 'Branches an independent session from shared context, for comparing approaches side by side.' },
     ],
     buys: 'Continuity across days, and the ability to try two designs from the same starting point without either polluting the other.',
-    breaks: 'Nothing — this is the top of the stack. What is left is knowing when <em>not</em> to resume.',
+    breaks: 'Nothing; this is the top of the stack. What is left is knowing when <em>not</em> to resume.',
     caveats: [
       {
         title: 'Stale tool results actively mislead',
@@ -331,7 +329,7 @@ claude --resume investigation-auth-bug
       },
       {
         title: 'Write findings down instead',
-        body: 'In a long investigation, have the agent keep a scratchpad file of concrete findings — real class names, call sites, external rate limits, migration dates. That survives compaction, a new session, and a crash, which context does not. Long multi-agent jobs go further: each agent persists a small state file and the coordinator keeps a manifest, so a crash resumes from disk instead of restarting from zero.',
+        body: 'In a long investigation, have the agent keep a scratchpad file of concrete findings: real class names, call sites, external rate limits, migration dates. That survives compaction, a new session, and a crash, which context does not. Long multi-agent jobs go further: each agent persists a small state file and the coordinator keeps a manifest, so a crash resumes from disk instead of restarting from zero.',
       },
     ],
     exam: 'The tell for "start a new session" is always a change in the world since the session ran: files refactored, a dependency upgraded, time passed. The tell for <code data-tip="fork_session">fork_session</code> is two candidate approaches you want to compare.',

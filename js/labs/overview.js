@@ -25,6 +25,10 @@ import { escHtml } from '../utils.js';
 // Editorial card copy, keyed by lab id. Falls back to the rail hint so a
 // new lab never renders an empty card.
 const CARDS = {
+  foundations: {
+    desc: 'The layer under every other lab: what a token is, how text chunks into them, how the next one is picked, and what temperature actually changes, with two live demos.',
+    fact: '2 demos + 6 prompt techniques compared',
+  },
   loop: {
     desc: 'Replay a full agent run node by node: stop_reason, tool_choice, the Task tool, subagents, and the context meter filling as it works.',
     fact: `${RUN_ORDER.length} runs to replay`,
@@ -77,7 +81,7 @@ const DOMAIN_LABS = {
   d1: ['loop', 'sdk'],
   d2: ['mcp', 'sdk'],
   d3: ['config', 'planning'],
-  d4: ['patterns', 'vocab', 'traps'],
+  d4: ['foundations', 'patterns', 'vocab', 'traps'],
   d5: ['context', 'loop', 'antipatterns'],
 };
 
@@ -182,11 +186,11 @@ export function mountOverview(root) {
       <section class="ov-sec">
         <header class="ov-sec__head">
           <h3>Take the bank with you</h3>
-          <p>The full bank also ships as a <a href="proctor-drill.json">Proctor test file</a> — ${QUESTIONS.length} questions, every option reasoned. Here it runs embedded in <a href="https://proctor.neorgon.com/" target="_blank" rel="noopener noreferrer">Proctor</a>: study mode with instant corrections, or open it there for the timed simulator, PDF export, and notes.</p>
+          <p>The full bank also ships as a <a href="proctor-drill.json">Proctor test file</a>: ${QUESTIONS.length} questions, every option reasoned. Here it runs embedded in <a href="https://proctor.neorgon.com/" target="_blank" rel="noopener noreferrer">Proctor</a>: study mode with instant corrections, or open it there for the timed simulator, PDF export, and notes.</p>
         </header>
         <iframe class="ov-proctor" loading="lazy"
           src="https://proctor.neorgon.com/?embed=1&mode=study&src=${encodeURIComponent('https://glassbox.neorgon.com/proctor-drill.json')}"
-          title="Glass Box drill bank — Proctor"></iframe>
+          title="Glass Box drill bank · Proctor"></iframe>
       </section>
     </section>`;
 }

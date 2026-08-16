@@ -17,3 +17,15 @@ package-lock.json
 # ── Secrets — never commit ────────────────────────────────────────────────────
 .env
 .env.*
+!.env.example
+
+# ── Ephemeral skill working state (see neorgon-forge/docs/authoring.md) ───────
+# Session briefs and maps. Useful while the work happens, not repo content, and
+# on a site repo this directory is public.
+.forge/
+
+# ── Private working notes ─────────────────────────────────────────────────────
+# The gap analysis measures the site against third-party question banks and
+# cites a local path outside this repo. It is planning material, not site
+# content, and this repo is public. It was removed from history on 2026-08-16.
+docs/gap-analysis.md

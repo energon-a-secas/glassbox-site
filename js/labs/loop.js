@@ -2,10 +2,18 @@
 // Replays a hand-authored agentic run. Nodes reveal step by step,
 // are draggable, and open an inspector on click. A dual log shows
 // the "chat" view (what you see) vs the "under the hood" API turns.
+//
+// The lab reads as two parts, and the split is deliberate: Part 1 is
+// the practice (this file, a run you drive), Part 2 is the theory
+// (labs/loop-theory.js: the concept ledger, hub-and-spoke, the
+// built-in toolset, then the steer-vs-enforce pair below). The jump
+// nav at the top scrolls between them rather than hiding either, so
+// every theory section stays findable with the browser's own search.
 
 import { RUNS, RUN_ORDER } from '../data/runs.js';
 import { ANTIPATTERNS } from '../data/antipatterns.js';
 import { LOOP_CONTRAST } from '../data/loop-contrast.js';
+import { theoryHtml, bindTheory } from './loop-theory.js';
 import { el, escHtml, flagHtml, highlightCode } from '../utils.js';
 import { openInspector } from '../ui.js';
 
@@ -167,7 +175,7 @@ function renderLog(scene) {
   for (let i = 0; i <= S.step; i++) {
     const st = r.steps[i];
     const cur = i === S.step ? ' is-current' : '';
-    // In the chat view a request renders as the user's bubble — the CLI
+    // In the chat view a request renders as the user's bubble; the CLI
     // caret (›) is the terminal's affordance, not the chat's.
     const chatText = st.turn === 'request' ? st.chat.replace(/›\s*/g, '') : st.chat;
     rows.push(`<div class="log-row log-row--${st.turn}${cur}">
@@ -207,7 +215,7 @@ function renderFlag(scene) {
 
 // \u2500\u2500 Steer vs enforce (static bottom section) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 // Rendered once at mount; paint()/selectRun() never touch it. Each side
-// has exactly FOUR children (title / claim / code / reliability row) \u2014
+// has exactly FOUR children (title / claim / code / reliability row), and
 // the .pair__cols subgrid template pins those rows to shared baselines.
 function contrastHtml() {
   const c = LOOP_CONTRAST;
@@ -227,7 +235,7 @@ function contrastHtml() {
       <p>${l.text}</p>
     </div>`).join('');
   return `
-    <section class="pair loop-contrast">
+    <section class="pair loop-contrast" data-section="Steer vs enforce">
       <div class="loop-contrast__head">
         <h3>${escHtml(c.heading)}</h3>
         <p>${escHtml(c.lead)}</p>
@@ -322,6 +330,25 @@ export function mountLoop(root) {
         </div>
       </header>
 
+      <nav class="loop-parts" aria-label="The two halves of this lab">
+        <button class="loop-parts__link" type="button" data-jump="loopPractice">
+          <span class="loop-parts__n">Part 1 · practice</span>
+          <span class="loop-parts__t">Drive a run</span>
+          <span class="loop-parts__d">Step through a real loop and watch the context fill</span>
+        </button>
+        <button class="loop-parts__link" type="button" data-jump="loopTheory">
+          <span class="loop-parts__n">Part 2 · theory</span>
+          <span class="loop-parts__t">Name every part</span>
+          <span class="loop-parts__d">The ledger, hub-and-spoke, the built-in toolset, prompt vs hook</span>
+        </button>
+      </nav>
+
+      <div class="loop-part" id="loopPractice" data-section="Drive a run">
+      <div class="loop-part__head">
+        <span class="loop-part__tag">Part 1 · practice</span>
+        <h3>Watch one run, one step at a time</h3>
+        <p>Pick a scenario, then step through it. The graph is what is running; the log on the right is the same run seen twice: as the user sees it, and as the API turns underneath.</p>
+      </div>
       <div class="loop-scenarios" id="loopScenarios"></div>
       <p class="loop-blurb" id="loopBlurb"></p>
       <div class="loop-prompt" id="loopPrompt"></div>
@@ -355,8 +382,17 @@ export function mountLoop(root) {
 
       <div class="loop-note is-empty" id="loopNote"></div>
       <div class="loop-flag" id="loopFlag" hidden></div>
+      </div>
 
-      ${contrastHtml()}
+      <div class="loop-part loop-part--theory" id="loopTheory">
+        <div class="loop-part__head">
+          <span class="loop-part__tag">Part 2 · theory</span>
+          <h3>What each moving part is, and what breaks without it</h3>
+          <p>The run above is one path through the loop. This half names every part of it (the fields you send, the fields you read, the definitions the SDK adds) then the two things a coordinator actually does with them: delegate, and read a codebase.</p>
+        </div>
+        ${theoryHtml()}
+        ${contrastHtml()}
+      </div>
     </section>`;
 
   buildScenarioChips();
@@ -376,6 +412,16 @@ export function mountLoop(root) {
     root.querySelectorAll('.view-toggle .seg').forEach((s) => s.classList.toggle('is-active', s === b));
     renderLog(sceneAt(S.step));
   });
+
+  // Part jumps: buttons + scrollIntoView, never anchors, because the hash
+  // namespace belongs to the lab router (events.js), and #loop must
+  // survive the jump. Same reason as the mcp lab's file jump.
+  root.querySelectorAll('[data-jump]').forEach((b) => {
+    b.addEventListener('click', () => {
+      document.getElementById(b.dataset.jump)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  bindTheory(root);
 
   // Deep-link into the SDK lab landing on L3 Hooks. Navigation itself is
   // the href="#sdk" hashchange; this only parks the level for mountSdk,

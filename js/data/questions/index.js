@@ -58,7 +58,7 @@ export const DOMAIN_BY_ID = Object.fromEntries(DOMAINS.map((d) => [d.id, d]));
  * This maps label → PATTERNS[].id so the drill can deep-link into the card.
  *
  * Labels are deliberately finer-grained than the playbook, so some have no
- * card and stay unlinked — that is expected, not a gap to be filled with a
+ * card and stay unlinked. That is expected, not a gap to be filled with a
  * loose match. Titles matching a playbook title resolve without an entry here.
  */
 export const PATTERN_ALIASES = {

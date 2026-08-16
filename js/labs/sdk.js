@@ -1,24 +1,55 @@
 // ── Lab 2: Agent SDK, level by level ─────────────────────────
-// Six levels, each adding one layer of setup, then a config bench that
-// checks a configuration against what the agent actually has to do.
+// Six levels, each adding one layer of setup, then the tool-definition
+// section (labs/sdk-tools.js) and the config bench (labs/sdk-bench.js),
+// both partials, so this file stays the level view plus the router.
 //
-// Escaping contract (see data/sdk.js, data/sdk-config.js): caveat body,
-// `breaks`, `exam`, `why`, `gap` and note `text` carry inline
-// <code>/<em>/<strong> and data-tip glossary spans, and render raw.
-// Everything else is plain text and goes through escHtml.
+// Escaping contract (see data/sdk.js): caveat body, `breaks` and `exam`
+// carry inline <code>/<em>/<strong> and data-tip glossary spans, and
+// render raw. Everything else is plain text and goes through escHtml.
 
 import { SDK_LEVELS } from '../data/sdk.js';
-import { CFG_FIELDS, CFG_GOALS, CFG_NOTES } from '../data/sdk-config.js';
+import { SDK_TS, SDK_TS_ABSENT } from '../data/sdk-ts.js';
 import { state } from '../state.js';
-import { escHtml, highlightCode, copyText } from '../utils.js';
+import { escHtml, highlightCode, copyText, keepInScroller } from '../utils.js';
+import { langTabs, toolsHtml, toolsCode } from './sdk-tools.js';
+import { benchHtml, benchClick } from './sdk-bench.js';
+import { sessionsHtml, sessionsClick } from './sdk-sessions.js';
 
+// A level may carry `demo: 'id'` (data/sdk.js) to render an interactive
+// example under its sample. Deliberately *not* a rail `data-section`:
+// sections are scanned once per mount, and a block that appears only at
+// one level would leave the rail claiming a section the reader cannot see.
+const DEMOS = { sessions: sessionsHtml };
+
+// The bench owns its own {cfg, goals}; see labs/sdk-bench.js.
 const S = {
   level: 'l0',
-  cfg: Object.fromEntries(CFG_FIELDS.map((f) => [f.id, f.def])),
-  goals: new Set(['refund']),
+  lang: 'py',           // one language for the whole lab: levels + tool section
 };
 
 const level = () => SDK_LEVELS.find((l) => l.id === S.level) || SDK_LEVELS[0];
+
+// The code-block bar names the language the reader is looking at. A TS
+// sample is tagged `lang: 'js'` for the highlighter (there is no ts
+// dialect), so the label cannot come from that field alone.
+const LANG_LABEL = { py: 'python', js: 'javascript', bash: 'shell' };
+
+/** The sample to render for a level in the chosen language. Python is the
+ *  canon (data/sdk.js); a TS variant overrides it where one exists, and
+ *  where one deliberately does not, `absent` explains why instead of
+ *  silently falling back and leaving the toggle looking broken. */
+function shown(l) {
+  const ts = S.lang === 'ts' ? SDK_TS[l.id] : null;
+  if (ts) return { ...ts, label: 'typescript', absent: null };
+  return {
+    lang: l.lang,
+    label: LANG_LABEL[l.lang] || l.lang,
+    code: l.code,
+    note: null,
+    divergence: null,
+    absent: S.lang === 'ts' ? SDK_TS_ABSENT[l.id] || null : null,
+  };
+}
 
 // ── Level view ───────────────────────────────────────────────
 
@@ -50,6 +81,7 @@ function caveatCards(caveats) {
 function levelHtml() {
   const l = level();
   const prev = SDK_LEVELS[l.n - 1];
+  const v = shown(l);
   return `
     <div class="sdk-level" data-level="${l.id}">
       <header class="sdk-level__head">
@@ -61,13 +93,22 @@ function levelHtml() {
         <div class="sdk-level__goal"><span>Goal</span>${escHtml(l.goal)}</div>
       </header>
 
+      ${langTabs(S.lang, 'level code')}
       <div class="code-block">
         <div class="code-block__bar">
-          <span class="code-block__lang">${l.lang === 'bash' ? 'shell' : 'python'}</span>
+          <span class="code-block__lang">${v.label}</span>
           <button class="code-copy" type="button" id="sdkCopy">Copy</button>
         </div>
-        <pre><code>${highlightCode(l.code, l.lang)}</code></pre>
+        <pre><code>${highlightCode(v.code, v.lang)}</code></pre>
       </div>
+      ${v.note ? `<p class="sdk-langnote">${v.note}</p>` : ''}
+      ${v.absent ? `<p class="sdk-langnote sdk-langnote--absent"><span>Python only</span> ${v.absent}</p>` : ''}
+      ${v.divergence ? `
+        <div class="sdk-diverge">
+          <span class="sdk-diverge__badge">${escHtml(v.divergence.badge)}</span>
+          <p>${v.divergence.body}</p>
+        </div>` : ''}
+      ${l.demo && DEMOS[l.demo] ? DEMOS[l.demo]() : ''}
 
       <div class="sdk-keys">
         <h4 class="sdk-sub">What this level introduces</h4>
@@ -100,123 +141,44 @@ function levelHtml() {
     </div>`;
 }
 
-// ── Config bench ─────────────────────────────────────────────
-
-const TOOLS_NARROW = ['get_customer', 'lookup_order', 'process_refund', 'escalate_to_human'];
-
-function buildSnippet() {
-  const c = S.cfg;
-  const tools = c.scope === 'narrow'
-    ? TOOLS_NARROW.slice()
-    : [...TOOLS_NARROW, 'search_docs', 'send_email', 'fetch_url', 'run_report', '...11 more'];
-  if (c.task === 'on') tools.unshift('Task');
-
-  const lines = [
-    'agent = AgentDefinition(',
-    '    name="support_agent",',
-    '    description="Handles returns, billing and order issues",',
-    '    system_prompt=SYSTEM_PROMPT,',
-    '    allowed_tools=[',
-    ...tools.map((t) => `        ${t.startsWith('...') ? `# ${t}` : `"${t}",`}`),
-    '    ],',
-    ')',
-    '',
-    `tool_choice = ${c.toolChoice === 'auto' ? '{"type": "auto"}'
-      : c.toolChoice === 'any' ? '{"type": "any"}'
-      : '{"type": "tool", "name": "extract_metadata"}'}`,
-  ];
-  if (c.pre === 'on') {
-    lines.push('', '@hook("PreToolUse")', 'def enforce_limits(call): ...   # blocks in code');
-  }
-  if (c.post === 'on') {
-    lines.push('', '@hook("PostToolUse")', 'def reshape(result): ...        # trims + normalises');
-  }
-  return lines.join('\n');
-}
-
-/** A `need` is satisfied when the current value matches the value or is in the list. */
-function satisfied(need) {
-  return Object.entries(need).every(([k, v]) =>
-    (Array.isArray(v) ? v.includes(S.cfg[k]) : S.cfg[k] === v));
-}
-
-function matches(when) {
-  return Object.entries(when).every(([k, v]) => S.cfg[k] === v);
-}
-
-function verdictHtml() {
-  const chosen = CFG_GOALS.filter((g) => S.goals.has(g.id));
-  const gaps = chosen.filter((g) => !satisfied(g.need));
-  const met = chosen.filter((g) => satisfied(g.need));
-  const notes = CFG_NOTES.filter((n) => matches(n.when));
-
-  const head = !chosen.length
-    ? '<div class="sdk-verdict__head is-idle">Pick what the agent has to do.</div>'
-    : gaps.length
-      ? `<div class="sdk-verdict__head is-gap">${gaps.length} requirement${gaps.length === 1 ? '' : 's'} not guaranteed by this config</div>`
-      : '<div class="sdk-verdict__head is-ok">Every requirement is enforced, not just requested</div>';
-
-  const gapList = gaps.map((g) => `
-    <article class="sdk-gap">
-      <h5>${escHtml(g.label)}</h5>
-      <p class="sdk-gap__risk">${g.gap}</p>
-      <p class="sdk-gap__fix">${g.why}</p>
-      <span class="sdk-gap__ref">${escHtml(g.refs)}</span>
-    </article>`).join('');
-
-  const metList = met.map((g) => `<li>${escHtml(g.label)}</li>`).join('');
-
-  return `
-    ${head}
-    ${gapList ? `<div class="sdk-gaps">${gapList}</div>` : ''}
-    ${metList ? `<ul class="sdk-met">${metList}</ul>` : ''}
-    ${notes.length ? `<ul class="sdk-notes">${notes.map((n) => `<li class="sdk-note sdk-note--${n.tone}">${n.text}</li>`).join('')}</ul>` : ''}`;
-}
-
-function renderBench() {
-  const goals = CFG_GOALS.map((g) =>
-    `<button class="chip${S.goals.has(g.id) ? ' is-active' : ''}" type="button" data-goal="${g.id}">${escHtml(g.label)}</button>`).join('');
-
-  const knobs = CFG_FIELDS.map((f) => `
-    <div class="sig">
-      <div class="sig__label">${escHtml(f.label)}<em>${escHtml(f.hint)}</em></div>
-      <div class="seg-group" data-cfg="${f.id}">
-        ${f.options.map((o) => `<button class="seg${S.cfg[f.id] === o.v ? ' is-active' : ''}" type="button" data-v="${o.v}">${escHtml(o.label)}</button>`).join('')}
-      </div>
-    </div>`).join('');
-
-  const bench = document.getElementById('sdkBench');
-  if (!bench) return;
-  bench.innerHTML = `
-    <div class="sdk-bench__goals">
-      <div class="sdk-sub">What does this agent have to do?</div>
-      <div class="chip-row" id="sdkGoals">${goals}</div>
-    </div>
-    <div class="sdk-bench__grid">
-      <div class="sdk-bench__knobs" id="sdkKnobs">
-        <div class="sdk-sub">Settings</div>
-        ${knobs}
-      </div>
-      <div class="sdk-bench__out">
-        <div class="code-block code-block--sm">
-          <div class="code-block__bar"><span class="code-block__lang">live config</span></div>
-          <pre><code>${highlightCode(buildSnippet(), 'py')}</code></pre>
-        </div>
-        <div class="sdk-verdict" id="sdkVerdict">${verdictHtml()}</div>
-      </div>
-    </div>`;
-}
-
 function renderLevel() {
   const host = document.getElementById('sdkLevel');
   if (host) host.innerHTML = levelHtml();
-  document.querySelectorAll('.sdk-step').forEach((b) => {
+  // `[data-level]` matters: a language tab is a .sdk-step too, so an
+  // unscoped sweep stripped is-active from both language navs on every
+  // level render, and the level's own toggle came back unlit.
+  document.querySelectorAll('.sdk-step[data-level]').forEach((b) => {
     b.classList.toggle('is-active', b.dataset.level === S.level);
     b.setAttribute('aria-current', b.dataset.level === S.level ? 'step' : 'false');
   });
-  // Keep the active step inside the stepper's faded viewport (horizontal
-  // only — block:nearest never moves the page vertically).
-  document.querySelector('.sdk-step.is-active')?.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+  // Keep the active step inside the stepper's faded viewport. Its own
+  // scroller only: `block: 'nearest'` does move the page when the stepper is
+  // scrolled out of sight, which yanked the reader up out of the tool section
+  // every time they flipped the language from down there.
+  keepInScroller(document.querySelector('.sdk-stepper > .sdk-step.is-active'));
+}
+
+function renderTools() {
+  const host = document.getElementById('sdkTools');
+  if (host) host.innerHTML = toolsHtml(S.lang);
+}
+
+/** One language for the whole lab, set from either toggle. The two navs are
+ *  the same control rendered twice, so both re-render. */
+function setLang(lang) {
+  if (!lang || lang === S.lang) return;
+  const anchor = document.getElementById('sdkTools');
+  const before = anchor?.getBoundingClientRect().top;
+  S.lang = lang;
+  renderLevel();
+  renderTools();
+  // The level sample above the tool section changes height between languages
+  // (the TS loop is longer than the Python one), so without this a reader who
+  // flipped the language from down here watches the page slide under them.
+  const after = document.getElementById('sdkTools')?.getBoundingClientRect().top;
+  if (typeof before === 'number' && typeof after === 'number' && Math.abs(after - before) > 1) {
+    window.scrollBy(0, after - before);
+  }
 }
 
 function setLevel(id) {
@@ -246,45 +208,54 @@ export function mountSdk(root) {
         </div>
       </header>
 
-      <nav class="sdk-stepper" id="sdkStepper" aria-label="SDK levels">${stepper()}</nav>
-      <div id="sdkLevel"></div>
+      <div class="sdk-levels" data-section="The six levels">
+        <nav class="sdk-stepper" id="sdkStepper" aria-label="SDK levels">${stepper()}</nav>
+        <div id="sdkLevel"></div>
+      </div>
 
-      <section class="sdk-bench">
+      <section class="lab-sub sdk-tools" id="sdkTools" data-section="Defining a tool"></section>
+
+      <section class="sdk-bench" data-section="Config bench">
         <header class="sdk-bench__head">
           <h3>Config bench</h3>
-          <p>Set the knobs against a requirement. The difference between a setting that <em>works</em> and one that is <em>guaranteed</em> is most of Domain 1.</p>
+          <p>Set the knobs against a requirement and read the config that results: each knob carries the level that introduced it. The difference between a setting that <em>works</em> and one that is <em>guaranteed</em> is most of Domain 1.</p>
         </header>
         <div id="sdkBench"></div>
       </section>
     </section>`;
 
   renderLevel();
-  renderBench();
+  renderTools();
+  const bench = document.getElementById('sdkBench');
+  if (bench) bench.innerHTML = benchHtml();
 
   root.addEventListener('click', (e) => {
+    // Language first: a lang tab is also a .sdk-step (same component), so
+    // testing for the step class first would swallow the click.
+    const lang = e.target.closest('[data-lang]');
+    if (lang) { setLang(lang.dataset.lang); return; }
+
     const step = e.target.closest('.sdk-step');
     if (step) { setLevel(step.dataset.level); return; }
 
     const goto = e.target.closest('[data-goto]');
     if (goto) { setLevel(goto.dataset.goto); return; }
 
-    if (e.target.closest('#sdkCopy')) { copyText(level().code, 'Snippet copied'); return; }
+    if (e.target.closest('#sdkCopy')) { copyText(shown(level()).code, 'Snippet copied'); return; }
 
-    const goal = e.target.closest('[data-goal]');
-    if (goal) {
-      const id = goal.dataset.goal;
-      if (S.goals.has(id)) S.goals.delete(id); else S.goals.add(id);
-      renderBench();
+    if (e.target.closest('#sdkToolsCopy')) {
+      const t = toolsCode(S.lang);
+      copyText(t.code, `${t.file} copied`);
       return;
     }
 
-    const seg = e.target.closest('.seg[data-v]');
-    if (seg) {
-      const group = seg.closest('[data-cfg]');
-      if (!group) return;
-      S.cfg[group.dataset.cfg] = seg.dataset.v;
-      renderBench();
-    }
+    // The level's own interactive demo (L5) keeps its state in its
+    // partial; the level view is re-rendered from it.
+    if (sessionsClick(e)) { renderLevel(); return; }
+
+    // Chips, knobs, reset and copy all live in the bench partial, which
+    // updates in place rather than rebuilding the panel.
+    benchClick(e);
   });
 
   // Exam mode emphasises the bench: that is where the judgement lives.

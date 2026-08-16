@@ -15,19 +15,19 @@ export const MCP_FLOWS = {
     title: 'Just ask Claude to connect to Jira',
     subtitle: 'No MCP server. The model has to invent an integration on the spot.',
     tone: 'warn',
-    srcLabel: 'no config — reinvented every session',
+    srcLabel: 'no config · reinvented every session',
     steps: [
       { kind: 'think', line: 'No jira tool exists. I\u2019ll write code to hit the REST API myself.', tokens: 400 },
-      { kind: 'write', line: 'Write fetch_jira.py \u2014 guess the endpoint, auth header, and pagination.', tokens: 1300 },
+      { kind: 'write', line: 'Write fetch_jira.py: guess the endpoint, auth header, and pagination.', tokens: 1300 },
       { kind: 'bash', line: 'Bash: python fetch_jira.py  (JIRA_TOKEN pasted inline \u26a0)', tokens: 300 },
       { kind: 'result', line: 'Raw JSON: 62 fields \u00d7 40 issues dumped straight into context.', tokens: 5200 },
       { kind: 'think', line: 'Re-read my own code + the blob to figure out which fields matter.', tokens: 900 },
-      { kind: 'result', line: 'Summary produced \u2014 but the script is thrown away at session end.', tokens: 300 },
+      { kind: 'result', line: 'Summary produced, but the script is thrown away at session end.', tokens: 300 },
     ],
     totals: { turns: 6, reusable: false, discovery: false, secretsSafe: false },
     cons: [
       'Burns tokens writing, running, and re-reading throwaway code every session',
-      'Guesses the API shape \u2014 breaks when Jira changes or pagination hits',
+      'Guesses the API shape, so it breaks when Jira changes or pagination hits',
       'The token often ends up inline in code or logs',
       'Nothing is discoverable or shared; the next session starts from zero',
     ],
@@ -46,7 +46,7 @@ export const MCP_FLOWS = {
     ],
     totals: { turns: 4, reusable: true, discovery: true, secretsSafe: true },
     pros: [
-      'Tools auto-discovered on connect \u2014 no code to write',
+      'Tools auto-discovered on connect, with no code to write',
       'Typed inputs and trimmed outputs keep context small',
       'Secret stays in ${JIRA_TOKEN}; never enters the model context',
       'Committed to the repo, so every teammate and session reuses it',
@@ -56,9 +56,9 @@ export const MCP_FLOWS = {
 
 // The punchline: the one committed file that separates the two flows.
 // Every note restates a claim already made by the flows above or the
-// error contract below — no new behavior claims live here.
+// error contract below; no new behavior claims live here.
 export const MCP_CONFIG = {
-  lead: 'Both runs asked for the same tickets. The only artifact that differs is this file — one committed entry that wires the jira server for every session and every teammate.',
+  lead: 'Both runs asked for the same tickets. The only artifact that differs is this file: one committed entry that wires the jira server for every session and every teammate.',
   code: `{
   "mcpServers": {
     "jira": {
@@ -69,12 +69,12 @@ export const MCP_CONFIG = {
   }
 }`,
   notes: [
-    { tag: 'Discovered, not written', body: 'On connect the client auto-discovers `jira_search`, `jira_get_issue` and their schemas — no throwaway `fetch_jira.py`, no guessed endpoints or pagination.' },
+    { tag: 'Discovered, not written', body: 'On connect the client auto-discovers `jira_search`, `jira_get_issue` and their schemas: no throwaway `fetch_jira.py`, no guessed endpoints or pagination.' },
     { tag: 'Typed in, trimmed out', body: 'Typed inputs and trimmed outputs keep context small: 12 issues with only the fields the tool exposes, not 62 fields × 40 issues of raw JSON.' },
-    { tag: 'Secret stays outside', body: 'The `${JIRA_TOKEN}` reference is expanded by the server process — the token never enters model context and is never pasted inline in code.' },
+    { tag: 'Secret stays outside', body: 'The `${JIRA_TOKEN}` reference is expanded by the server process, so the token never enters model context and is never pasted inline in code.' },
     { tag: 'Committed and shared', body: 'The file lives in the repo, so every teammate and every future session reuses the same tools instead of starting from zero.' },
-    { tag: 'Debuggable failures', body: 'A failed call comes back marked `isError` with structured content the coordinator can act on — the error contract below.' },
-    { tag: 'Project scope, on purpose', body: 'Committed here, this config is project scope — the whole team gets it. Personal or experimental servers go in user scope (`~/.claude.json`) instead. And for standard integrations, prefer a community server over writing your own.' },
+    { tag: 'Debuggable failures', body: 'A failed call comes back marked `isError` with structured content the coordinator can act on: the error contract below.' },
+    { tag: 'Project scope, on purpose', body: 'Committed here, this config is project scope, so the whole team gets it. Personal or experimental servers go in user scope (`~/.claude.json`) instead. And for standard integrations, prefer a community server over writing your own.' },
   ],
 };
 

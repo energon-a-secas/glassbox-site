@@ -3,7 +3,7 @@
 // (a step's `flag` field is an id here). Keyed for cross-reference.
 //
 // Escaping: `fix` renders RAW (inline <code>). `bad`, `why`, `title`
-// and `domain` are plain text — every consumer escapes them, so markup
+// and `domain` are plain text; every consumer escapes them, so markup
 // in those fields shows up literally.
 
 export const ANTIPATTERNS = {
@@ -49,7 +49,7 @@ export const ANTIPATTERNS = {
     title: 'Aborting the whole workflow on one failure',
     bad: 'One of three research subagents times out, so the coordinator throws an error and returns nothing.',
     why: 'You discard two complete sections because of one gap. Users get nothing instead of 80%.',
-    fix: 'Continue with partial results and annotate the gap ("Music: PARTIAL COVERAGE \u2014 search timeout").',
+    fix: 'Continue with partial results and annotate the gap ("Music: PARTIAL COVERAGE \u00b7 search timeout").',
     tags: ['coordinator', 'subagent'],
   },
   'silent-empty': {
@@ -84,7 +84,7 @@ export const ANTIPATTERNS = {
     domain: 'Human-in-the-loop',
     title: 'Escalating on sentiment or self-rated confidence',
     bad: 'Route to a human when the customer sounds angry, or when the model rates its confidence below 7/10.',
-    why: 'Mood doesn\u2019t track case complexity, and models are confidently wrong \u2014 self-rated confidence is poorly calibrated.',
+    why: 'Mood doesn\u2019t track case complexity, and models are confidently wrong, so self-rated confidence is poorly calibrated.',
     fix: 'Escalate on clear rules: explicit "get me a manager", policy gaps, threshold breaches, or no progress after N attempts.',
     tags: ['coordinator'],
   },
@@ -128,9 +128,9 @@ export const ANTIPATTERNS = {
     id: 'prompt-not-prefill',
     domain: 'Conversation',
     title: 'Instructing away a verbal tic',
-    bad: 'System prompt: NEVER open with "Certainly!" or "I’d be happy to help!" — and hoping.',
+    bad: 'System prompt: NEVER open with "Certainly!" or "I’d be happy to help!", and hoping.',
     why: 'A prompt rule fights probability with prose: the model still samples openings, and its own past replies keep voting for the tic. Post-processing and temperature are patches on the same leak.',
-    fix: 'Prefill a partial assistant turn (<code>{role:"assistant", content:"..."}</code> as the last message) — the model continues your opening instead of writing its own.',
+    fix: 'Prefill a partial assistant turn (<code>{role:"assistant", content:"..."}</code> as the last message) so the model continues your opening instead of writing its own.',
     tags: ['prefill', 'system_prompt'],
   },
 };

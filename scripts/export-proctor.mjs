@@ -1,6 +1,6 @@
 // ── Export the drill bank as a Proctor test ──────────────────
 //
-// Converts js/data/questions into proctor-drill.json at the repo root —
+// Converts js/data/questions into proctor-drill.json at the repo root:
 // the Proctor format (https://proctor.neorgon.com/llms.txt), so the whole
 // bank runs anywhere Proctor runs, including embedded via
 //   ?embed=1&src=https://glassbox.neorgon.com/proctor-drill.json
@@ -19,7 +19,7 @@ const questions = QUESTIONS.map((q) => {
   const letters = q.options.map((o) => o.k);
   const wrong = letters
     .filter((k) => k !== q.answer)
-    .map((k) => `- **${k}** — ${q.distractors[k]}`)
+    .map((k) => `- **${k}**: ${q.distractors[k]}`)
     .join('\n');
   return {
     id: q.id,
@@ -33,7 +33,7 @@ const questions = QUESTIONS.map((q) => {
 });
 
 const test = {
-  title: 'Glass Box — CCA Foundations drill bank',
+  title: 'Glass Box · CCA Foundations drill bank',
   description: 'Every question from glassbox.neorgon.com, with the reasoning for all four options',
   category: 'Claude Certified Architect (Foundations)',
   questions,

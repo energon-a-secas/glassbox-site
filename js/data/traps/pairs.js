@@ -87,7 +87,7 @@ export const PAIRS = [
     sides: [
       {
         when: 'They want their own workflow without affecting teammates.',
-        answer: 'Create it under <code>~/.claude/skills/</code> with a <em>different</em> name, e.g. <code>/my-commit</code>. They keep the team’s maintained <code>/commit</code> — and every update the team ships to it — plus a clearly named personal skill.',
+        answer: 'Create it under <code>~/.claude/skills/</code> with a <em>different</em> name, e.g. <code>/my-commit</code>. They keep the team’s maintained <code>/commit</code> (and every update the team ships to it) plus a clearly named personal skill.',
         ref: 'Q36, §5.5',
       },
       {

@@ -82,7 +82,7 @@ function levelFiles() {
   return out;
 }
 
-/** Class/aria toggle only \u2014 no tree re-render, so keyboard focus survives. */
+/** Class/aria toggle only, with no tree re-render, so keyboard focus survives. */
 function updateActive() {
   document.querySelectorAll('.tree-file[data-file]').forEach((r) => {
     const on = r.dataset.file === C.file;
@@ -123,14 +123,14 @@ function renderMeta() {
   const lv = levelObj();
   document.getElementById('cfgTagline').textContent = lv.tagline;
   document.getElementById('cfgBehavior').innerHTML = `<span class="cfg-behavior__tag">Claude\u2019s behavior</span> ${escHtml(lv.behavior)}`;
-  document.querySelectorAll('.cfg-lvl').forEach((b) => b.classList.toggle('is-active', +b.dataset.i === C.level));
+  document.querySelectorAll('.cfg-step').forEach((b) => b.classList.toggle('is-active', +b.dataset.i === C.level));
 }
 
 function selectLevel(i) {
   C.level = i;
   const lv = levelObj();
   // The user scope only appears once the project has custom skills to
-  // collide with (L3) — before that, the second tree stays hidden.
+  // collide with (L3); before that, the second tree stays hidden.
   const userScopeEl = document.getElementById('cfgUserScope');
   if (userScopeEl) userScopeEl.hidden = !lv.userScope;
   // keep current file if it still exists at this level, else default
@@ -146,7 +146,9 @@ function selectLevel(i) {
 }
 
 export function mountConfig(root) {
-  const levelTabs = CONFIG_LEVELS.map((lv, i) => `<button class="cfg-lvl" data-i="${i}"><span class="cfg-lvl__lv">${lv.level}</span><span class="cfg-lvl__lb">${escHtml(lv.label)}</span></button>`).join('');
+  // Same path stepper as the SDK lab: one component shape for "pick a
+  // level" across the site (the old .cfg-lvl cards spent a full row on it).
+  const levelTabs = CONFIG_LEVELS.map((lv, i) => `<button class="sdk-step cfg-step" data-i="${i}"><span class="sdk-step__n">${lv.level}</span><span class="sdk-step__label">${escHtml(lv.label)}</span></button>`).join('');
 
   root.innerHTML = `
     <section class="lab lab-config">
@@ -157,7 +159,7 @@ export function mountConfig(root) {
         </div>
       </header>
 
-      <div class="cfg-levels">${levelTabs}</div>
+      <nav class="sdk-stepper cfg-path" aria-label="Maturity levels">${levelTabs}</nav>
       <p class="cfg-tagline" id="cfgTagline"></p>
       <div class="cfg-behavior" id="cfgBehavior"></div>
 
@@ -172,25 +174,27 @@ export function mountConfig(root) {
 
       <div class="cfg-ide">
         <aside class="cfg-sidebar">
-          <div class="cfg-sidebar__head">Explorer — project</div>
+          <div class="cfg-sidebar__head">Explorer · project</div>
           <div id="cfgTree"></div>
           <div id="cfgUserScope" hidden>
-            <div class="cfg-sidebar__head cfg-sidebar__head--user">User scope — ~/.claude</div>
+            <div class="cfg-sidebar__head cfg-sidebar__head--user">User scope · ~/.claude</div>
             <p class="cfg-user-sub">follows you, not the repo</p>
             <div id="cfgTreeUser"></div>
           </div>
         </aside>
         <div class="cfg-main" id="cfgView"></div>
       </div>
+
+      <p class="store-rule">Read the tree a second way and it is a set of <strong>context stores</strong>: <code>CLAUDE.md</code> is loaded into every session, a <code>.claude/rules/</code> file only when a matching path is edited, a scratchpad file only when the agent is told to open it. Which fact belongs in which, and what each one survives, is <a href="#context">where the fact lives</a> in the Context lab.</p>
     </section>`;
 
-  // The user scope never changes with the level — render it once. Its
+  // The user scope never changes with the level, so render it once. Its
   // read-order numbers come from the level that shows it (L3).
   const userLevel = CONFIG_LEVELS.find((lv) => lv.userScope);
   root.querySelector('#cfgTreeUser').innerHTML = `<ul class="tree tree--user">${treeHtml(USER_TREE, 0, userLevel)}</ul>`;
 
-  root.querySelector('.cfg-levels').addEventListener('click', (e) => {
-    const b = e.target.closest('.cfg-lvl'); if (b) selectLevel(+b.dataset.i);
+  root.querySelector('.cfg-path').addEventListener('click', (e) => {
+    const b = e.target.closest('.cfg-step'); if (b) selectLevel(+b.dataset.i);
   });
   // One pair of delegated listeners covers both trees.
   const sidebar = root.querySelector('.cfg-sidebar');

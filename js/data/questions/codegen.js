@@ -9,12 +9,12 @@ export const CODEGEN = [
     scenario: 'codegen',
     domain: 'd3',
     level: 'core',
-    situation: 'You asked Claude Code to write a function transforming API responses into an internal normalised format. Two iterations in, the structure is still wrong — some fields nested differently, timestamps formatted incorrectly. You described the requirements in prose and Claude interprets them differently each time.',
+    situation: 'You asked Claude Code to write a function transforming API responses into an internal normalised format. Two iterations in, the structure is still wrong: some fields nested differently, timestamps formatted incorrectly. You described the requirements in prose and Claude interprets them differently each time.',
     ask: 'Which approach is most effective for the next iteration?',
     options: [
       { k: 'A', t: 'Write a JSON schema for the expected output and validate Claude’s result against it after each iteration.' },
       { k: 'B', t: 'Provide 2-3 concrete input-output examples showing the expected transformation for representative API responses.' },
-      { k: 'C', t: 'Rewrite the requirements with more technical precision — exact field mappings, nesting rules, timestamp format strings.' },
+      { k: 'C', t: 'Rewrite the requirements with more technical precision: exact field mappings, nesting rules, timestamp format strings.' },
       { k: 'D', t: 'Ask Claude to explain its current understanding of the requirements to find where interpretations diverge.' },
     ],
     answer: 'B',
@@ -101,7 +101,7 @@ export const CODEGEN = [
     scenario: 'codegen',
     domain: 'd3',
     level: 'core',
-    situation: 'Your team created an `/analyze-codebase` skill that does deep analysis — dependency scanning, coverage counts, quality metrics. After running it, developers report Claude becomes less responsive and loses track of the original task.',
+    situation: 'Your team created an `/analyze-codebase` skill that does deep analysis: dependency scanning, coverage counts, quality metrics. After running it, developers report Claude becomes less responsive and loses track of the original task.',
     ask: 'How do you fix this while keeping full analysis capability?',
     options: [
       { k: 'A', t: 'Add `context: fork` to the skill frontmatter so the analysis runs in an isolated subagent context.' },
@@ -124,7 +124,7 @@ export const CODEGEN = [
     scenario: 'codegen',
     domain: 'd3',
     level: 'hard',
-    situation: 'Your team uses a `/commit` skill at `.claude/skills/commit/SKILL.md`. A developer wants to customise it for their own workflow — different commit message format, extra checks — without affecting teammates.',
+    situation: 'Your team uses a `/commit` skill at `.claude/skills/commit/SKILL.md`. A developer wants to customise it for their own workflow (different commit message format, extra checks) without affecting teammates.',
     ask: 'What do you recommend?',
     options: [
       { k: 'A', t: 'Create a personal version under `~/.claude/skills/` with a different name, e.g. `/my-commit`.' },
@@ -133,10 +133,10 @@ export const CODEGEN = [
       { k: 'D', t: 'Set `override: true` in the personal skill frontmatter to prioritise it over the project version.' },
     ],
     answer: 'A',
-    why: 'A different name avoids the collision entirely: the developer keeps the team’s maintained `/commit` — and every update the team ships to it — plus a clearly named personal skill. No teammate is affected and nothing is silently shadowed.',
+    why: 'A different name avoids the collision entirely: the developer keeps the team’s maintained `/commit`, and every update the team ships to it, plus a clearly named personal skill. No teammate is affected and nothing is silently shadowed.',
     distractors: {
       B: 'Username branching pushes one person’s preferences into the shared, version-controlled file.',
-      C: 'Works mechanically — personal skills take precedence over project skills with the same name — but that is the trap: the shadowing is silent, so this developer quietly stops receiving team updates to `/commit` and has to remember they run a different skill under the same command.',
+      C: 'Works mechanically, since personal skills take precedence over project skills with the same name, but that is the trap: the shadowing is silent, so this developer quietly stops receiving team updates to `/commit` and has to remember they run a different skill under the same command.',
       D: 'No such frontmatter key. Precedence is positional, not declared.',
     },
     pattern: 'Personal variants get their own name',
@@ -156,7 +156,7 @@ export const CODEGEN = [
       { k: 'D', t: 'Claude Code caches `CLAUDE.md` after first read and the original developers are on cached versions. Everyone should clear the cache.' },
     ],
     answer: 'A',
-    why: 'Same repo, same code, different behaviour per person — the instruction is not in the repo. User-level config is not version controlled, so it reached three laptops and never reached the fourth. Project level is where shared standards belong.',
+    why: 'Same repo, same code, different behaviour per person. The instruction is not in the repo. User-level config is not version controlled, so it reached three laptops and never reached the fourth. Project level is where shared standards belong.',
     distractors: {
       B: 'Possible in principle, but it does not explain why three separate developers all get behaviour the repo does not specify.',
       C: 'Claude Code does not learn preferences across sessions this way. Persistence comes from config files.',
@@ -170,7 +170,7 @@ export const CODEGEN = [
     scenario: 'codegen',
     domain: 'd3',
     level: 'hard',
-    situation: 'You find that including 2-3 full endpoint implementations as context markedly improves consistency when generating new API endpoints. That context is only useful when creating endpoints — not when debugging, reviewing, or doing other work in the API directory.',
+    situation: 'You find that including 2-3 full endpoint implementations as context markedly improves consistency when generating new API endpoints. That context is only useful when creating endpoints, not when debugging, reviewing, or doing other work in the API directory.',
     ask: 'Which configuration approach is most effective?',
     options: [
       { k: 'A', t: 'Add the endpoint examples and pattern documentation to the project `CLAUDE.md` so they are always available.' },
@@ -179,7 +179,7 @@ export const CODEGEN = [
       { k: 'D', t: 'Create a skill that references the examples and the pattern instructions, invoked on demand via a slash command.' },
     ],
     answer: 'D',
-    why: 'The trigger is the task, not the file. A skill loads the examples when you are generating an endpoint and stays out of the way when you are debugging one — which is the distinction the stem draws explicitly.',
+    why: 'The trigger is the task, not the file. A skill loads the examples when you are generating an endpoint and stays out of the way when you are debugging one, which is the distinction the stem draws explicitly.',
     distractors: {
       A: 'Always-loaded means those examples sit in context during every debugging and review session too.',
       B: 'Manual pasting works but is unrepeatable and inconsistent across the team.',
@@ -206,7 +206,7 @@ export const CODEGEN = [
     distractors: {
       A: 'Positional parameters do not prompt when omitted, and a "warning" in a description is not enforcement.',
       C: 'Splitting the skill addresses none of the three causes; the naming and context-leak problems survive in both halves.',
-      D: 'All three fixes are prompt instructions — probabilistic where two of the three problems demand a guarantee.',
+      D: 'All three fixes are prompt instructions: probabilistic where two of the three problems demand a guarantee.',
     },
     pattern: 'Match the config surface to the trigger',
     source: 'Guide Q39',
@@ -285,7 +285,7 @@ export const CODEGEN = [
     scenario: 'codegen',
     domain: 'd3',
     level: 'core',
-    situation: 'You created an `/explore-alternatives` skill your team uses to brainstorm and evaluate implementation approaches before choosing one. Developers report that afterwards Claude’s responses are coloured by the discussion — referencing rejected approaches, retaining exploration context that interferes with the actual implementation.',
+    situation: 'You created an `/explore-alternatives` skill your team uses to brainstorm and evaluate implementation approaches before choosing one. Developers report that afterwards Claude’s responses are coloured by the discussion: referencing rejected approaches, retaining exploration context that interferes with the actual implementation.',
     ask: 'How should you configure this skill?',
     options: [
       { k: 'A', t: 'Use the `!` prefix in the skill to run the exploration logic as a bash subprocess.' },
@@ -294,7 +294,7 @@ export const CODEGEN = [
       { k: 'D', t: 'Create the skill in `~/.claude/skills/` instead of `.claude/skills/`.' },
     ],
     answer: 'B',
-    why: '`context: fork` runs the skill in an isolated subagent, so the brainstorm — including every rejected approach — never enters the main conversation history and cannot bias the implementation that follows.',
+    why: '`context: fork` runs the skill in an isolated subagent, so the brainstorm, including every rejected approach, never enters the main conversation history and cannot bias the implementation that follows.',
     distractors: {
       A: 'A bash subprocess runs shell commands. It has nothing to do with conversation context.',
       C: 'Marker commands cannot remove text that is already in the transcript.',

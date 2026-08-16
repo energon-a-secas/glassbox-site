@@ -89,7 +89,7 @@ export const PLANNING_NOTES = {
   plan: {
     title: 'Planning mode',
     points: [
-      'Investigate only \u2014 Read, Grep, Glob. No edits, no side effects.',
+      'Investigate only: Read, Grep, Glob. No edits, no side effects.',
       'Produces an implementation plan you approve before anything changes.',
       'For dozens of files, multiple approaches, architecture, or unfamiliar code.',
     ],
@@ -97,7 +97,7 @@ export const PLANNING_NOTES = {
   direct: {
     title: 'Direct execution',
     points: [
-      'Make the change now \u2014 the path is clear and contained.',
+      'Make the change now, since the path is clear and contained.',
       'Single-file fixes, one validation check, a mechanical rename.',
       'Well-understood, unambiguous work where a plan is just overhead.',
     ],

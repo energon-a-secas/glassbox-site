@@ -4,7 +4,7 @@
 // then throws that away the moment you leave the lab.
 //
 // Aggregates are stored, not answers. A run keeps [right, total] per domain
-// id and the ids you missed — enough to rebuild rolling accuracy and a
+// id and the ids you missed: enough to rebuild rolling accuracy and a
 // retry pool, small enough that twenty runs stay a few kilobytes, and
 // stable if a question is later reworded.
 //
@@ -72,7 +72,7 @@ export function domainTally(runs) {
  *
  * Thin evidence is deliberately not filtered out. One question answered
  * wrong is a weak record on 0%, and the setup view shows that bar right
- * above this button — ranking on a sample-size floor would have the button
+ * above this button, and ranking on a sample-size floor would have the button
  * name a domain visibly stronger than the ones on screen.
  */
 export function weakest(runs, k = 2) {

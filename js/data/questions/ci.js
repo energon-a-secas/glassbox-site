@@ -33,7 +33,7 @@ export const CI = [
     scenario: 'ci',
     domain: 'd4',
     level: 'hard',
-    situation: 'Your team uses Claude Code to generate code. A pattern emerges: non-obvious problems — performance tweaks that break edge cases, cleanups that quietly change behaviour — are only caught when a human reviews the PR. Claude’s reasoning during generation shows it considered those cases and concluded its approach was fine.',
+    situation: 'Your team uses Claude Code to generate code. A pattern emerges: non-obvious problems (performance tweaks that break edge cases, cleanups that quietly change behaviour) are only caught when a human reviews the PR. Claude’s reasoning during generation shows it considered those cases and concluded its approach was fine.',
     ask: 'Which approach addresses the root cause of this self-check limitation?',
     options: [
       { k: 'A', t: 'Run a second independent instance of Claude Code to review the changes without access to the generator’s reasoning.' },
@@ -65,7 +65,7 @@ export const CI = [
       { k: 'D', t: 'Up to 24 hours of latency is too slow for PR feedback, though the workflow would otherwise work.' },
     ],
     answer: 'B',
-    why: 'Batch is fire-and-forget: one request in, one response out. There is no point at which your code can intercept a tool call, run it, and hand the result back — so a workflow built on multiple tool round trips inside one logical interaction cannot run there at all.',
+    why: 'Batch is fire-and-forget: one request in, one response out. There is no point at which your code can intercept a tool call, run it, and hand the result back, so a workflow built on multiple tool round trips inside one logical interaction cannot run there at all.',
     distractors: {
       A: '`custom_id` exists precisely to correlate batch requests and responses.',
       C: 'A batch request is an ordinary Messages API request: it may carry `tools`, and even prior `tool_use`/`tool_result` turns. What it cannot do is pause mid-request for your code to run the tool.',
@@ -88,7 +88,7 @@ export const CI = [
       { k: 'D', t: 'Synchronous for PR style checks and nightly test generation; Message Batches only for the weekly audits.' },
     ],
     answer: 'B',
-    why: 'Only one of the three has a human waiting on it. Blocking work goes synchronous; anything on a schedule with hours of slack — weekly audits, nightly generation — absorbs the 24-hour window and takes the 50% discount.',
+    why: 'Only one of the three has a human waiting on it. Blocking work goes synchronous; anything on a schedule with hours of slack (weekly audits, nightly generation) absorbs the 24-hour window and takes the 50% discount.',
     distractors: {
       A: 'Putting the blocking pre-merge check on a 24-hour window stalls every merge in the repo.',
       C: 'Keeping everything synchronous leaves the discount on the table for two workloads that have no latency requirement.',
@@ -102,13 +102,13 @@ export const CI = [
     scenario: 'ci',
     domain: 'd4',
     level: 'core',
-    situation: 'Your automated reviews find real issues, but developers say the feedback is not actionable: findings read "complex ticket routing logic" or "potential null pointer" without saying what to change. Adding instructions like "always include concrete fix suggestions" produces inconsistent output — sometimes detailed, sometimes vague.',
+    situation: 'Your automated reviews find real issues, but developers say the feedback is not actionable: findings read "complex ticket routing logic" or "potential null pointer" without saying what to change. Adding instructions like "always include concrete fix suggestions" produces inconsistent output: sometimes detailed, sometimes vague.',
     ask: 'Which prompting technique most reliably produces actionable feedback?',
     options: [
       { k: 'A', t: 'Refine the instructions further with explicit requirements for each part of the feedback format.' },
       { k: 'B', t: 'Expand the context window to include more of the surrounding codebase so the model can propose concrete fixes.' },
       { k: 'C', t: 'Use a two-pass approach: one prompt identifies issues, a second generates fixes.' },
-      { k: 'D', t: 'Add 3-4 few-shot examples showing the exact required format — identified issue, location in code, concrete fix.' },
+      { k: 'D', t: 'Add 3-4 few-shot examples showing the exact required format: identified issue, location in code, concrete fix.' },
     ],
     answer: 'D',
     why: 'You already tried instructions and got variance. Examples show the target instead of describing it, and the model generalises the pattern to new findings rather than reinterpreting an adjective each run.',
@@ -134,7 +134,7 @@ export const CI = [
       { k: 'D', t: 'Neither mode.' },
     ],
     answer: 'B',
-    why: 'Deep analysis already runs overnight and already polls before publishing — its architecture is the batch architecture. The pre-merge hook blocks a human and cannot absorb a 24-hour window.',
+    why: 'Deep analysis already runs overnight and already polls before publishing, so its architecture is the batch architecture. The pre-merge hook blocks a human and cannot absorb a 24-hour window.',
     distractors: {
       A: 'Exactly backwards: the blocking check is the one workload that must stay synchronous.',
       C: 'Batching the blocking hook stalls merges for up to a day.',
@@ -148,7 +148,7 @@ export const CI = [
     scenario: 'ci',
     domain: 'd4',
     level: 'hard',
-    situation: 'Your automated review analyses comments and docstrings. The prompt tells Claude to "check that comments are accurate and up to date". Findings often flag acceptable patterns — TODO markers, plain descriptions — while missing comments that describe behaviour the code no longer implements.',
+    situation: 'Your automated review analyses comments and docstrings. The prompt tells Claude to "check that comments are accurate and up to date". Findings often flag acceptable patterns (TODO markers, plain descriptions) while missing comments that describe behaviour the code no longer implements.',
     ask: 'What change addresses the root cause?',
     options: [
       { k: 'A', t: 'Include git blame data so Claude can spot comments that predate recent code changes.' },
@@ -203,7 +203,7 @@ export const CI = [
       { k: 'D', t: 'Include the previous review findings in context and instruct Claude to report only new or still-unresolved issues.' },
     ],
     answer: 'D',
-    why: 'Same shape as the duplicate-tests problem: the reviewer is missing the record of what it already said. With prior findings in context, Claude can tell a fixed issue from an outstanding one — a judgement no string match can make.',
+    why: 'Same shape as the duplicate-tests problem: the reviewer is missing the record of what it already said. With prior findings in context, Claude can tell a fixed issue from an outstanding one, a judgement no string match can make.',
     distractors: {
       A: 'Reviewing less often reduces the count of duplicates by reducing review, which is not the same as fixing it.',
       B: 'Text matching cannot distinguish "already fixed" from "still broken, described the same way".',
@@ -240,7 +240,7 @@ export const CI = [
     scenario: 'ci',
     domain: 'd4',
     level: 'hard',
-    situation: 'A pull request changes 14 files in an inventory module. A single pass over all of them gives inconsistent results: detailed feedback on some files, shallow comments on others, obvious bugs missed, and contradictory verdicts — a pattern flagged in one file and the identical code approved in another.',
+    situation: 'A pull request changes 14 files in an inventory module. A single pass over all of them gives inconsistent results: detailed feedback on some files, shallow comments on others, obvious bugs missed, and contradictory verdicts, with a pattern flagged in one file and the identical code approved in another.',
     ask: 'How should you restructure the review?',
     options: [
       { k: 'A', t: 'Run three independent full-PR passes and flag only issues that appear in at least two of the three.' },
@@ -286,7 +286,7 @@ export const CI = [
     scenario: 'ci',
     domain: 'd4',
     level: 'hard',
-    situation: 'False-positive rates differ sharply by category: security and correctness 8%, performance 18%, style and naming 52%, documentation 48%. Surveys show growing distrust — developers dismiss findings unread because "half are wrong" — and the noisy categories are eroding trust in the accurate ones.',
+    situation: 'False-positive rates differ sharply by category: security and correctness 8%, performance 18%, style and naming 52%, documentation 48%. Surveys show growing distrust, with developers dismissing findings unread because "half are wrong", and the noisy categories are eroding trust in the accurate ones.',
     ask: 'Which approach best restores developer trust?',
     options: [
       { k: 'A', t: 'Temporarily disable the high-false-positive categories (style, naming, documentation), keeping the high-precision ones while you improve the prompts.' },
@@ -322,7 +322,7 @@ export const CI = [
     distractors: {
       A: 'A "fallback if too slow" still means the merge is blocked while you wait to find out.',
       B: 'Polling does not shorten the window. The blocking check still stalls.',
-      D: 'Ordering is not the issue — `custom_id` handles correlation — and this declines a free 50% on the overnight job.',
+      D: 'Ordering is not the issue, since `custom_id` handles correlation, and this declines a free 50% on the overnight job.',
     },
     pattern: 'Blocking is synchronous, scheduled is batch',
     source: 'Guide Q30',

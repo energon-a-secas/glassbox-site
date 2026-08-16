@@ -104,7 +104,7 @@ function chipRow(kind, items, sel) {
 function renderSetup() {
   const n = pool().length;
   // A set that exists and has not been logged is still owed a score, even if
-  // every question is answered — you can quit on the last reveal.
+  // every question is answered; you can quit on the last reveal.
   const resumable = D.set.length > 0 && !D.logged;
   const wrap = document.getElementById('drillSetup');
   wrap.innerHTML = `
@@ -337,7 +337,7 @@ function start(qs) {
  * Log the finished run, once. Only a run played to the end is logged:
  * quitting early would count everything unanswered as missed and poison the
  * rolling accuracy the setup view reports. Re-entering the result view must
- * not append the same run again — the log is persistent.
+ * not append the same run again, because the log is persistent.
  */
 function logRun() {
   if (D.logged) return;
@@ -387,8 +387,8 @@ export function mountDrill(root) {
     </section>`;
 
   RUNS = readRuns();
-  // Come back to where you were. Leaving the lab — including through the
-  // drill's own Pattern link — used to throw the run away even though D
+  // Come back to where you were. Leaving the lab (including through the
+  // drill's own Pattern link) used to throw the run away even though D
   // still held it.
   show(D.set.length ? D.view : 'setup');
 

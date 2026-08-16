@@ -1,12 +1,16 @@
 // ── Global events ────────────────────────────────────────────
 import { state, save, LABS } from './state.js';
-import { mountLab, syncRail } from './render.js';
+import { mountLab } from './render.js';
+import { setRailView, jumpToSection } from './rail.js';
 import { $ } from './utils.js';
 import { closeInspector, initTooltips } from './ui.js';
 
 function setLab(id) {
   if (!id || id === state.activeLab) return;
   state.activeLab = id;
+  // Entering a lab offers its sections again, even if the reader climbed
+  // back out of the previous one.
+  state.railView = 'auto';
   save(state);
   if (location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`);
   mountLab(state);
@@ -23,8 +27,12 @@ function setExam(on) {
 }
 
 export function bindEvents() {
-  // Lab rail
+  // Lab rail: labs, the drill-down into one lab's sections, and back out
   $('labRail')?.addEventListener('click', (e) => {
+    if (e.target.closest('[data-rail-back]')) { setRailView('labs'); return; }
+    if (e.target.closest('[data-rail-sections]')) { setRailView('auto'); return; }
+    const sub = e.target.closest('.lab-tab--sub');
+    if (sub) { jumpToSection(sub.dataset.jump); return; }
     const tab = e.target.closest('.lab-tab');
     if (tab) setLab(tab.dataset.lab);
   });
@@ -53,9 +61,9 @@ export function bindEvents() {
     const id = location.hash.replace('#', '');
     if (id && id !== state.activeLab && LABS.some((l) => l.id === id)) {
       state.activeLab = id;
+      state.railView = 'auto';
       save(state);
       mountLab(state);
-      syncRail(state);
     }
   });
 
