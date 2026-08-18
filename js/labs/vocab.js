@@ -19,7 +19,7 @@ function inspectVerb(key) {
   if (!v) return;
   openInspector(v.term, `
     <p class="insp-blurb">${v.gloss}</p>
-    <div class="vx-insp"><span class="vx-insp__tag">in a stem</span><p>${v.tell}</p></div>
+    <div class="vx-insp"><span class="vx-insp__tag">in a <span data-tip="stem">stem</span></span><p>${v.tell}</p></div>
     <div class="vx-insp vx-insp--trap"><span class="vx-insp__tag">the trap</span><p>${v.trap}</p></div>
     ${v.see ? `<p class="insp-foot"><a href="#${v.see.hash}" data-inspector-close>${escHtml(v.see.label)} →</a></p>` : ''}
   `);
@@ -79,7 +79,7 @@ export function mountVocab(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">The words are signals</h2>
-          <p class="lab__lead">Every operational verb in a stem encodes a mechanism: <em>synthesize</em> means coordinator judgment, <em>enforce</em> means code, <em>delegate</em> means full context in the prompt. The verbs are not interchangeable, and the distractors rely on you reading them as synonyms. Click any term for how it appears in a stem and the trap built on it.</p>
+          <p class="lab__lead">Every operational verb in a <span data-tip="stem">stem</span> encodes a mechanism: <em>synthesize</em> means coordinator judgment, <em>enforce</em> means code, <em>delegate</em> means full context in the prompt. The verbs are not interchangeable, and the distractors rely on you reading them as synonyms. Click any term for how it appears in a stem and the trap built on it.</p>
         </div>
       </header>
       ${VERB_GROUPS.map(groupHtml).join('')}

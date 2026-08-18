@@ -154,6 +154,18 @@ export const TIPS = {
     term: 'stdio transport',
     body: 'The MCP transport for a <em>local</em> server the client launches as a subprocess, speaking JSON-RPC over standard input and output. No port, no URL, no network exposure. Local versus remote is the whole decision: <code>stdio</code> or Streamable HTTP.',
   },
+  file_descriptor: {
+    term: 'File descriptor',
+    body: 'A small integer the operating system hands a process for each stream it can read or write. Three are already open before your code runs: <code>0</code> stdin, <code>1</code> stdout, <code>2</code> stderr. MCP\u2019s local transport is the decision to carry JSON-RPC over 0 and 1, and leave 2 for your logs.',
+  },
+  json_rpc: {
+    term: 'JSON-RPC 2.0',
+    body: 'The message format both MCP transports carry. A <em>request</em> has a <code>method</code>, <code>params</code> and an <code>id</code>; the <em>response</em> that answers it repeats that <code>id</code>, which is how replies are matched when several are in flight. A <em>notification</em> has no <code>id</code> at all, which is exactly why nothing ever answers one.',
+  },
+  stem: {
+    term: 'Stem',
+    body: 'The scenario paragraph a question opens with, before the four options: the setup, the measured symptom, and any constraint you must respect. Standard exam terminology. Everything needed to pick the answer is in it, which is why the patterns here are written as <em>the tell in the stem</em> rather than as facts to recall.',
+  },
   structured_outputs: {
     term: 'Structured Outputs',
     body: 'Constrains Claude’s <em>final response</em> to your JSON Schema, requested through <code>output_config.format</code>. It removes the retry-and-reparse loop that "please reply in JSON" needs. Different surface from a tool’s <code>input_schema</code>, which constrains a tool <em>call</em>.',

@@ -74,7 +74,7 @@ function patCard(p) {
         <span class="pat__chev" aria-hidden="true">${CHEVRON}</span>
       </button>
       <div class="pat__body">
-        ${col('tell', 'The tell in the stem', p.tells)}
+        ${col('tell', 'The tell in the <span data-tip="stem">stem</span>', p.tells)}
         ${col('pick', 'Pick the option that', p.pick)}
         ${col('reject', 'Reject', p.reject)}
         <div class="pat__example">
@@ -122,7 +122,7 @@ export function mountPatterns(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">The patterns that decide the answer</h2>
-          <p class="lab__lead">Almost every question is a broken system and four plausible fixes. These are the recurring rules that separate the one that works from the three that look like it. Read the tell, then the shape of the winner.</p>
+          <p class="lab__lead">Almost every question is a broken system and four plausible fixes, and the broken system is described in the <span data-tip="stem"><b>stem</b></span>: the scenario paragraph before the options. These are the recurring rules that separate the one that works from the three that look like it. Read the tell, then the shape of the winner.</p>
         </div>
       </header>
 

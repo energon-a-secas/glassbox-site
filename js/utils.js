@@ -1,16 +1,16 @@
+// Generic helpers come from the DOM Kit (js/neorgon-dom.js, vendored from
+// packages/neorgon-ui/dom/). They are re-exported so every existing
+// `import { escHtml } from './utils.js'` keeps working.
+//
+// Do not edit js/neorgon-dom.js. Edit the canonical source and run
+// packages/neorgon-ui/sync-dom.sh.
+import { escHtml, showToast as kitToast } from './neorgon-dom.js';
+export { escHtml };
+
 // ── Shared utilities ─────────────────────────────────────────
 
 export function $(id) { return document.getElementById(id); }
 
-/** Escape HTML special characters. */
-export function escHtml(str) {
-  if (str === null || str === undefined) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
 
 /**
  * Escape, then promote `backticked` spans to <code>. The question bank writes
@@ -51,24 +51,12 @@ export function keepInScroller(node) {
 }
 
 /** Show a temporary toast. */
-let _toastTimer = null;
+/** This site's own toast contract, rendered by the kit. */
 export function showToast(msg) {
-  let node = document.getElementById('app-toast');
-  if (!node) {
-    node = document.createElement('div');
-    node.id = 'app-toast';
-    node.className = 'toast';
-    document.body.appendChild(node);
-  }
-  // Announced by screen readers. Without these the toast is
-  // invisible to anyone not looking at that corner of the screen.
-  node.setAttribute('role', 'status');
-  node.setAttribute('aria-live', 'polite');
-  node.textContent = msg;
-  node.classList.add('visible');
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => node.classList.remove('visible'), 1800);
+  return kitToast(msg, { id: 'app-toast', className: 'toast',
+    visibleClass: 'visible', duration: 1800 });
 }
+
 
 /**
  * Very light code "highlighter", intentionally not a real parser.

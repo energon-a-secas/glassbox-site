@@ -12,7 +12,7 @@ import { SDK_TS, SDK_TS_ABSENT } from '../data/sdk-ts.js';
 import { state } from '../state.js';
 import { escHtml, highlightCode, copyText, keepInScroller } from '../utils.js';
 import { langTabs, toolsHtml, toolsCode } from './sdk-tools.js';
-import { benchHtml, benchClick } from './sdk-bench.js';
+import { benchHtml, benchClick, benchChange } from './sdk-bench.js';
 import { sessionsHtml, sessionsClick } from './sdk-sessions.js';
 
 // A level may carry `demo: 'id'` (data/sdk.js) to render an interactive
@@ -253,10 +253,14 @@ export function mountSdk(root) {
     // partial; the level view is re-rendered from it.
     if (sessionsClick(e)) { renderLevel(); return; }
 
-    // Chips, knobs, reset and copy all live in the bench partial, which
-    // updates in place rather than rebuilding the panel.
+    // The case list, knobs, reset and copy all live in the bench partial,
+    // which updates in place rather than rebuilding the panel.
     benchClick(e);
   });
+
+  // The bench's case dropdown is the one control on this lab that reports
+  // through `change` rather than `click`, so it needs its own delegate.
+  root.addEventListener('change', benchChange);
 
   // Exam mode emphasises the bench: that is where the judgement lives.
   // (The CSS hook lives on the .sdk-bench section, not the inner div.)

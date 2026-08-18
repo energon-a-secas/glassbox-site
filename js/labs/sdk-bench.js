@@ -6,6 +6,16 @@
 // block exactly where the missing structure would go. A verdict card
 // underneath is a footnote; the code is the answer.
 //
+// Laid out as three numbered steps, and that is a fix rather than a
+// decoration: as one chip row above a 300px knob column, picking the case
+// and tuning the knobs read as one undifferentiated bank of controls, so
+// a reported gap could not be traced back to the requirement that raised
+// it. Now step 1 states the case (a dropdown adds one; each lands as a
+// row carrying its own verdict and the setting it rides on), step 2 tunes
+// the settings with the riding requirements badged *on the knob*, and
+// step 3 is the config plus the gaps. The chain a reader has to follow
+// -- requirement -> knob -> line of config -- is the layout.
+//
 // Escaping contract (see data/sdk-config.js): goal `why`/`gap` and note
 // `text` render RAW (inline <code>/<em> + data-tip spans). Everything
 // else is plain text via escHtml. The snippet is assembled as plain text
@@ -165,14 +175,59 @@ function verdictHtml() {
 
 // ── Render ───────────────────────────────────────────────────
 
-/** Built once. Everything that changes on a click is swapped in place by
- *  `updateBench`: replacing the whole panel discarded the reader's scroll
- *  position inside the snippet and re-ran every animation on the page. */
-export function benchHtml() {
-  const goals = CFG_GOALS.map((g) =>
-    `<button class="chip${B.goals.has(g.id) ? ' is-active' : ''}" type="button" data-goal="${g.id}">${escHtml(g.label)}</button>`).join('');
+/** "PreToolUse hook = on", "tool_choice = any or named tool". Built from
+ *  CFG_FIELDS so a renamed option label can never drift from the rule. */
+function needText(need) {
+  return Object.entries(need).map(([k, v]) => {
+    const f = CFG_FIELDS.find((x) => x.id === k);
+    if (!f) return k;
+    const vals = (Array.isArray(v) ? v : [v])
+      .map((x) => f.options.find((o) => o.v === x)?.label || x);
+    return `${escHtml(f.label)} = ${escHtml(vals.join(' or '))}`;
+  }).join(' &middot; ');
+}
 
-  const knobs = CFG_FIELDS.map((f) => `
+/** Only the requirements not already in the case. The dropdown empties as
+ *  the case fills, which is what makes "you have picked them all" legible
+ *  without a count. */
+function pickOptionsHtml() {
+  const left = CFG_GOALS.filter((g) => !B.goals.has(g.id));
+  const opts = left.map((g) =>
+    `<option value="${escHtml(g.id)}">${escHtml(g.label)}</option>`).join('');
+  return `<option value="">${left.length ? 'Choose a requirement\u2026' : 'All seven are in the case'}</option>${opts}`;
+}
+
+function caseListHtml() {
+  const picked = chosen();
+  if (!picked.length) {
+    return `<li class="case-empty">No requirements yet. The config below is a default agent \u2014 it enforces nothing because nothing has been asked of it.</li>`;
+  }
+  return picked.map((g) => {
+    const ok = satisfied(g.need);
+    return `
+      <li class="case-row case-row--${ok ? 'ok' : 'gap'}">
+        <span class="case-row__state">${ok ? 'Enforced' : 'Not guaranteed'}</span>
+        <span class="case-row__label">${escHtml(g.label)}</span>
+        <span class="case-row__need">needs ${needText(g.need)}</span>
+        <button class="case-row__x" type="button" data-drop="${escHtml(g.id)}"
+                aria-label="Remove ${escHtml(g.label)} from the case">&times;</button>
+      </li>`;
+  }).join('');
+}
+
+/** The requirements riding on one knob, each carrying its own verdict.
+ *  This is where a gap becomes attributable: the failing requirement is
+ *  named on the control that would fix it. */
+function ridersHtml(fieldId) {
+  const n = needsByField()[fieldId];
+  if (!n || (!n.met.length && !n.gap.length)) return '';
+  const tag = (label, kind) =>
+    `<span class="rider rider--${kind}">${escHtml(label)}</span>`;
+  return n.gap.map((l) => tag(l, 'gap')).join('') + n.met.map((l) => tag(l, 'ok')).join('');
+}
+
+function knobsHtml() {
+  return CFG_FIELDS.map((f) => `
     <div class="sig">
       <div class="sig__label">
         ${escHtml(f.label)}
@@ -182,42 +237,73 @@ export function benchHtml() {
       <div class="seg-group" data-cfg="${f.id}">
         ${f.options.map((o) => `<button class="seg${B.cfg[f.id] === o.v ? ' is-active' : ''}" type="button" data-v="${o.v}">${escHtml(o.label)}</button>`).join('')}
       </div>
+      <div class="sig__riders" id="sdkRiders-${f.id}">${ridersHtml(f.id)}</div>
     </div>`).join('');
+}
+
+/** Built once. Everything that changes on a click is swapped in place by
+ *  `updateBench`: replacing the whole panel discarded the reader's scroll
+ *  position inside the snippet and re-ran every animation on the page. */
+export function benchHtml() {
+  const step = (n, title, lead, body, extra = '') => `
+    <section class="bstep${extra ? ` ${extra}` : ''}">
+      <header class="bstep__head">
+        <span class="bstep__n">${n}</span>
+        <div>
+          <h4>${title}</h4>
+          <p>${lead}</p>
+        </div>
+      </header>
+      ${body}
+    </section>`;
 
   return `
-    <div class="sdk-bench__goals">
-      <div class="sdk-sub">What does this agent have to do?</div>
-      <p class="sdk-bench__hint">Every requirement you pick has to appear in the config on the right: a hook, a <code>tool_choice</code>, a tool in the list. When the knobs cannot deliver one, it appears as a commented <b class="is-gap">GAP</b> block where the missing structure would go.</p>
-      <div class="chip-row" id="sdkGoals">${goals}</div>
-    </div>
-    <div class="sdk-bench__grid">
-      <div class="sdk-bench__knobs" id="sdkKnobs">
-        <div class="sdk-sub">Settings <button class="cfg-reset" type="button" id="sdkCfgReset">Reset</button></div>
-        ${knobs}
-      </div>
-      <div class="sdk-bench__out">
-        <div class="code-block code-block--sm">
-          <div class="code-block__bar">
-            <span class="code-block__lang">live config</span>
-            <span class="cfg-legend"><i class="cline--ok"></i>enforced<i class="cline--gap"></i>gap</span>
-            <button class="code-copy" type="button" id="sdkCfgCopy">Copy</button>
+    <div class="bench-steps">
+      ${step(1, 'State the case',
+    'What does this agent actually have to do? Add one or more. Each lands below with the setting it rides on, so you can see which knob answers it.',
+    `<div class="bstep__body">
+          <div class="bench-pick">
+            <label class="bench-pick__label" for="sdkGoalPick">Add a requirement</label>
+            <select class="bench-select" id="sdkGoalPick">${pickOptionsHtml()}</select>
           </div>
-          <pre><code class="cfg-code" id="sdkCfgCode">${snippetHtml()}</code></pre>
-        </div>
-        <div class="sdk-verdict" id="sdkVerdict">${verdictHtml()}</div>
-      </div>
+          <ul class="case-list" id="sdkCase">${caseListHtml()}</ul>
+        </div>`)}
+
+      ${step(2, 'Tune the settings',
+    'Now make the config deliver it. A requirement riding on a knob is badged <b class="is-gap">red</b> while the current value cannot guarantee it, and <b class="is-ok">green</b> once it can.',
+    `<div class="bstep__body">
+          <div class="sdk-bench__knobs" id="sdkKnobs">${knobsHtml()}</div>
+          <button class="cfg-reset" type="button" id="sdkCfgReset">Reset the knobs</button>
+        </div>`)}
+
+      ${step(3, 'Read the config',
+    'Every requirement has to appear here as real structure: a hook, a <code>tool_choice</code>, a tool in the list. Where the knobs cannot deliver one, the snippet gains a commented <b class="is-gap">GAP</b> block exactly where the missing structure would go.',
+    `<div class="bstep__body bstep__body--out">
+          <div class="code-block code-block--sm">
+            <div class="code-block__bar">
+              <span class="code-block__lang">live config</span>
+              <span class="cfg-legend"><i class="cline--ok"></i>enforced<i class="cline--gap"></i>gap</span>
+              <button class="code-copy" type="button" id="sdkCfgCopy">Copy</button>
+            </div>
+            <pre><code class="cfg-code" id="sdkCfgCode">${snippetHtml()}</code></pre>
+          </div>
+          <div class="sdk-verdict" id="sdkVerdict">${verdictHtml()}</div>
+        </div>`)}
     </div>`;
 }
 
 /** Reflect state without rebuilding the panel. The snippet's innerHTML is
  *  replaced, which restarts the mark animation, and that flash is the point:
- *  it shows *which lines* the click just changed. */
+ *  it shows *which lines* the click just changed. The seg buttons keep their
+ *  identity (class toggle, not re-render) so a keyboard user does not lose
+ *  focus mid-adjustment; only their rider badges are swapped. */
 function updateBench() {
-  document.querySelectorAll('#sdkGoals [data-goal]').forEach((b) => {
-    const on = B.goals.has(b.dataset.goal);
-    b.classList.toggle('is-active', on);
-    b.setAttribute('aria-pressed', on ? 'true' : 'false');
-  });
+  const pick = document.getElementById('sdkGoalPick');
+  if (pick) { pick.innerHTML = pickOptionsHtml(); pick.value = ''; }
+
+  const list = document.getElementById('sdkCase');
+  if (list) list.innerHTML = caseListHtml();
+
   document.querySelectorAll('#sdkKnobs [data-cfg]').forEach((group) => {
     group.querySelectorAll('.seg[data-v]').forEach((b) => {
       const on = B.cfg[group.dataset.cfg] === b.dataset.v;
@@ -225,6 +311,11 @@ function updateBench() {
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   });
+  CFG_FIELDS.forEach((f) => {
+    const r = document.getElementById(`sdkRiders-${f.id}`);
+    if (r) r.innerHTML = ridersHtml(f.id);
+  });
+
   const code = document.getElementById('sdkCfgCode');
   if (code) code.innerHTML = snippetHtml();
   const verdict = document.getElementById('sdkVerdict');
@@ -234,10 +325,9 @@ function updateBench() {
 /** Bench clicks, delegated from the lab's one listener.
  *  Returns true when it consumed the event. */
 export function benchClick(e) {
-  const goal = e.target.closest('[data-goal]');
-  if (goal) {
-    if (B.goals.has(goal.dataset.goal)) B.goals.delete(goal.dataset.goal);
-    else B.goals.add(goal.dataset.goal);
+  const drop = e.target.closest('[data-drop]');
+  if (drop) {
+    B.goals.delete(drop.dataset.drop);
     updateBench();
     return true;
   }
@@ -263,4 +353,14 @@ export function benchClick(e) {
   }
 
   return false;
+}
+
+/** The case dropdown fires `change`, not `click`, so the lab delegates
+ *  both. Returns true when it consumed the event. */
+export function benchChange(e) {
+  const pick = e.target.closest('#sdkGoalPick');
+  if (!pick || !pick.value) return false;
+  B.goals.add(pick.value);
+  updateBench();
+  return true;
 }

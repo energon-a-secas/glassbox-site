@@ -6,7 +6,9 @@ const STORAGE_KEY = 'glassbox-state';
 
 // key: the digit that jumps to the lab (0 = overview). half: which skill the
 // lab trains, used by the overview map. "machinery" labs simulate Claude's
-// internals, "questions" labs train the exam format itself.
+// internals, "questions" labs train the exam format itself. The id stays
+// "machinery"; the overview renders it as "See how it works", which is the
+// wording a first-time reader actually parses.
 export const LABS = [
   { id: 'overview', key: '0', half: 'map', label: 'Overview', hint: 'The exam, mapped to the labs that train it' },
   { id: 'foundations', key: 'f', half: 'machinery', label: 'Foundations', hint: 'Tokens, prediction, temperature: the layer under every other lab' },

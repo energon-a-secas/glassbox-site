@@ -6,12 +6,15 @@
 // data/mcp-authoring.js: what MCP is, how the server is reached
 // (local stdio vs remote HTTP), what you write to create a tool, and
 // what the call looks like on the wire. See that file for which
-// fields render raw. The connection lifecycle between the config and
-// the first call is a partial: labs/mcp-lifecycle.js.
+// fields render raw. Two partials sit between the transport cards and
+// the first tool call: labs/mcp-stdio.js (what the pipe underneath the
+// local transport is) and labs/mcp-lifecycle.js (the four JSON-RPC
+// steps that run over it), in that order.
 
 import { MCP_TASK, MCP_FLOWS, MCP_CONFIG, MCP_ERRORS, MCP_PRIMITIVES } from '../data/mcp.js';
 import { MCP_DEF, MCP_TRANSPORTS, TRANSPORT_VARIANTS, MCP_BUILD, TOOL_ANATOMY } from '../data/mcp-authoring.js';
 import { lifecycleHtml, lifecycleClick } from './mcp-lifecycle.js';
+import { stdioHtml, stdioClick } from './mcp-stdio.js';
 import { el, escHtml, codeify, highlightCode, copyText } from '../utils.js';
 
 const timers = {};
@@ -304,6 +307,8 @@ export function mountMcp(root) {
         </div>
       </div>
 
+      ${stdioHtml()}
+
       ${lifecycleHtml()}
 
       ${buildHtml()}
@@ -332,6 +337,7 @@ export function mountMcp(root) {
       document.getElementById(jump.dataset.jump)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
     }
+    if (stdioClick(e)) return;
     if (lifecycleClick(e)) {
       const old = root.querySelector('#mcpLife');
       if (old) old.outerHTML = lifecycleHtml();

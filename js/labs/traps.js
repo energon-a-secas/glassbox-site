@@ -55,7 +55,7 @@ function lureCard(l) {
 function pairCard(p) {
   const sides = p.sides.map((s) => `
     <div class="pair__side">
-      <span class="pair__when">If the stem says</span>
+      <span class="pair__when">If the <span data-tip="stem">stem</span> says</span>
       <p class="pair__whentext">${escHtml(s.when)}</p>
       <div class="pair__ans">${s.answer}</div>
       ${s.ref ? `<span class="pair__ref">${escHtml(s.ref)}</span>` : ''}

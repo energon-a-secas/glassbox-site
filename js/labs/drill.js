@@ -377,7 +377,7 @@ export function mountDrill(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">Drill the question bank</h2>
-          <p class="lab__lead">${QUESTIONS.length} scenario questions in the exam&rsquo;s own format · one stem, four plausible fixes, one that is most effective. Every answer comes back with the reasoning for the winner and for each option you rejected.</p>
+          <p class="lab__lead">${QUESTIONS.length} scenario questions in the exam&rsquo;s own format · one <span data-tip="stem">stem</span>, four plausible fixes, one that is most effective. Every answer comes back with the reasoning for the winner and for each option you rejected.</p>
         </div>
       </header>
       <div class="drill-setup" id="drillSetup"></div>

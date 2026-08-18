@@ -54,11 +54,11 @@ const CARDS = {
     fact: `${Object.values(CW_SCENARIOS).reduce((a, s) => a + s.strategies.length, 0)} playouts, side by side`,
   },
   patterns: {
-    desc: 'The decision patterns that settle most stems: the tell in the question, the winning option shape, the distractor shapes.',
+    desc: 'The decision patterns that settle most <span data-tip="stem">stems</span>: the tell in the question, the winning option shape, the distractor shapes.',
     fact: `${PATTERNS.length} patterns`,
   },
   vocab: {
-    desc: 'The exam’s verbs are signals, not synonyms: synthesize means judgment, aggregate means code, enforce means a hook. Each term with its stem-tell, its trap, and the near-miss pairs split apart.',
+    desc: 'The exam’s verbs are signals, not synonyms: synthesize means judgment, aggregate means code, enforce means a hook. Each term with its <span data-tip="stem">stem</span>-tell, its trap, and the near-miss pairs split apart.',
     fact: `${VERB_GROUPS.reduce((a, g) => a + g.verbs.length, 0)} terms · ${DISTINCTIONS.length} pairs split`,
   },
   traps: {
@@ -66,7 +66,7 @@ const CARDS = {
     fact: `${LURES.length} lures · ${PAIRS.length} near-misses`,
   },
   antipatterns: {
-    desc: 'The failure modes the exam loves, named and flagged. Spot them in stems and in your own configs.',
+    desc: 'The failure modes the exam loves, named and flagged. Spot them in <span data-tip="stem">stems</span> and in your own configs.',
     fact: `${Object.keys(ANTIPATTERNS).length} named anti-patterns`,
   },
   drill: {
@@ -88,13 +88,13 @@ const DOMAIN_LABS = {
 const HALVES = [
   {
     id: 'machinery',
-    title: 'See the machinery',
+    title: 'See how it works',
     sub: 'Hand-authored simulations, no live API and no keys. The internals behave the way Claude Code and the Agent SDK actually behave, slowed down so you can inspect each step.',
   },
   {
     id: 'questions',
     title: 'Answer the questions',
-    sub: 'The format is a skill by itself: four plausible options, exactly one that removes the cause. These labs teach the shapes questions come in, then score you against them.',
+    sub: 'Every question is a <span data-tip="stem"><b>stem</b></span> \u2014 the scenario paragraph that opens it, carrying the setup, the measured symptom and any constraint \u2014 followed by four plausible options, exactly one of which removes the cause. These labs teach the shapes those stems come in, then score you against them.',
   },
 ];
 
@@ -158,7 +158,7 @@ export function mountOverview(root) {
         <div class="ov-hero__text">
           <span class="ov-eyebrow">Claude Certified Architect (Foundations) · study labs</span>
           <h2>The exam tests two skills. This site trains both.</h2>
-          <p>Half the exam is knowing what Claude actually does when a request comes in: what it reads, what it fires, what it waits on. The other half is picking the one option that removes the cause when three would work. The machinery labs make the first visible. The question labs drill the second.</p>
+          <p>Half the exam is knowing what Claude actually does when a request comes in: what it reads, what it fires, what it waits on. The other half is picking the one option that removes the cause when three would work. The how-it-works labs make the first visible. The question labs drill the second.</p>
           <p class="ov-start">New here? Press <kbd>1</kbd> for the Agent Loop, or take the Drill cold with <kbd>9</kbd> and let the misses pick your path.</p>
         </div>
         <div class="ov-stats">
