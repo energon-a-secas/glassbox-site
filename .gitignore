@@ -29,3 +29,9 @@ package-lock.json
 # cites a local path outside this repo. It is planning material, not site
 # content, and this repo is public. It was removed from history on 2026-08-16.
 docs/gap-analysis.md
+
+# ── Neorgon base (enforced by smoke check 20) ─────────────────────────────────
+__pycache__/
+*.py[cod]
+skills-archived/
+*.log
