@@ -30,7 +30,7 @@ export const STDIO = {
 
   framing: {
     title: 'A pipe carries bytes, not messages',
-    body: 'This is the fact everything else on this page follows from. Nothing in a pipe marks where one message ends and the next begins, so the transport has to impose it: <strong>one JSON-RPC object per line, and no newlines inside it</strong>. The parser reads to the next <code>\\n</code> and expects what it finds to be a complete message. Both failures below are the same failure — something reached the wire that was not a message.',
+    body: 'This is the fact everything else on this page follows from. Nothing in a pipe marks where one message ends and the next begins, so the transport has to impose it: <strong>one JSON-RPC object per line, and no newlines inside it</strong>. The parser reads to the next <code>\\n</code> and expects what it finds to be a complete message. Both failures below are the same failure, something reached the wire that was not a message.',
   },
 
   // fd numbers are POSIX; the obligations are the spec's own MUST/MAY.
@@ -43,7 +43,7 @@ export const STDIO = {
       role: 'requests in',
       carries: 'Everything the host asks for: <code>initialize</code>, <code>tools/list</code>, and every <code>tools/call</code> the model triggers.',
       who: 'The host writes; your server reads in a loop until end-of-file.',
-      rule: 'The client <strong>MUST NOT</strong> write anything to stdin that is not a valid MCP message. The rule cuts both ways — there is no room here for a prompt, a banner or a keystroke.',
+      rule: 'The client <strong>MUST NOT</strong> write anything to stdin that is not a valid MCP message. The rule cuts both ways. There is no room here for a prompt, a banner or a keystroke.',
       breaks: 'Closing this stream <em>is</em> the shutdown signal; there is no <code>shutdown</code> method in the protocol. A server that ignores end-of-file becomes an orphan the host has to kill.',
     },
     {
@@ -83,17 +83,17 @@ export const STDIO = {
         lang: 'py',
         sample: `import sys
 
-# fd 2 — logged, never parsed
+# fd 2: logged, never parsed
 print("loaded 3 tools", file=sys.stderr)
 
-# fd 1 — one object, one line
+# fd 1: one object, one line
 sys.stdout.write(json.dumps(reply) + "\\n")
 sys.stdout.flush()`,
         bytes: `{"jsonrpc":"2.0","id":2,"result":{"tools":[…]}}`,
         parsed: [
           { ok: true, msg: 'Line 1 parses as JSON-RPC. Response to <code>id: 2</code>, two tools registered.' },
         ],
-        note: 'The debug line still reached you — it just travelled on the stream the protocol ignores.',
+        note: 'The debug line still reached you: it just travelled on the stream the protocol ignores.',
       },
       {
         id: 'print',
@@ -109,7 +109,7 @@ sys.stdout.flush()`,
         bytes: `loaded 3 tools
 {"jsonrpc":"2.0","id":2,"result":{"tools":[…]}}`,
         parsed: [
-          { ok: false, msg: 'Line 1 is not JSON. <strong>Protocol violation</strong> — the host tears the connection down here.' },
+          { ok: false, msg: 'Line 1 is not JSON. <strong>Protocol violation</strong>. The host tears the connection down here.' },
           { ok: false, msg: 'Line 2 was a perfectly valid response. Nothing is left to read it.' },
         ],
         note: 'The response was never wrong. The line above it was, and on a byte stream that is the same thing. Note where this lands: during startup, so the model is never told the server was supposed to exist.',
@@ -132,7 +132,7 @@ sys.stdout.flush()`,
   "result": { "tools": [ … ] }
 }`,
         parsed: [
-          { ok: false, msg: 'Line 1 is <code>{</code> — a truncated object. The parser had to stop at the newline, because the newline is the only delimiter it has.' },
+          { ok: false, msg: 'Line 1 is <code>{</code>: a truncated object. The parser had to stop at the newline, because the newline is the only delimiter it has.' },
           { ok: false, msg: 'Every following line is a fragment of a message that was already declared broken.' },
         ],
         note: 'The document is valid JSON and the transport still rejects it: messages are newline-delimited and <strong>must not contain embedded newlines</strong>. Formatting for a human is what breaks it.',
@@ -147,7 +147,7 @@ sys.stdout.flush()`,
     },
     {
       tag: 'One client, one process',
-      body: 'Connect two editors and two copies of your server are running, each with its own memory. A module-level variable is per-connection state, not shared state — anything that must be shared belongs behind a database.',
+      body: 'Connect two editors and two copies of your server are running, each with its own memory. A module-level variable is per-connection state, not shared state, anything that must be shared belongs behind a database.',
     },
     {
       tag: 'Shutdown is closing a stream',
@@ -170,7 +170,7 @@ sys.stdout.flush()`,
       { title: 'The runtime must be local', body: 'Right Python or Node, dependencies installed, on <em>every</em> machine that uses it. <code>uvx</code> and <code>npx -y</code> exist to make this someone else&rsquo;s problem.' },
       { title: 'Nothing is shared', body: 'No pooled connections, no shared cache, no one place to fix a bug. Thirty users means thirty processes and thirty re-pulls.' },
       { title: 'Your stdout is spoken for', body: 'Every library you import shares descriptor 1 with the protocol. A dependency that prints a deprecation warning takes the connection down, and the traceback will not mention it.' },
-      { title: 'Local is not safe', body: 'The server reads your files with your privileges. Read what you cloned — the transport removes the network, not the trust question.' },
+      { title: 'Local is not safe', body: 'The server reads your files with your privileges. Read what you cloned. The transport removes the network, not the trust question.' },
     ],
   },
 
