@@ -29,11 +29,11 @@ js/
     foundations.js    Tokenizer samples (pre-cut, with the recount rules), next-token distributions re-weighted by temperature, PROMPT_TECHNIQUES
     runs.js           Agent-loop scenarios: nodes + per-step scene deltas, token counts, flags
     loop-contrast.js  Steer-vs-enforce comparison (prompt asks / code enforces) for the Loop lab
-    loop-theory.js    LEDGER: one row per concept in the exchange — meaning (glossary key), consequence, optional exam note
+    loop-theory.js    LEDGER: one row per concept in the exchange: meaning (glossary key), consequence, optional exam note
     loop-orchestration.js  Hub-and-spoke map + coordinator duties + isolated-context rules + Task prompt pair + the built-in toolset walk
     mcp.js            Improvised-integration vs defined-MCP flows, MCP_CONFIG showcase, isError contract, primitives
     mcp-authoring.js  What MCP is (4 parts, N×M), stdio/Streamable-HTTP transport cards + caveats, server code in two languages, tool-call anatomy
-    mcp-stdio.js      STDIO: what the local transport *is* — the three POSIX streams with the spec's MUST/MAY obligations per descriptor, the newline-delimited framing rule, one tools/list answer written three ways (correct / stray print() / pretty-printed, the last two fatal for different reasons), process ownership incl. the close-stdin→SIGTERM→SIGKILL shutdown, and buys/costs
+    mcp-stdio.js      STDIO: what the local transport *is*: the three POSIX streams with the spec's MUST/MAY obligations per descriptor, the newline-delimited framing rule, one tools/list answer written three ways (correct / stray print() / pretty-printed, the last two fatal for different reasons), process ownership incl. the close-stdin→SIGTERM→SIGKILL shutdown, and buys/costs
     mcp-lifecycle.js  MCP_LIFE: the four steps from .mcp.json to a callable tool (spawn → JSON-RPC handshake → tools/list → injection), worked on crystaldba/postgres-mcp, each step carrying its wire messages, its failure mode, and the one state row it changes
     config.js         Repo maturity L0→L3 trees + user-scope (~/.claude) tree + annotated file contents + read-order metadata (per-file `load`, per-level `startOrder`)
     planning.js       Plan-vs-direct signals, preset cases, verdict notes
@@ -51,17 +51,17 @@ js/
       lures.js        Distractor shapes that read senior and lose
       pairs.js        Near-miss clusters where one word in the stem picks the winner
       checks.js       The passes to run before committing to an answer
-    vocab.js          Lexicon: VERB_GROUPS (term/gloss/tell/trap), QUICK_TEST, DISTINCTIONS — verbs are guide-traceable; DISTINCTIONS carries four bank-tested identifier pairs
+    vocab.js          Lexicon: VERB_GROUPS (term/gloss/tell/trap), QUICK_TEST, DISTINCTIONS. Verbs are guide-traceable; DISTINCTIONS carries four bank-tested identifier pairs
     questions/        Question bank, one file per exam scenario
       index.js        QUESTIONS aggregate + SCENARIOS / DOMAINS / LEVELS vocabularies
       support.js  codegen.js  research.js  ci.js  conversational.js   (guide practice test)
-      authored.js     Extraction + Dev Tools — exam scenarios the guide leaves unexercised
+      authored.js     Extraction + Dev Tools: exam scenarios the guide leaves unexercised
   labs/               One module per lab, each exports mount(root)
     overview.js  The landing map: hero, per-lab cards by `half`, domain-weight map. Counts are derived from data modules, never hardcoded.
     foundations.js  loop.js  sdk.js  mcp.js  config.js  planning.js  context.js  patterns.js  vocab.js  traps.js  antipatterns.js  drill.js
     drill-recall.js  The drill's "Since last time" card: history.js aggregates → the setup view's domain bars and its two preset buttons
     loop-theory.js  context-stores.js  sdk-tools.js  sdk-bench.js  sdk-sessions.js  mcp-stdio.js  mcp-lifecycle.js
-                    Partials, not labs — HTML builders (+ an optional binder, or a `*Click(e)` that returns whether it consumed the event) imported by loop.js / context.js / sdk.js / mcp.js so those stay under the 500-line cap
+                    Partials, not labs: HTML builders (+ an optional binder, or a `*Click(e)` that returns whether it consumed the event) imported by loop.js / context.js / sdk.js / mcp.js so those stay under the 500-line cap
 docs/architecture.mmd + .svg   Diagram source + render
 ```
 
