@@ -700,7 +700,7 @@ button:active,
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition: none !important;
     /* The lab rail and the drill option list both scroll programmatically. */
     scroll-behavior: auto !important;
   }
