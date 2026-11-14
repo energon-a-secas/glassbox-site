@@ -204,7 +204,7 @@ export function mountSdk(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">Building an agent, one setting at a time</h2>
-          <p class="lab__lead">The Agent Loop lab shows the <span data-tip="agentic_loop">loop</span> Claude Code already runs for you. This is the part you write: six levels, each adding exactly one layer of configuration, with what it buys you and what still breaks if you stop there.</p>
+          <p class="lab__lead">The Agent Loop lab shows the <span data-tip="agentic_loop">loop</span> Claude Code already runs for you. This is the part you write, one layer of configuration per level, with what each buys you and what still breaks if you stop there.</p>
         </div>
       </header>
 

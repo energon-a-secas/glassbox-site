@@ -13,7 +13,7 @@ export const LABS = [
   { id: 'overview', key: '0', half: 'map', label: 'Overview', hint: 'The exam, mapped to the labs that train it' },
   { id: 'foundations', key: 'f', half: 'machinery', label: 'Foundations', hint: 'Tokens, prediction, temperature: the layer under every other lab' },
   { id: 'loop', key: '1', half: 'machinery', label: 'Agent Loop', hint: 'Watch a coordinator spin subagents, step by step' },
-  { id: 'sdk', key: '2', half: 'machinery', label: 'Agent SDK', hint: 'Build one yourself: six levels of setup and their caveats' },
+  { id: 'sdk', key: '2', half: 'machinery', label: 'Agent SDK', hint: 'Build one yourself: each level of setup and its caveats' },
   { id: 'mcp', key: '3', half: 'machinery', label: 'MCP', hint: 'Improvised integration vs a defined MCP server' },
   { id: 'config', key: '4', half: 'machinery', label: 'Config Explorer', hint: 'A repo from bare to fully outfitted' },
   { id: 'planning', key: '5', half: 'machinery', label: 'Plan vs Direct', hint: 'When Claude should plan before it edits' },

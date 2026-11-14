@@ -155,7 +155,7 @@ export function mountConfig(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">A repo, from bare to fully outfitted</h2>
-          <p class="lab__lead">Step a project through four levels of Claude Code config. Each file you add changes what Claude knows before it types a character. Click a file to read it. At L3, once custom skills exist, a second tree appears: your <span data-tip="user_scope">user scope</span>, where a personal copy of the same skill can silently shadow the team’s.</p>
+          <p class="lab__lead">Each Claude Code config file you add to a repo changes what Claude knows before it types a character. Click a file to read it. At L3, once custom skills exist, a second tree appears: your <span data-tip="user_scope">user scope</span>, where a personal copy of the same skill can silently shadow the team’s.</p>
         </div>
       </header>
 

@@ -34,7 +34,7 @@ export function mountAntipatterns(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">The traps the exam loves</h2>
-          <p class="lab__lead">Every one of these looks reasonable and quietly breaks a production agent. Flip a card for why it fails and what to do instead. The other labs flag these live as they happen.</p>
+          <p class="lab__lead">Every one of these looks reasonable and quietly breaks a production agent. Flip a card for why it fails and what to do instead.</p>
         </div>
       </header>
       ${groups}

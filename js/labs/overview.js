@@ -1,16 +1,17 @@
 // ── Lab 0: Overview ──────────────────────────────────────────
-// The landing map. Orients a first-time visitor (what the exam tests,
-// which lab trains what) and gives a returning one a one-glance path.
+// The landing map: one title row naming the exam, then the labs by half,
+// the domain-weight map and the portable bank. No hero and no stat tiles:
+// the page opens on the lab cards (fleet design pass, 2026-11-14).
 // Cards are plain #hash anchors: the shell's hashchange handler mounts
 // the target lab, so this file needs no navigation code of its own.
 //
 // Every count below is derived from the data modules, never hardcoded:
-// add a question or a pattern and the tiles update themselves.
+// add a question or a pattern and the cards update themselves.
 
 import { LABS } from '../state.js';
-import { EXAM_BRIEF } from '../data/exam-brief.js';
 import { DOMAINS, QUESTIONS, SCENARIOS } from '../data/questions/index.js';
 import { RUN_ORDER } from '../data/runs.js';
+import { PROMPT_TECHNIQUES } from '../data/foundations.js';
 import { SDK_LEVELS } from '../data/sdk.js';
 import { MCP_FLOWS } from '../data/mcp.js';
 import { CONFIG_LEVELS } from '../data/config.js';
@@ -26,15 +27,15 @@ import { escHtml } from '../utils.js';
 // new lab never renders an empty card.
 const CARDS = {
   foundations: {
-    desc: 'The layer under every other lab: what a token is, how text chunks into them, how the next one is picked, and what temperature actually changes, with two live demos.',
-    fact: '2 demos + 6 prompt techniques compared',
+    desc: 'The layer under every other lab: what a token is, how text chunks into them, how the next one is picked, and what temperature actually changes.',
+    fact: `Live demos + ${PROMPT_TECHNIQUES.length} prompt techniques`,
   },
   loop: {
     desc: 'Replay a full agent run node by node: stop_reason, tool_choice, the Task tool, subagents, and the context meter filling as it works.',
     fact: `${RUN_ORDER.length} runs to replay`,
   },
   sdk: {
-    desc: 'Build the same agent six times, from a bare stateless call to sessions and subagents. Each level names the config keys it adds and what still breaks without the next one.',
+    desc: 'Build the same agent level by level, from a bare stateless call to sessions and subagents. Each level names the config keys it adds and what still breaks without the next one.',
     fact: `${SDK_LEVELS.length} levels + a config bench`,
   },
   mcp: {
@@ -86,16 +87,8 @@ const DOMAIN_LABS = {
 };
 
 const HALVES = [
-  {
-    id: 'machinery',
-    title: 'See how it works',
-    sub: 'Hand-authored simulations, no live API and no keys. The internals behave the way Claude Code and the Agent SDK actually behave, slowed down so you can inspect each step.',
-  },
-  {
-    id: 'questions',
-    title: 'Answer the questions',
-    sub: 'Every question is a <span data-tip="stem"><b>stem</b></span> \u2014 the scenario paragraph that opens it, carrying the setup, the measured symptom and any constraint \u2014 followed by four plausible options, exactly one of which removes the cause. These labs teach the shapes those stems come in, then score you against them.',
-  },
+  { id: 'machinery', title: 'See how it works' },
+  { id: 'questions', title: 'Answer the questions' },
 ];
 
 const labById = Object.fromEntries(LABS.map((l) => [l.id, l]));
@@ -121,7 +114,6 @@ function halfHtml(half) {
     <section class="ov-sec">
       <header class="ov-sec__head">
         <h3>${half.title}</h3>
-        <p>${half.sub}</p>
       </header>
       <div class="ov-cards">${ids.map(cardHtml).join('')}</div>
     </section>`;
@@ -145,29 +137,10 @@ function domainHtml(d) {
 }
 
 export function mountOverview(root) {
-  const tiles = [
-    { num: EXAM_BRIEF.stats[0].num, cap: EXAM_BRIEF.stats[0].cap },
-    { num: EXAM_BRIEF.stats[2].num, cap: EXAM_BRIEF.stats[2].cap },
-    { num: String(QUESTIONS.length), cap: 'practice questions, every option reasoned' },
-    { num: String(PATTERNS.length), cap: 'decision patterns that settle most stems' },
-  ];
-
   root.innerHTML = `
     <section class="lab lab-overview">
-      <header class="ov-hero">
-        <div class="ov-hero__text">
-          <span class="ov-eyebrow">Claude Certified Architect (Foundations) · study labs</span>
-          <h2>The exam tests two skills. This site trains both.</h2>
-          <p>Half the exam is knowing what Claude actually does when a request comes in: what it reads, what it fires, what it waits on. The other half is picking the one option that removes the cause when three would work. The how-it-works labs make the first visible. The question labs drill the second.</p>
-          <p class="ov-start">New here? Press <kbd>1</kbd> for the Agent Loop, or take the Drill cold with <kbd>9</kbd> and let the misses pick your path.</p>
-        </div>
-        <div class="ov-stats">
-          ${tiles.map((t) => `
-            <div class="ov-stat">
-              <div class="ov-stat__num">${escHtml(t.num)}</div>
-              <div class="ov-stat__cap">${escHtml(t.cap)}</div>
-            </div>`).join('')}
-        </div>
+      <header class="lab__head">
+        <h2 class="lab__title">Study labs for the Claude Certified Architect (Foundations) exam</h2>
       </header>
 
       ${HALVES.map(halfHtml).join('')}
@@ -175,22 +148,22 @@ export function mountOverview(root) {
       <section class="ov-sec">
         <header class="ov-sec__head">
           <h3>Where the points are</h3>
-          <p>Five domains, weighted. Bars are the official weights relative to the biggest; chips are the labs that train each one.</p>
+          <p>Bars are the official weights relative to the biggest; chips are the labs that train each one.</p>
         </header>
         <div class="ov-map">
           ${DOMAINS.map(domainHtml).join('')}
-          <p class="ov-map__note">The <a href="#drill">Drill</a> samples all five domains and estimates a scaled score on the 100-1000 scale from these weights.</p>
+          <p class="ov-map__note">The <a href="#drill">Drill</a> samples every domain and estimates a scaled score on the 100-1000 scale from these weights.</p>
         </div>
       </section>
 
       <section class="ov-sec">
         <header class="ov-sec__head">
           <h3>Take the bank with you</h3>
-          <p>The full bank also ships as a <a href="proctor-drill.json">Proctor test file</a>: ${QUESTIONS.length} questions, every option reasoned. Here it runs embedded in <a href="https://proctor.neorgon.com/" target="_blank" rel="noopener noreferrer">Proctor</a>: study mode with instant corrections, or open it there for the timed simulator, PDF export, and notes.</p>
+          <p>Get the bank as a <a href="proctor-drill.json">Proctor test file</a> (${QUESTIONS.length} questions, every option reasoned), or open it in <a href="https://proctor.neorgon.com/" target="_blank" rel="noopener noreferrer">Proctor</a> for the timed simulator, PDF export and notes.</p>
         </header>
         <iframe class="ov-proctor" loading="lazy"
           src="https://proctor.neorgon.com/?embed=1&mode=study&src=${encodeURIComponent('https://glassbox.neorgon.com/proctor-drill.json')}"
-          title="Glass Box drill bank · Proctor"></iframe>
+          title="Glass Box drill bank in Proctor, study mode"></iframe>
       </section>
     </section>`;
 }

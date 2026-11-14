@@ -261,7 +261,7 @@ export function mountContext(root) {
 
       <div class="lab-sub" data-section="Technique matrix">
         <h3>Pick the technique by what must survive</h3>
-        <p class="lab__lead">Five tools, one question: what happens to an exact number, and to a topic from forty turns ago? Click a row for the full trade-off.</p>
+        <p class="lab__lead">One question for every tool: what happens to an exact number, and to a topic from forty turns ago? Click a row for the full trade-off.</p>
         ${matrixHtml()}
       </div>
 
@@ -269,7 +269,7 @@ export function mountContext(root) {
 
       <div class="lab-sub" data-section="Recurring failures">
         <h3>The recurring failures</h3>
-        <p class="lab__lead">Four symptoms long conversations keep producing. The cause is never “the model forgot”; it is always something about what the request did or didn’t contain.</p>
+        <p class="lab__lead">The symptoms long conversations keep producing. The cause is never “the model forgot”; it is always something about what the request did or didn’t contain.</p>
         <div class="cw-issues">${issuesHtml()}</div>
       </div>
     </section>`;

@@ -57,7 +57,7 @@ js/
       support.js  codegen.js  research.js  ci.js  conversational.js   (guide practice test)
       authored.js     Extraction + Dev Tools: exam scenarios the guide leaves unexercised
   labs/               One module per lab, each exports mount(root)
-    overview.js  The landing map: hero, per-lab cards by `half`, domain-weight map. Counts are derived from data modules, never hardcoded.
+    overview.js  The landing map: one title row naming the exam, per-lab cards by `half`, domain-weight map. No hero or stat tiles (fleet design pass, 2026-11-14). Counts are derived from data modules, never hardcoded.
     foundations.js  loop.js  sdk.js  mcp.js  config.js  planning.js  context.js  patterns.js  vocab.js  traps.js  antipatterns.js  drill.js
     drill-recall.js  The drill's "Since last time" card: history.js aggregates → the setup view's domain bars and its two preset buttons
     loop-theory.js  context-stores.js  sdk-tools.js  sdk-bench.js  sdk-sessions.js  mcp-stdio.js  mcp-lifecycle.js

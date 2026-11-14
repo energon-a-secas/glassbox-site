@@ -109,7 +109,7 @@ export function mountTraps(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">Where the points actually go</h2>
-          <p class="lab__lead">Two or three options in every question are real engineering. You lose marks to answers that sound senior but are wrong here, and to stems that look identical until one word moves the answer. Both catalogues, plus what to run through before you commit.</p>
+          <p class="lab__lead">Two or three options in every question are real engineering. You lose marks to answers that sound senior but are wrong here, and to stems that look identical until one word moves the answer.</p>
         </div>
       </header>
 

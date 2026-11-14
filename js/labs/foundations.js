@@ -202,7 +202,7 @@ export function mountFoundations(root) {
       <header class="lab__head">
         <div>
           <h2 class="lab__title">The layer under everything</h2>
-          <p class="lab__lead">Every other lab talks about loops, tools, and windows. This one is what they are made of: <span data-tip="token">tokens</span>, one prediction at a time, with <span data-tip="temperature">temperature</span> deciding how brave each pick is. Two live demos, then the prompt techniques one level up.</p>
+          <p class="lab__lead">Loops, tools and context windows are all made of the same thing: <span data-tip="token">tokens</span>, one prediction at a time, with <span data-tip="temperature">temperature</span> deciding how brave each pick is.</p>
         </div>
       </header>
 
@@ -245,7 +245,7 @@ export function mountFoundations(root) {
 
       <section class="lab-sub" data-section="Prompt techniques">
         <h3>Prompt techniques, side by side</h3>
-        <p class="lab__lead">One task, <em>${escHtml(TECHNIQUE_TASK)}</em>, solved six ways. The difference is never “wording”; each technique moves a different lever: tokens spent, format guarantees, authority, decomposition.</p>
+        <p class="lab__lead">One task, <em>${escHtml(TECHNIQUE_TASK)}</em>, solved once per technique. The difference is never “wording”; each technique moves a different lever: tokens spent, format guarantees, authority, decomposition.</p>
         <div class="fnd-techs">${techniqueCards()}</div>
       </section>
 
